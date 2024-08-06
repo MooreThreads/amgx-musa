@@ -36,7 +36,7 @@ class MemoryInfo
         {
             size_t free;
             size_t total;
-            cudaMemGetInfo(&free, &total);
+            musaMemGetInfo(&free, &total);
             return total / 1024.0 / 1024 / 1024;
         }
 
@@ -44,7 +44,7 @@ class MemoryInfo
         {
             size_t free;
             size_t total;
-            cudaMemGetInfo(&free, &total);
+            musaMemGetInfo(&free, &total);
             return free / 1024.0 / 1024 / 1024;
         }
 
@@ -57,7 +57,7 @@ class MemoryInfo
         {
             size_t free;
             size_t total;
-            cudaMemGetInfo(&free, &total);
+            musaMemGetInfo(&free, &total);
             size_t allocated = total - free;
 
             if (allocated > max_allocated)

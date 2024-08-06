@@ -92,8 +92,8 @@ class MulticolorGaussSeidelSolver_Base : public Solver<T_Config>
         bool m_reorder_cols_by_color_desired;
         bool m_insert_diagonal_desired;
 
-        cudaStream_t get_aux_stream();
-        cudaEvent_t m_start, m_end;
+        musaStream_t get_aux_stream();
+        musaEvent_t m_start, m_end;
 
     public:
         // Constructor.

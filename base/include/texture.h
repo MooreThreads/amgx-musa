@@ -30,7 +30,7 @@
 #include <error.h>
 #include <cutil.h>
 
-#include "cuda_runtime.h"
+#include "musa_runtime.h"
 
 namespace amgx
 {

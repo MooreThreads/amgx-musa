@@ -286,9 +286,9 @@ template <typename TConfig> class DistributedManagerBase
             halo_ranges(_halo_ranges), halo_rows_ref_count(0), halo_btl_ref_count(0), halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h),  halo_rows(NULL), halo_btl(NULL), m_is_root_partition(false), m_is_glued(false), m_is_fine_level_glued(false), m_is_fine_level_consolidated(false), m_is_fine_level_root_partition(false), m_use_cuda_ipc_consolidation(false), m_fixed_view_size(false)
 
         {
-            cudaEventCreate(&comm_event);
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaEventCreate(&comm_event);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
         };
 
         DistributedManagerBase(Matrix<TConfig> &a);
@@ -304,8 +304,8 @@ template <typename TConfig> class DistributedManagerBase
             halo_ranges(_halo_ranges), halo_rows_ref_count(0), halo_btl_ref_count(0), halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h), halo_rows(NULL), halo_btl(NULL),
             _comms(NULL), m_is_root_partition(false), m_is_glued(false), m_is_fine_level_glued(false), m_is_fine_level_consolidated(false), m_is_fine_level_root_partition(false), m_use_cuda_ipc_consolidation(false), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             _neighbors = neighbors_;
             _B2L_maps.resize(B2L_maps_.size());
 
@@ -314,7 +314,7 @@ template <typename TConfig> class DistributedManagerBase
                 _B2L_maps[i] = B2L_maps_[i];
             }
 
-            cudaEventCreate(&comm_event);
+            musaEventCreate(&comm_event);
         };
 
 
@@ -329,8 +329,8 @@ template <typename TConfig> class DistributedManagerBase
                                 std::vector<Matrix<TConfig> > **halo_rows_,
                                 std::vector<DistributedManager<TConfig> > **halo_btl_) : m_fine_level_comms(NULL), A(&a), m_pinned_buffer_size(0), m_pinned_buffer(NULL), neighbors(neighbors_), B2L_maps(B2L_maps_), L2H_maps(_L2H_maps), B2L_rings(B2L_rings_), halo_rows_ref_count(0), halo_btl_ref_count(0), halo_ranges(halo_ranges_), halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             DistributedManagerBaseInit(my_id, base_index, index_range, a, comms_, halo_rows_, halo_btl_);
         }
 
@@ -346,8 +346,8 @@ template <typename TConfig> class DistributedManagerBase
                                 std::vector<Matrix<TConfig> > **halo_rows_,
                                 std::vector<DistributedManager<TConfig> > **halo_btl_) : m_fine_level_comms(NULL), A(&a), m_pinned_buffer_size(0), m_pinned_buffer(NULL), neighbors(neighbors_), B2L_maps(B2L_maps_), L2H_maps(_L2H_maps), B2L_rings(B2L_rings_), halo_rows_ref_count(0), halo_btl_ref_count(0), halo_ranges(halo_ranges_), halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             DistributedManagerBaseInit(my_id, base_index, index_range, a, comms_, halo_rows_, halo_btl_);
         }
 
@@ -362,8 +362,8 @@ template <typename TConfig> class DistributedManagerBase
             halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h),
             B2L_maps(B2L_maps_),  L2H_maps(_L2H_maps), B2L_rings(B2L_rings_), m_is_root_partition(false), m_is_glued(false), m_is_fine_level_glued(false), m_is_fine_level_consolidated(false), m_is_fine_level_root_partition(false), m_use_cuda_ipc_consolidation(false), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             DistributedArranger<TConfig> *prep = new DistributedArranger<TConfig>;
             int rings = num_halo_rings(B2L_rings);
             prep->create_B2L_from_maps(a, my_id, rings, base_index, index_range, neighbors,
@@ -381,8 +381,8 @@ template <typename TConfig> class DistributedManagerBase
             halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h),
             B2L_maps(B2L_maps_),  L2H_maps(L2H_maps_), B2L_rings(_B2L_rings), m_is_root_partition(false), m_is_glued(false), m_is_fine_level_glued(false), m_is_fine_level_consolidated(false), m_is_fine_level_root_partition(false), m_use_cuda_ipc_consolidation(false), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             DistributedArranger<TConfig> *prep = new DistributedArranger<TConfig>;
             prep->create_B2L_from_maps(a, my_id, rings, neighbors,
                                        B2L_maps, L2H_maps, B2L_rings, comms_, &halo_rows, &halo_btl);
@@ -428,8 +428,8 @@ template <typename TConfig> class DistributedManagerBase
                                 DistributedComms<TConfig> **comms_) : m_fine_level_comms(NULL), _comms(NULL), A(&a), m_pinned_buffer_size(0), m_pinned_buffer(NULL), neighbors(neighbors_), halo_ranges(_halo_ranges), halo_ranges_h(halo_ranges_h_), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h),
             B2L_maps(_B2L_maps),  L2H_maps(_L2H_maps), B2L_rings(_B2L_rings), m_is_root_partition(false), m_is_glued(false), m_is_fine_level_glued(false), m_is_fine_level_consolidated(false), m_is_fine_level_root_partition(false), m_use_cuda_ipc_consolidation(false), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             DistributedArranger<TConfig> *prep = new DistributedArranger<TConfig>;
             prep->create_B2L_from_neighbors(a, my_id, rings, base_index, index_range, neighbors,
                                             halo_ranges_h, halo_ranges, B2L_maps, L2H_maps, B2L_rings, comms_, &halo_rows, &halo_btl);
@@ -446,8 +446,8 @@ template <typename TConfig> class DistributedManagerBase
                                 int num_neighbors) : m_fine_level_comms(NULL), A(&a), m_pinned_buffer_size(0), m_pinned_buffer(NULL), neighbors(_neighbors), halo_ranges(_halo_ranges), halo_ranges_h(_halo_ranges_h), part_offsets(_part_offsets), part_offsets_h(_part_offsets_h),
             B2L_maps(_B2L_maps),  L2H_maps(_L2H_maps), B2L_rings(_B2L_rings), m_is_root_partition(false), m_is_glued(false), m_is_fine_level_glued(false), m_is_fine_level_consolidated(false), m_is_fine_level_root_partition(false), m_use_cuda_ipc_consolidation(false), m_fixed_view_size(false)
         {
-            cudaStreamCreateWithFlags(&m_int_stream, cudaStreamNonBlocking);
-            cudaStreamCreateWithFlags(&m_bdy_stream, cudaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_int_stream, musaStreamNonBlocking);
+            musaStreamCreateWithFlags(&m_bdy_stream, musaStreamNonBlocking);
             this->createComms(A->getResources());
             DistributedArranger<TConfig> *prep = new DistributedArranger<TConfig>;
             neighbors.resize(num_neighbors);
@@ -1012,7 +1012,7 @@ template <typename TConfig> class DistributedManagerBase
 
             _comms->setup(data, *A, tag);  //set pointers to buffer
             gather_B2L(data);             //write values to buffer
-            cudaEventRecord(comm_event);
+            musaEventRecord(comm_event);
             _comms->exchange_halo_async(data, *A, comm_event, tag); //begin async send
         }
 
@@ -1025,7 +1025,7 @@ template <typename TConfig> class DistributedManagerBase
 
             _comms->setup(data, *A, tag);  //set pointers to buffer
             gather_B2L_v2(data);             //write values to buffer
-            cudaEventRecord(comm_event);
+            musaEventRecord(comm_event);
         }
 
         template <class Vector>
@@ -1062,7 +1062,7 @@ template <typename TConfig> class DistributedManagerBase
         }
 
         template <class Vector>
-        void add_from_halo(Vector &data, int tag, cudaStream_t stream = 0)
+        void add_from_halo(Vector &data, int tag, musaStream_t stream = 0)
         {
             // set num neighbors = size of b2l_rings
             // need to do this because comms might have more neighbors than our matrix knows about
@@ -1074,7 +1074,7 @@ template <typename TConfig> class DistributedManagerBase
         }
 
         template <class Vector>
-        void add_from_halo_v2(Vector &data, int tag, cudaStream_t stream = 0)
+        void add_from_halo_v2(Vector &data, int tag, musaStream_t stream = 0)
         {
             // set num neighbors = size of b2l_rings
             // need to do this because comms might have more neighbors than our matrix knows about
@@ -1086,7 +1086,7 @@ template <typename TConfig> class DistributedManagerBase
         }
 
         template <class Vector>
-        void add_from_halo_split_gather(Vector &data, int tag, cudaStream_t stream = 0)
+        void add_from_halo_split_gather(Vector &data, int tag, musaStream_t stream = 0)
         {
             // set num neighbors = size of b2l_rings
             // need to do this because comms might have more neighbors than our matrix knows about
@@ -1096,7 +1096,7 @@ template <typename TConfig> class DistributedManagerBase
         }
 
         template <class Vector>
-        void add_from_halo_split_finish(Vector &data, int tag, cudaStream_t stream = 0)
+        void add_from_halo_split_finish(Vector &data, int tag, musaStream_t stream = 0)
         {
             _comms->add_from_halo(data, *A, tag, 1, stream);      //exchange buffers
             scatter_B2L_v2(data);                                  // update values
@@ -1110,7 +1110,7 @@ template <typename TConfig> class DistributedManagerBase
             _comms->set_neighbors(B2L_rings.size());
             _comms->setup_L2H(data, *A);                                //set pointers to buffer
             _comms->gather_L2H(data, *A, 1);                            //write values to buffer
-            cudaStream_t null_stream = 0;
+            musaStream_t null_stream = 0;
             _comms->add_from_halo(data, *A, tag, 1, null_stream);      //exchange buffers
             scatter_B2L_min(data);                                      // update values
         }
@@ -1406,7 +1406,7 @@ template <typename TConfig> class DistributedManagerBase
         int m_child_max_n;
         // End of level 0 API related
 
-        cudaEvent_t comm_event;
+        musaEvent_t comm_event;
 
         //
         // Internal variables
@@ -1437,7 +1437,7 @@ template <typename TConfig> class DistributedManagerBase
             _num_boundary_nodes = 0;
             has_B2L = false;
             _comms = *comms_;
-            cudaEventCreate(&comm_event);
+            musaEventCreate(&comm_event);
             set_base_index(base_index);
             set_index_range(index_range);
             set_global_id(my_id);
@@ -1747,17 +1747,17 @@ template <typename TConfig> class DistributedManagerBase
         Vector<ivec_value_type_h> &neighbors;  //LEVEL 0 - list of neighbors with their global index, in the order we store their halos
         Vector<ivec_value_type_h> _neighbors;
 
-        cudaStream_t m_int_stream;
-        cudaStream_t m_bdy_stream;
-        cudaStream_t null_stream = NULL;
+        musaStream_t m_int_stream;
+        musaStream_t m_bdy_stream;
+        musaStream_t null_stream = NULL;
 
         IVector boundary_rows_list;
         IVector interior_rows_list;
         IVector halo1_rows_list;
 
-        inline cudaStream_t& get_int_stream() { return m_int_stream; }
-        inline cudaStream_t& get_bdy_stream() { return m_bdy_stream; }
-        inline cudaEvent_t& get_comm_event() { return comm_event; }
+        inline musaStream_t& get_int_stream() { return m_int_stream; }
+        inline musaStream_t& get_bdy_stream() { return m_bdy_stream; }
+        inline musaEvent_t& get_comm_event() { return comm_event; }
 
         int64_t num_rows_global = 0;
 

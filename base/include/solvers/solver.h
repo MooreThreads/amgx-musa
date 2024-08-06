@@ -278,9 +278,9 @@ class Solver : public AuxData
         bool m_obtain_timings;
 
         // Events and time informations.
-        cudaEvent_t m_setup_start, m_setup_stop;
-        cudaEvent_t m_solve_start, m_solve_stop;
-        cudaEvent_t m_iter_start,  m_iter_stop;
+        musaEvent_t m_setup_start, m_setup_stop;
+        musaEvent_t m_solve_start, m_solve_stop;
+        musaEvent_t m_iter_start,  m_iter_stop;
 
         // Timings.
         float m_setup_time, m_solve_time;

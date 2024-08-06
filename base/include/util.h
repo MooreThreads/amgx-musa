@@ -118,7 +118,7 @@ void printVector(const char *label, const Vector<TConfig> &v)
 template<class TConfig>
 void printVectorToFile(const char *f, const Vector<TConfig> &v)
 {
-    cudaDeviceSynchronize();
+    musaDeviceSynchronize();
     cudaCheckError();
     int rank = 0;
 #ifdef AMGX_WITH_MPI
@@ -140,8 +140,8 @@ void printVectorToFile(const char *f, const Vector<TConfig> &v)
     }
 
     fprintf(fid, "%s", ss.str().c_str());
-    cudaDeviceSynchronize();
-    cudaGetLastError();
+    musaDeviceSynchronize();
+    musaGetLastError();
     fclose(fid);
 }
 

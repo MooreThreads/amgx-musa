@@ -31,7 +31,7 @@
 #include <error.h>
 #include <ld_functions.h>
 /**********************************************************
- * Checks for a cuda error and if one exists prints it,
+ * Checks for a musa error and if one exists prints it,
  * the stack trace, and exits
  *********************************************************/
 
@@ -224,7 +224,7 @@ __device__ inline void loadAsVector(const double *src, double *dst)
 }
 
 template <int NUM_ELEMENTS>
-__device__ inline void loadAsVector(const cuComplex *src, cuComplex *dst)
+__device__ inline void loadAsVector(const muComplex *src, muComplex *dst)
 {
     if (NUM_ELEMENTS % 2 == 0)
     {
@@ -247,7 +247,7 @@ __device__ inline void loadAsVector(const cuComplex *src, cuComplex *dst)
 }
 
 template <int NUM_ELEMENTS>
-__device__ inline void loadAsVector(const cuComplex *src, cuDoubleComplex *dst)
+__device__ inline void loadAsVector(const muComplex *src, muDoubleComplex *dst)
 {
     if (NUM_ELEMENTS % 2 == 0)
     {
@@ -257,8 +257,8 @@ __device__ inline void loadAsVector(const cuComplex *src, cuDoubleComplex *dst)
         for (int i = 0; i < NUM_ELEMENTS / 2; i++)
         {
             _t = src_[i];
-            dst[i * 2] = make_cuDoubleComplex(_t.x, _t.y);
-            dst[i * 2 + 1] = make_cuDoubleComplex(_t.z, _t.w);
+            dst[i * 2] = make_muDoubleComplex(_t.x, _t.y);
+            dst[i * 2 + 1] = make_muDoubleComplex(_t.z, _t.w);
         }
     }
     else
@@ -266,13 +266,13 @@ __device__ inline void loadAsVector(const cuComplex *src, cuDoubleComplex *dst)
 #pragma unroll
         for (int i = 0; i < NUM_ELEMENTS; i++)
         {
-            dst[i] = make_cuDoubleComplex(src[i].x, src[i].y);
+            dst[i] = make_muDoubleComplex(src[i].x, src[i].y);
         }
     }
 }
 
 template <int NUM_ELEMENTS>
-__device__ inline void loadAsVector(const cuDoubleComplex *src, cuDoubleComplex *dst)
+__device__ inline void loadAsVector(const muDoubleComplex *src, muDoubleComplex *dst)
 {
     if (NUM_ELEMENTS % 2 == 0)
     {
@@ -316,12 +316,12 @@ template <class ScalarType> bool containsNan( ScalarType *mem, int num )
 
     if (num > 0)
     {
-        cudaMalloc(&d_retval, sizeof(bool));
-        cudaMemcpy(d_retval, &retval, sizeof(bool), cudaMemcpyHostToDevice);
+        musaMalloc(&d_retval, sizeof(bool));
+        musaMemcpy(d_retval, &retval, sizeof(bool), musaMemcpyHostToDevice);
         containsNan_kernel <<< blocks, threads>>>(mem, num, d_retval);
         cudaCheckError();
-        cudaMemcpy(&retval, d_retval, sizeof(bool), cudaMemcpyDeviceToHost);
-        cudaFree(d_retval);
+        musaMemcpy(&retval, d_retval, sizeof(bool), musaMemcpyDeviceToHost);
+        musaFree(d_retval);
     }
 
     return retval;

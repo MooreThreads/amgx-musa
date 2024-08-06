@@ -52,22 +52,22 @@ static inline __host__ __device__ bool isCloseToZero( float a)
     return  fabs(a) < float_epsilon ? true : false;
 }
 
-static inline __host__ __device__ bool isCloseToZero( const cuComplex &a)
+static inline __host__ __device__ bool isCloseToZero( const muComplex &a)
 {
     return fabs(types::get_re(a)) < float_epsilon && fabs(types::get_im(a)) < float_epsilon;
 }
 
-static inline __host__ __device__ bool isCloseToZero( const cuDoubleComplex &a)
+static inline __host__ __device__ bool isCloseToZero( const muDoubleComplex &a)
 {
     return fabs(types::get_re(a)) < double_epsilon && fabs(types::get_im(a)) < double_epsilon;
 }
 
-static inline __host__ __device__ bool isCloseToZero( volatile const cuComplex &a)
+static inline __host__ __device__ bool isCloseToZero( volatile const muComplex &a)
 {
     return fabs(a.x) < float_epsilon && fabs(a.y) < float_epsilon;
 }
 
-static inline __host__ __device__ bool isCloseToZero( volatile const cuDoubleComplex &a)
+static inline __host__ __device__ bool isCloseToZero( volatile const muDoubleComplex &a)
 {
     return fabs(a.x) < double_epsilon && fabs(a.y) < double_epsilon;
 }
@@ -82,22 +82,22 @@ static inline __host__ __device__ bool isNotCloseToZero( const float &a)
     return !isCloseToZero(a);
 }
 
-static inline __host__ __device__ bool isNotCloseToZero( const cuComplex &a)
+static inline __host__ __device__ bool isNotCloseToZero( const muComplex &a)
 {
     return !isCloseToZero(a);
 }
 
-static inline __host__ __device__ bool isNotCloseToZero( const cuDoubleComplex &a)
+static inline __host__ __device__ bool isNotCloseToZero( const muDoubleComplex &a)
 {
     return !isCloseToZero(a);
 }
 
-static inline __host__ __device__ bool isNotCloseToZero( volatile const cuComplex &a)
+static inline __host__ __device__ bool isNotCloseToZero( volatile const muComplex &a)
 {
     return !isCloseToZero(a);
 }
 
-static inline __host__ __device__ bool isNotCloseToZero( volatile const cuDoubleComplex &a)
+static inline __host__ __device__ bool isNotCloseToZero( volatile const muDoubleComplex &a)
 {
     return !isCloseToZero(a);
 }
@@ -114,16 +114,16 @@ static inline __host__ __device__ double epsilon( double dummy)
     return copysign(double_epsilon, dummy);
 }
 
-static inline __host__ __device__ cuComplex epsilon( cuComplex dummy)
+static inline __host__ __device__ muComplex epsilon( muComplex dummy)
 {
     // return a small value with the same sign as the example value
-    return make_cuComplex(copysign(float_epsilon, types::get_re(dummy)), copysign(float_epsilon, types::get_im(dummy)) );
+    return make_muComplex(copysign(float_epsilon, types::get_re(dummy)), copysign(float_epsilon, types::get_im(dummy)) );
 }
 
-static inline __host__ __device__ cuDoubleComplex epsilon( cuDoubleComplex dummy)
+static inline __host__ __device__ muDoubleComplex epsilon( muDoubleComplex dummy)
 {
     // return a small value with the same sign as the example value
-    return make_cuDoubleComplex( copysign(double_epsilon, types::get_re(dummy)), copysign(double_epsilon, types::get_im(dummy)) );
+    return make_muDoubleComplex( copysign(double_epsilon, types::get_re(dummy)), copysign(double_epsilon, types::get_im(dummy)) );
 }
 
 template<typename IndexType, typename ValueType, int blockrows_per_cta, int bsize, int bsize_sq>

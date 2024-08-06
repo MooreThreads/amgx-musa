@@ -34,25 +34,25 @@ namespace amgx
 
 class Stream
 {
-        cudaStream_t s;
+        musaStream_t s;
 
     public:
 
         inline
-        Stream(unsigned flags = cudaStreamNonBlocking) 
+        Stream(unsigned flags = musaStreamNonBlocking) 
         { 
-            cudaStreamCreateWithFlags(&s, flags);
+            musaStreamCreateWithFlags(&s, flags);
             cudaCheckError();
         }
 
         inline
         ~Stream() 
         { 
-            cudaStreamDestroy(s); 
+            musaStreamDestroy(s); 
         }
 
         inline
-        cudaStream_t get() { return s; }
+        musaStream_t get() { return s; }
 };
 
 } // namespace amgx

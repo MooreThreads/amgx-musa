@@ -28,7 +28,7 @@
 #pragma once
 
 #include <string>
-#include <cublas_v2.h>
+#include <mublas.h>
 #include <solvers/solver.h>
 
 #include <amgx_cusolverDn.h>
@@ -116,8 +116,8 @@ class DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >
 
     private:
 
-        cusolverDnHandle_t m_cuds_handle;
-        cublasHandle_t m_cublas_handle;
+        musolverDnHandle_t m_cuds_handle;
+        mublasHandle_t m_cublas_handle;
         int m_num_rows, m_num_cols, m_lda;
         int m_nnz_global;
         Matrix_data *m_dense_A;   // store sparse as dense

@@ -158,9 +158,9 @@ class EigenSolver
         std::vector<PODValueB> m_residuals;
 
         // Events and time informations.
-        cudaEvent_t m_setup_start, m_setup_stop;
-        cudaEvent_t m_solve_start, m_solve_stop;
-        cudaEvent_t m_iter_start,  m_iter_stop;
+        musaEvent_t m_setup_start, m_setup_stop;
+        musaEvent_t m_solve_start, m_solve_stop;
+        musaEvent_t m_iter_start,  m_iter_stop;
 
         float m_setup_time;
         float m_solve_time;

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <cuda.h>
+#include <musa.h>
 #include <cusp/complex.h>
 #include <cusp/exception.h>
 #include <cusp/detail/device/utils.h>
@@ -31,7 +31,7 @@ inline void bind_x(const float * x)
 {   
 #ifdef CUSP_USE_TEXTURE_MEMORY    
     size_t offset = size_t(-1);
-    CUDA_SAFE_CALL(cudaBindTexture(&offset, tex_x_float, x));
+    CUDA_SAFE_CALL(musaBindTexture(&offset, tex_x_float, x));
     if (offset != 0)
         throw cusp::invalid_input_exception("memory is not aligned, refusing to use texture cache");
 #else
@@ -44,7 +44,7 @@ inline void bind_x(const double * x)
 {   
 #ifdef CUSP_USE_TEXTURE_MEMORY    
     size_t offset = size_t(-1);
-    CUDA_SAFE_CALL(cudaBindTexture(&offset, tex_x_double, x));
+    CUDA_SAFE_CALL(musaBindTexture(&offset, tex_x_double, x));
     if (offset != 0)
         throw cusp::invalid_input_exception("memory is not aligned, refusing to use texture cache");
 #else
@@ -57,7 +57,7 @@ inline void bind_x(const cusp::complex<float> * x)
 {   
 #ifdef CUSP_USE_TEXTURE_MEMORY    
     size_t offset = size_t(-1);
-    CUDA_SAFE_CALL(cudaBindTexture(&offset, tex_x_float, x));
+    CUDA_SAFE_CALL(musaBindTexture(&offset, tex_x_float, x));
     if (offset != 0)
         throw cusp::invalid_input_exception("memory is not aligned, refusing to use texture cache");
 #else
@@ -70,7 +70,7 @@ inline void bind_x(const cusp::complex<double> * x)
 {   
 #ifdef CUSP_USE_TEXTURE_MEMORY    
     size_t offset = size_t(-1);
-    CUDA_SAFE_CALL(cudaBindTexture(&offset, tex_x_double, x));
+    CUDA_SAFE_CALL(musaBindTexture(&offset, tex_x_double, x));
     if (offset != 0)
         throw cusp::invalid_input_exception("memory is not aligned, refusing to use texture cache");
 #else
@@ -83,7 +83,7 @@ inline void bind_x(const cusp::complex<double> * x)
 inline void unbind_x(const float * x)
 {
 #ifdef CUSP_USE_TEXTURE_MEMORY
-    CUDA_SAFE_CALL(cudaUnbindTexture(tex_x_float));
+    CUDA_SAFE_CALL(musaUnbindTexture(tex_x_float));
 #else
     throw cusp::runtime_exception("texture support was not enabled");
 #endif
@@ -91,7 +91,7 @@ inline void unbind_x(const float * x)
 inline void unbind_x(const double * x)
 {
 #ifdef CUSP_USE_TEXTURE_MEMORY
-    CUDA_SAFE_CALL(cudaUnbindTexture(tex_x_double));
+    CUDA_SAFE_CALL(musaUnbindTexture(tex_x_double));
 #else
     throw cusp::runtime_exception("texture support was not enabled");
 #endif
@@ -99,7 +99,7 @@ inline void unbind_x(const double * x)
 inline void unbind_x(const cusp::complex<float> * x)
 {
 #ifdef CUSP_USE_TEXTURE_MEMORY
-    CUDA_SAFE_CALL(cudaUnbindTexture(tex_x_float));
+    CUDA_SAFE_CALL(musaUnbindTexture(tex_x_float));
 #else
     throw cusp::runtime_exception("texture support was not enabled");
 #endif
@@ -108,7 +108,7 @@ inline void unbind_x(const cusp::complex<float> * x)
 inline void unbind_x(const cusp::complex<double> * x)
 {
 #ifdef CUSP_USE_TEXTURE_MEMORY
-    CUDA_SAFE_CALL(cudaUnbindTexture(tex_x_double));
+    CUDA_SAFE_CALL(musaUnbindTexture(tex_x_double));
 #else
     throw cusp::runtime_exception("texture support was not enabled");
 #endif
@@ -128,7 +128,7 @@ __inline__ __device__ float fetch_x(const int& i, const float * x)
 template <bool UseCache>
 __inline__ __device__ double fetch_x(const int& i, const double * x)
 {
-#if __CUDA_ARCH__ >= 130
+#if __MUSA_ARCH__ >= 130
 #ifdef CUSP_USE_TEXTURE_MEMORY
     // double requires Compute Capability 1.3 or greater
     if (UseCache)
@@ -159,7 +159,7 @@ __inline__ __device__ cusp::complex<float> fetch_x(const int& i, const cusp::com
 template <bool UseCache>
 __inline__ __device__ cusp::complex<double> fetch_x(const int& i, const cusp::complex<double> * x)
 {
-#if __CUDA_ARCH__ >= 130
+#if __MUSA_ARCH__ >= 130
 #ifdef CUSP_USE_TEXTURE_MEMORY
     // double requires Compute Capability 1.3 or greater
     if (UseCache)

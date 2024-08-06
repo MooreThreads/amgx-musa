@@ -531,7 +531,7 @@ struct CopyHostFunctor: BaseFunctor<TConfig>
 template<typename TConfig, typename Tb>
 struct HalloWaitCopyFunctor: BaseFunctor<TConfig>
 {
-        HalloWaitCopyFunctor(Tb &b, const Matrix<TConfig> &m, cudaStream_t stream):
+        HalloWaitCopyFunctor(Tb &b, const Matrix<TConfig> &m, musaStream_t stream):
             m_b(b),
             m_m(m),
             m_stream(stream)
@@ -545,11 +545,11 @@ struct HalloWaitCopyFunctor: BaseFunctor<TConfig>
 
             if (size != 0)
             {
-                cudaMemcpyAsync(m_b.raw() + m_m.manager->halo_offsets[0]*bsize,
+                musaMemcpyAsync(m_b.raw() + m_m.manager->halo_offsets[0]*bsize,
                            &(m_b.explicit_host_buffer[m_b.buffer_size]),
                            size * sizeof(typename Tb::value_type),
-                           cudaMemcpyHostToDevice, m_stream);
-                cudaStreamSynchronize(m_stream);
+                           musaMemcpyHostToDevice, m_stream);
+                musaStreamSynchronize(m_stream);
             }
         }
 
@@ -560,7 +560,7 @@ struct HalloWaitCopyFunctor: BaseFunctor<TConfig>
     private:
         Tb &m_b;
         const Matrix<TConfig> &m_m;
-        cudaStream_t m_stream;
+        musaStream_t m_stream;
 };
 
 //multi-purpose trampoline visitor
@@ -670,7 +670,7 @@ struct ExcHalo1Functor: BaseFunctor<TConfig>
                         const Matrix<TConfig> &m,
                         int num_rings,
                         int offset,
-                        cudaStream_t stream = NULL):
+                        musaStream_t stream = NULL):
             m_ptr_b(&b),
             m_ptr_m(&m),
             m_num_rings(num_rings),
@@ -685,7 +685,7 @@ struct ExcHalo1Functor: BaseFunctor<TConfig>
                         int num_rings,
                         int offset,
                         int tag,
-                        cudaStream_t stream = NULL):
+                        musaStream_t stream = NULL):
             m_ptr_b(&b),
             m_ptr_m(&m),
             m_num_rings(num_rings),
@@ -712,7 +712,7 @@ struct ExcHalo1Functor: BaseFunctor<TConfig>
             }
         }
 
-        cudaStream_t &get_stream(void)
+        musaStream_t &get_stream(void)
         {
             return m_stream;
         }
@@ -755,7 +755,7 @@ struct ExcHalo1Functor: BaseFunctor<TConfig>
 
     private:
         Tb *m_ptr_b;
-        cudaStream_t m_stream;
+        musaStream_t m_stream;
         const Matrix<TConfig> *m_ptr_m;
         int m_num_rings;
         int m_offset;
@@ -827,7 +827,7 @@ struct ExcHalo3Functor: ExcHalo1Functor<TConfig, Tb>
                     const Matrix<TConfig> &m,
                     int num_rings,
                     int offset,
-                    cudaStream_t stream = NULL):
+                    musaStream_t stream = NULL):
         ExcHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
     {
     }
@@ -897,7 +897,7 @@ struct ExcHalo3AsyncFunctor: ExcHalo1Functor<TConfig, Tb>
                          const Matrix<TConfig> &m,
                          int num_rings,
                          int offset,
-                         cudaStream_t stream):
+                         musaStream_t stream):
         ExcHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
     {
     }
@@ -907,7 +907,7 @@ struct ExcHalo3AsyncFunctor: ExcHalo1Functor<TConfig, Tb>
                          int num_rings,
                          int offset,
                          int tag,
-                         cudaStream_t stream):
+                         musaStream_t stream):
         ExcHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag, stream)
     {
     }
@@ -971,7 +971,7 @@ struct AddFromHalo1Functor: ExcHalo1Functor<TConfig, Tb>
                             const Matrix<TConfig> &m,
                             int num_rings,
                             int offset,
-                            cudaStream_t &stream):
+                            musaStream_t &stream):
             ExcHalo1Functor<TConfig, Tb>(b, m, num_rings, offset),
             m_ptr_stream(&stream)
         {
@@ -982,13 +982,13 @@ struct AddFromHalo1Functor: ExcHalo1Functor<TConfig, Tb>
                             int num_rings,
                             int offset,
                             int tag,
-                            cudaStream_t &stream):
+                            musaStream_t &stream):
             ExcHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag),
             m_ptr_stream(&stream)
         {
         }
 
-        cudaStream_t &get_stream(void)
+        musaStream_t &get_stream(void)
         {
             if ( m_ptr_stream )
             {
@@ -1014,7 +1014,7 @@ struct AddFromHalo1Functor: ExcHalo1Functor<TConfig, Tb>
 
         void operator()(CommsMPIDirect<TConfig> &comm);
     private:
-        cudaStream_t *m_ptr_stream;
+        musaStream_t *m_ptr_stream;
         int m_send_size;
 };
 
@@ -1037,7 +1037,7 @@ struct AddFromHalo2Functor: AddFromHalo1Functor<TConfig, Tb>
                         const Matrix<TConfig> &m,
                         int num_rings,
                         int offset,
-                        cudaStream_t &stream):
+                        musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
     {
     }
@@ -1047,7 +1047,7 @@ struct AddFromHalo2Functor: AddFromHalo1Functor<TConfig, Tb>
                         int num_rings,
                         int offset,
                         int tag,
-                        cudaStream_t &stream):
+                        musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag, stream)
     {
     }
@@ -1077,7 +1077,7 @@ struct AddFromHalo3Functor:  AddFromHalo1Functor<TConfig, Tb>
                             const Matrix<TConfig> &m,
                             int num_rings,
                             int offset,
-                            cudaStream_t &stream):
+                            musaStream_t &stream):
             AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
         {
         }
@@ -1087,7 +1087,7 @@ struct AddFromHalo3Functor:  AddFromHalo1Functor<TConfig, Tb>
                             int num_rings,
                             int offset,
                             int tag,
-                            cudaStream_t &stream):
+                            musaStream_t &stream):
             AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag, stream)
         {
         }
@@ -1124,7 +1124,7 @@ struct SendRecvWait1Functor: AddFromHalo1Functor<TConfig, Tb>
                          const Matrix<TConfig> &m,
                          int num_rings,
                          int offset,
-                         cudaStream_t &stream):
+                         musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
     {
     }
@@ -1134,7 +1134,7 @@ struct SendRecvWait1Functor: AddFromHalo1Functor<TConfig, Tb>
                          int num_rings,
                          int offset,
                          int tag,
-                         cudaStream_t &stream):
+                         musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag, stream)
     {
     }
@@ -1164,7 +1164,7 @@ struct SendRecvWait2Functor: AddFromHalo1Functor<TConfig, Tb>
                          const Matrix<TConfig> &m,
                          int num_rings,
                          int offset,
-                         cudaStream_t &stream):
+                         musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
     {
     }
@@ -1174,7 +1174,7 @@ struct SendRecvWait2Functor: AddFromHalo1Functor<TConfig, Tb>
                          int num_rings,
                          int offset,
                          int tag,
-                         cudaStream_t &stream):
+                         musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag, stream)
     {
     }
@@ -1204,7 +1204,7 @@ struct SendRecvWait3Functor: AddFromHalo1Functor<TConfig, Tb>
                          const Matrix<TConfig> &m,
                          int num_rings,
                          int offset,
-                         cudaStream_t &stream):
+                         musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, stream)
     {
     }
@@ -1214,7 +1214,7 @@ struct SendRecvWait3Functor: AddFromHalo1Functor<TConfig, Tb>
                          int num_rings,
                          int offset,
                          int tag,
-                         cudaStream_t &stream):
+                         musaStream_t &stream):
         AddFromHalo1Functor<TConfig, Tb>(b, m, num_rings, offset, tag, stream)
     {
     }

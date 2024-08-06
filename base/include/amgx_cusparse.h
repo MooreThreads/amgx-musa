@@ -43,15 +43,15 @@ class Cusparse;
 
 #define cusparseCheckError(status) {\
     switch(status) {\
-    case CUSPARSE_STATUS_SUCCESS:                   break;\
-    case CUSPARSE_STATUS_NOT_INITIALIZED:           FatalError("CUSPARSE_STATUS_NOT_INITIALIZED", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_ALLOC_FAILED:              FatalError("CUSPARSE_STATUS_ALLOC_FAILED", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_INVALID_VALUE:             FatalError("CUSPARSE_STATUS_INVALID_VALUE", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_ARCH_MISMATCH:             FatalError("CUSPARSE_STATUS_ARCH_MISMATCH", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_MAPPING_ERROR:             FatalError("CUSPARSE_STATUS_MAPPING_ERROR", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_EXECUTION_FAILED:          FatalError("CUSPARSE_STATUS_EXECUTION_FAILED", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_INTERNAL_ERROR:            FatalError("CUSPARSE_STATUS_INTERNAL_ERROR", AMGX_ERR_CUDA_FAILURE);\
-    case CUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED: FatalError("CUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED", AMGX_ERR_NOT_IMPLEMENTED);\
+    case MUSPARSE_STATUS_SUCCESS:                   break;\
+    case MUSPARSE_STATUS_NOT_INITIALIZED:           FatalError("MUSPARSE_STATUS_NOT_INITIALIZED", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_ALLOC_FAILED:              FatalError("MUSPARSE_STATUS_ALLOC_FAILED", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_INVALID_VALUE:             FatalError("MUSPARSE_STATUS_INVALID_VALUE", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_ARCH_MISMATCH:             FatalError("MUSPARSE_STATUS_ARCH_MISMATCH", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_MAPPING_ERROR:             FatalError("MUSPARSE_STATUS_MAPPING_ERROR", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_EXECUTION_FAILED:          FatalError("MUSPARSE_STATUS_EXECUTION_FAILED", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_INTERNAL_ERROR:            FatalError("MUSPARSE_STATUS_INTERNAL_ERROR", AMGX_ERR_CUDA_FAILURE);\
+    case MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED: FatalError("MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED", AMGX_ERR_NOT_IMPLEMENTED);\
     default:                                        FatalError("unknown CUSPARSE error", AMGX_ERR_CUDA_FAILURE);\
     }\
 }
@@ -59,7 +59,7 @@ class Cusparse;
 } // namespace amgx
 
 
-#include <cusparse_v2.h>
+#include <musparse.h>
 #include <error.h>
 #include <matrix.h>
 #include <vector.h>
@@ -71,17 +71,17 @@ class Cusparse;
 #ifndef DISABLE_MIXED_PRECISION
 
 // Support of mixed precision
-#ifndef CUSPARSEAPI
+#ifndef MUSPARSEAPI
 #ifdef _WIN32
-#define CUSPARSEAPI __stdcall
+#define MUSPARSEAPI __stdcall
 #else
-#define CUSPARSEAPI
+#define MUSPARSEAPI
 #endif
 #endif
 
 #if defined(__cplusplus)
 extern "C" {
-cusparseStatus_t CUSPARSEAPI cusparseSetMatFullPrecision(cusparseMatDescr_t descrA, bool fullprec);
+musparseStatus_t MUSPARSEAPI cusparseSetMatFullPrecision(musparseMatDescr_t descrA, bool fullprec);
 }
 #endif
 
@@ -100,20 +100,20 @@ namespace amgx
 template <class T_Config>
 struct CusparseMatPrec
 {
-    static cusparseStatus_t set(cusparseMatDescr_t &cuMatDescr);
+    static musparseStatus_t set(musparseMatDescr_t &cuMatDescr);
 };
 
 // For mixed precision
 template <AMGX_MemorySpace t_memSpace, AMGX_IndPrecision t_indPrec>
 struct CusparseMatPrec< TemplateConfig<t_memSpace, AMGX_vecDouble, AMGX_matFloat, t_indPrec> >
 {
-    static cusparseStatus_t set(cusparseMatDescr_t &cuMatDescr);
+    static musparseStatus_t set(musparseMatDescr_t &cuMatDescr);
 };
 
 template <AMGX_MemorySpace t_memSpace, AMGX_IndPrecision t_indPrec>
 struct CusparseMatPrec< TemplateConfig<t_memSpace, AMGX_vecDoubleComplex, AMGX_matComplex, t_indPrec> >
 {
-    static cusparseStatus_t set(cusparseMatDescr_t &cuMatDescr);
+    static musparseStatus_t set(musparseMatDescr_t &cuMatDescr);
 };
 #endif
 
@@ -121,7 +121,7 @@ class Cusparse
 {
     private:
         // global CUSPARSE handle for nvAMG
-        cusparseHandle_t m_handle;
+        musparseHandle_t m_handle;
 
     public:
         // Which columns should be used in A.x?
@@ -149,7 +149,7 @@ class Cusparse
         {
             if (m_handle != 0)
             {
-                cusparseCheckError( cusparseDestroy(m_handle) );
+                cusparseCheckError( musparseDestroy(m_handle) );
             }
 
             m_handle = 0;
@@ -159,12 +159,12 @@ class Cusparse
         {
             if (m_handle == 0)
             {
-                cusparseCheckError( cusparseCreate(&m_handle) );
+                cusparseCheckError( musparseCreate(&m_handle) );
             }
         }
 
         // Get the handle.
-        inline cusparseHandle_t get_handle() { return m_handle; }
+        inline musparseHandle_t get_handle() { return m_handle; }
 
         // TODO : here we declare alpha and beta consts as lower precision (VecPrec),
         // however when mixed precision for bsrmv will be supported those constants will
@@ -265,7 +265,7 @@ class Cusparse
                                     const typename TConfig::VecPrec betaConst,
                                     Vector<TConfig> &y,
                                     ViewType view,
-                                    const cudaStream_t &stream);
+                                    const musaStream_t &stream);
 
 
         template <class TConfig>
@@ -275,7 +275,7 @@ class Cusparse
                                               const typename TConfig::VecPrec betaConst,
                                               Vector<TConfig> &y,
                                               ViewType view,
-                                              const cudaStream_t &stream);
+                                              const musaStream_t &stream);
 
         template <class TConfig>
         static void bsrmv_internal_with_mask_restriction( typename TConfig::VecPrec alphaConst,
@@ -284,7 +284,7 @@ class Cusparse
                 const typename TConfig::VecPrec betaConst,
                 Vector<TConfig> &y,
                 ViewType view,
-                const cudaStream_t &stream,
+                const musaStream_t &stream,
                 Matrix<TConfig> &P);
 
 
@@ -297,7 +297,7 @@ class Cusparse
                                     const typename TConfig::VecPrec betaConst,
                                     Vector<TConfig> &y,
                                     ViewType view,
-                                    const cudaStream_t &stream);
+                                    const musaStream_t &stream);
 
         template <class TConfig>
         static void bsrmv_internal( ColumnColorSelector columnColorSelector,
@@ -308,7 +308,7 @@ class Cusparse
                                     const typename TConfig::VecPrec betaConst,
                                     Vector<TConfig> &y,
                                     ViewType view,
-                                    const cudaStream_t &stream);
+                                    const musaStream_t &stream);
 
         template <class TConfig>
         static void bsrmv_internal( const int color,
@@ -319,13 +319,13 @@ class Cusparse
                                     const typename TConfig::VecPrec betaConst,
                                     Vector<TConfig> &y,
                                     ViewType view,
-                                    const cudaStream_t &stream);
+                                    const musaStream_t &stream);
         // real-valued declarations
         // overloaded C++ wrappers for cusparse?bsrmv
-        static inline void bsrmv( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans,
+        static inline void bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                                   int mb, int nb, int nnzb,
                                   const float *alpha,
-                                  const cusparseMatDescr_t descr,
+                                  const musparseMatDescr_t descr,
                                   const float *bsrVal,
                                   const int *bsrMaskPtr,
                                   const int *bsrRowPtr,
@@ -334,12 +334,12 @@ class Cusparse
                                   const float *x,
                                   const float *beta,
                                   float *y,
-                                  const cudaStream_t& stream);
+                                  const musaStream_t& stream);
 
-        static inline void bsrmv( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans,
+        static inline void bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                                   int mb, int nb, int nnzb,
                                   const double *alpha,
-                                  const cusparseMatDescr_t descr,
+                                  const musparseMatDescr_t descr,
                                   const double *bsrVal,
                                   const int *bsrMaskPtr,
                                   const int *bsrRowPtr,
@@ -348,12 +348,12 @@ class Cusparse
                                   const double *x,
                                   const double *beta,
                                   double *y,
-                                  const cudaStream_t& stream);
+                                  const musaStream_t& stream);
 
-        static inline void bsrmv( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans,
+        static inline void bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                                   int mb, int nb, int nnzb,
                                   const double *alpha,
-                                  const cusparseMatDescr_t descr,
+                                  const musparseMatDescr_t descr,
                                   const float *bsrVal,
                                   const int *bsrMaskPtr,
                                   const int *bsrRowPtr,
@@ -362,16 +362,16 @@ class Cusparse
                                   const double *x,
                                   const double *beta,
                                   double *y,
-                                  const cudaStream_t& stream);
+                                  const musaStream_t& stream);
 
         // overloaded C++ wrappers for cusparse?bsrxmv
         // bsrxmv
         // matrix - float
         // vector - float
-        static inline void bsrxmv_internal( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans, int sizeOfMask,
+        static inline void bsrxmv_internal( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans, int sizeOfMask,
                                             int mb, int nb, int nnzb,
                                             const float *alpha,
-                                            const cusparseMatDescr_t descr,
+                                            const musparseMatDescr_t descr,
                                             const float *bsrVal,
                                             const int *bsrMaskPtr,
                                             const int *bsrRowPtr,
@@ -385,10 +385,10 @@ class Cusparse
         // bsrxmv
         // matrix - float
         // vector - double
-        static inline void bsrxmv_internal( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans, int sizeOfMask,
+        static inline void bsrxmv_internal( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans, int sizeOfMask,
                                             int mb, int nb, int nnzb,
                                             const double *alpha,
-                                            const cusparseMatDescr_t descr,
+                                            const musparseMatDescr_t descr,
                                             const float *bsrVal,
                                             const int *bsrMaskPtr,
                                             const int *bsrRowPtr,
@@ -401,10 +401,10 @@ class Cusparse
         // bsrxmv
         // matrix - double
         // vector - double
-        static inline void bsrxmv_internal( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans, int sizeOfMask,
+        static inline void bsrxmv_internal( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans, int sizeOfMask,
                                             int mb, int nb, int nnzb,
                                             const double *alpha,
-                                            const cusparseMatDescr_t descr,
+                                            const musparseMatDescr_t descr,
                                             const double *bsrVal,
                                             const int *bsrMaskPtr,
                                             const int *bsrRowPtr,
@@ -417,98 +417,98 @@ class Cusparse
 
         // complex-valued declarations
         // overloaded C++ wrappers for cusparse?bsrmv
-        static inline void bsrmv( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans,
+        static inline void bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                                   int mb, int nb, int nnzb,
-                                  const cuComplex *alpha,
-                                  const cusparseMatDescr_t descr,
-                                  const cuComplex *bsrVal,
+                                  const muComplex *alpha,
+                                  const musparseMatDescr_t descr,
+                                  const muComplex *bsrVal,
                                   const int *bsrMaskPtr,
                                   const int *bsrRowPtr,
                                   const int *bsrColInd,
                                   int blockDim,
-                                  const cuComplex *x,
-                                  const cuComplex *beta,
-                                  cuComplex *y,
-                                  const cudaStream_t& stream);
+                                  const muComplex *x,
+                                  const muComplex *beta,
+                                  muComplex *y,
+                                  const musaStream_t& stream);
 
-        static inline void bsrmv( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans,
+        static inline void bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                                   int mb, int nb, int nnzb,
-                                  const cuDoubleComplex *alpha,
-                                  const cusparseMatDescr_t descr,
-                                  const cuDoubleComplex *bsrVal,
+                                  const muDoubleComplex *alpha,
+                                  const musparseMatDescr_t descr,
+                                  const muDoubleComplex *bsrVal,
                                   const int *bsrMaskPtr,
                                   const int *bsrRowPtr,
                                   const int *bsrColInd,
                                   int blockDim,
-                                  const cuDoubleComplex *x,
-                                  const cuDoubleComplex *beta,
-                                  cuDoubleComplex *y,
-                                  const cudaStream_t& stream);
+                                  const muDoubleComplex *x,
+                                  const muDoubleComplex *beta,
+                                  muDoubleComplex *y,
+                                  const musaStream_t& stream);
 
-        static inline void bsrmv( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans,
+        static inline void bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                                   int mb, int nb, int nnzb,
-                                  const cuDoubleComplex *alpha,
-                                  const cusparseMatDescr_t descr,
-                                  const cuComplex *bsrVal,
+                                  const muDoubleComplex *alpha,
+                                  const musparseMatDescr_t descr,
+                                  const muComplex *bsrVal,
                                   const int *bsrMaskPtr,
                                   const int *bsrRowPtr,
                                   const int *bsrColInd,
                                   int blockDim,
-                                  const cuDoubleComplex *x,
-                                  const cuDoubleComplex *beta,
-                                  cuDoubleComplex *y,
-                                  const cudaStream_t& stream);
+                                  const muDoubleComplex *x,
+                                  const muDoubleComplex *beta,
+                                  muDoubleComplex *y,
+                                  const musaStream_t& stream);
 
         // overloaded C++ wrappers for cusparse?bsrxmv
         // bsrxmv
-        // matrix - cuComplex
-        // vector - cuComplex
-        static inline void bsrxmv_internal( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans, int sizeOfMask,
+        // matrix - muComplex
+        // vector - muComplex
+        static inline void bsrxmv_internal( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans, int sizeOfMask,
                                             int mb, int nb, int nnzb,
-                                            const cuComplex *alpha,
-                                            const cusparseMatDescr_t descr,
-                                            const cuComplex *bsrVal,
+                                            const muComplex *alpha,
+                                            const musparseMatDescr_t descr,
+                                            const muComplex *bsrVal,
                                             const int *bsrMaskPtr,
                                             const int *bsrRowPtr,
                                             const int *bsrEndPtr,
                                             const int *bsrColInd,
                                             int blockDim,
-                                            const cuComplex *x,
-                                            const cuComplex *beta,
-                                            cuComplex *y);
+                                            const muComplex *x,
+                                            const muComplex *beta,
+                                            muComplex *y);
 
         // bsrxmv
-        // matrix - cuComplex
-        // vector - cuDoubleComplex
-        static inline void bsrxmv_internal( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans, int sizeOfMask,
+        // matrix - muComplex
+        // vector - muDoubleComplex
+        static inline void bsrxmv_internal( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans, int sizeOfMask,
                                             int mb, int nb, int nnzb,
-                                            const cuDoubleComplex *alpha,
-                                            const cusparseMatDescr_t descr,
-                                            const cuComplex *bsrVal,
+                                            const muDoubleComplex *alpha,
+                                            const musparseMatDescr_t descr,
+                                            const muComplex *bsrVal,
                                             const int *bsrMaskPtr,
                                             const int *bsrRowPtr,
                                             const int *bsrEndPtr,
                                             const int *bsrColInd,
                                             int blockDim,
-                                            const cuDoubleComplex *x,
-                                            const cuDoubleComplex *beta,
-                                            cuDoubleComplex *y);
+                                            const muDoubleComplex *x,
+                                            const muDoubleComplex *beta,
+                                            muDoubleComplex *y);
         // bsrxmv
-        // matrix - cuDoubleComplex
-        // vector - cuDoubleComplex
-        static inline void bsrxmv_internal( cusparseHandle_t handle, cusparseDirection_t dir, cusparseOperation_t trans, int sizeOfMask,
+        // matrix - muDoubleComplex
+        // vector - muDoubleComplex
+        static inline void bsrxmv_internal( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans, int sizeOfMask,
                                             int mb, int nb, int nnzb,
-                                            const cuDoubleComplex *alpha,
-                                            const cusparseMatDescr_t descr,
-                                            const cuDoubleComplex *bsrVal,
+                                            const muDoubleComplex *alpha,
+                                            const musparseMatDescr_t descr,
+                                            const muDoubleComplex *bsrVal,
                                             const int *bsrMaskPtr,
                                             const int *bsrRowPtr,
                                             const int *bsrEndPtr,
                                             const int *bsrColInd,
                                             int blockDim,
-                                            const cuDoubleComplex *x,
-                                            const cuDoubleComplex *beta,
-                                            cuDoubleComplex *y);
+                                            const muDoubleComplex *x,
+                                            const muDoubleComplex *beta,
+                                            muDoubleComplex *y);
 };
 
 } // namespace amgx

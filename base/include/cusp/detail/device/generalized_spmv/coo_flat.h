@@ -32,7 +32,7 @@ namespace detail
 {
 namespace device
 {
-namespace cuda
+namespace musa
 {
 
 template <int BLOCK_SIZE,
@@ -521,7 +521,7 @@ void spmv_coo(SizeType        num_rows,
      row_carries.begin(), val_carries.begin());
 }
 
-} // end namespace cuda
+} // end namespace musa
 } // end namespace device
 } // end namespace detail
 } // end namespace cusp

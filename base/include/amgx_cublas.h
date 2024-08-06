@@ -28,7 +28,7 @@
 #pragma once
 
 
-#include <cublas_v2.h>
+#include <mublas.h>
 #include <error.h>
 #include <matrix.h>
 #include <vector.h>
@@ -41,14 +41,14 @@ class Cublas;
 
 #define cublasCheckError(status) {\
     switch(status) {\
-    case CUBLAS_STATUS_SUCCESS:                   break;\
-    case CUBLAS_STATUS_NOT_INITIALIZED:           FatalError("CUBLAS_STATUS_NOT_INITIALIZED", AMGX_ERR_CUDA_FAILURE);\
-    case CUBLAS_STATUS_ALLOC_FAILED:              FatalError("CUBLAS_STATUS_ALLOC_FAILED", AMGX_ERR_CUDA_FAILURE);\
-    case CUBLAS_STATUS_INVALID_VALUE:             FatalError("CUBLAS_STATUS_INVALID_VALUE", AMGX_ERR_CUDA_FAILURE);\
-    case CUBLAS_STATUS_ARCH_MISMATCH:             FatalError("CUBLAS_STATUS_ARCH_MISMATCH", AMGX_ERR_CUDA_FAILURE);\
-    case CUBLAS_STATUS_MAPPING_ERROR:             FatalError("CUBLAS_STATUS_MAPPING_ERROR", AMGX_ERR_CUDA_FAILURE);\
-    case CUBLAS_STATUS_EXECUTION_FAILED:          FatalError("CUBLAS_STATUS_EXECUTION_FAILED", AMGX_ERR_CUDA_FAILURE);\
-    case CUBLAS_STATUS_INTERNAL_ERROR:            FatalError("CUBLAS_STATUS_INTERNAL_ERROR", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_SUCCESS:                   break;\
+    case MUBLAS_STATUS_NOT_INITIALIZED:           FatalError("MUBLAS_STATUS_NOT_INITIALIZED", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_ALLOC_FAILED:              FatalError("MUBLAS_STATUS_ALLOC_FAILED", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_INVALID_VALUE:             FatalError("MUBLAS_STATUS_INVALID_VALUE", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_ARCH_MISMATCH:             FatalError("MUBLAS_STATUS_ARCH_MISMATCH", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_MAPPING_ERROR:             FatalError("MUBLAS_STATUS_MAPPING_ERROR", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_EXECUTION_FAILED:          FatalError("MUBLAS_STATUS_EXECUTION_FAILED", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_INTERNAL_ERROR:            FatalError("MUBLAS_STATUS_INTERNAL_ERROR", AMGX_ERR_CUDA_FAILURE);\
     default:                                        FatalError("unknown CUBLAS error", AMGX_ERR_CUDA_FAILURE);\
     }\
 }
@@ -56,18 +56,18 @@ class Cublas;
 class Cublas
 {
     private:
-        static cublasHandle_t m_handle;
+        static mublasHandle_t m_handle;
         // Private ctor to prevent instantiation.
         Cublas();
         ~Cublas();
     public:
 
         // Get the handle.
-        static cublasHandle_t get_handle()
+        static mublasHandle_t get_handle()
         {
             if (m_handle == 0)
             {
-                cublasCheckError(cublasCreate(&m_handle));
+                cublasCheckError(mublasCreate(&m_handle));
             }
 
             return m_handle;
@@ -77,7 +77,7 @@ class Cublas
         {
             if (m_handle != 0)
             {
-                cublasCheckError(cublasDestroy(m_handle));
+                cublasCheckError(mublasDestroy(m_handle));
             }
 
             m_handle = 0;
@@ -126,7 +126,7 @@ class Cublas
                              const T *beta, T *y, const int incy, const int offsetx, const int offsety, const int offseta);
 
         template <typename T>
-        static void trsv_v2( cublasFillMode_t uplo, cublasOperation_t trans, cublasDiagType_t diag, int n,
+        static void trsv_v2( mublasFillMode_t uplo, mublasOperation_t trans, mublasDiagType_t diag, int n,
                              const T *A, int lda, T *x, int incx, int offseta);
         template <typename T>
         static void ger(int m, int n, const T *alpha,

@@ -28,7 +28,7 @@
 #pragma once
 
 #include <energymin/interpolators/em_interpolator.h>
-#include "cusolverDn.h"
+#include "musolverDn.h"
 
 #define TEST_EM
 
@@ -121,7 +121,7 @@ class EM_Interpolator< TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPr
         virtual ~EM_Interpolator();
 
     private:
-        cusolverDnHandle_t m_cuds_handle;
+        musolverDnHandle_t m_cuds_handle;
         ValueType *m_dense_Aijs;    // store dense submatrices of A
         ValueType *m_dense_invAijs; // store dense inverses of submatrices Aij
         int *m_ipiv;                // device pointer for pivot sequence from getrf()
@@ -138,7 +138,7 @@ class EM_Interpolator< TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPr
         void computeAijSubmatrices( const Matrix_d &A, const int numCoarse, const Matrix_d &P,
                                     ValueType *dense_Aijs, ValueType *dense_invAijs,
                                     const IntVector &AijOffsets, int *ipiv,
-                                    cusolverDnHandle_t &cuds_handle, int *cuds_info = 0 );
+                                    musolverDnHandle_t &cuds_handle, int *cuds_info = 0 );
 
         void computeMa( Matrix_d &Ma, const int AnumRows, const int numCoarse, const Matrix_d &P,
                         const ValueType *dense_invAijs, const IntVector &AijOffsets, const BVector &Ma_nzDiagRows,
@@ -148,7 +148,7 @@ class EM_Interpolator< TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPr
 
         void computePvalues(const int AnumRows, const int numCoarse, Matrix_d &P, const Vector_d &v_x,
                             const ValueType *dense_Aijs, const IntVector &AijOffsets, const int *ipiv,
-                            cusolverDnHandle_t &cuds_handle, int *cuds_info = 0);
+                            musolverDnHandle_t &cuds_handle, int *cuds_info = 0);
 
         void computePvalues(const int AnumRows, const int numCoarse, Matrix_d &P, const Vector_d &v_x,
                             const ValueType *dense_invAijs, const IntVector &AijOffsets);

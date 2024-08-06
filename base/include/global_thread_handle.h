@@ -215,22 +215,22 @@ void setMallocScalingThreshold(size_t threshold);
 void createAsyncFreePool(_thread_id thread_id);
 
 // Set the main stream.
-void setMainStream(cudaStream_t stream);
+void setMainStream(musaStream_t stream);
 // Set the stream associated with the current thread.
-void setStream(_thread_id thread_id, cudaStream_t stream);
+void setStream(_thread_id thread_id, musaStream_t stream);
 
 // Get the stream associated with the current thread.
-cudaStream_t getStream();
+musaStream_t getStream();
 
 // Register a host pointer.
-void cudaHostRegister(void *ptr, int size);
+void musaHostRegister(void *ptr, int size);
 
 // Allocate/free pinned memory.
-cudaError_t cudaMallocHost(void **ptr, size_t size);
-cudaError_t cudaFreeHost(void *ptr);
+musaError_t musaMallocHost(void **ptr, size_t size);
+musaError_t musaFreeHost(void *ptr);
 
-cudaError_t cudaMalloc(void **ptr, size_t size);
-cudaError_t cudaFreeAsync(void *ptr);
+musaError_t musaMalloc(void **ptr, size_t size);
+musaError_t musaFreeAsync(void *ptr);
 
 // Wait for the asynchronous frees to complete.
 void cudaFreeWait();
@@ -240,7 +240,7 @@ void joinPinnedPools();
 void joinDevicePools();
 
 // For backward compatibility
-inline cudaStream_t get_stream()
+inline musaStream_t get_stream()
 {
     return amgx::memory::getStream();
 }

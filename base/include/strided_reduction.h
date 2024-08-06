@@ -399,9 +399,9 @@ struct warputil<8, strided_reduction_arch_KEPLER>
 
 template<int STRIDE, int CTA_SIZE, int WARP_SIZE, int BLOCKS_PER_THREAD, class OP, class T, class V, class TRANSFORM>
 __global__
-#if defined(__CUDA_ARCH__) && __CUDA_ARCH__ >= 700
+#if defined(__MUSA_ARCH__) && __MUSA_ARCH__ >= 700
 __launch_bounds__( CTA_SIZE, 2 )
-#elif defined(__CUDA_ARCH__)
+#elif defined(__MUSA_ARCH__)
 __launch_bounds__( CTA_SIZE, 2 )
 #endif
 void strided_reduction(const T *X, const int N, V *sums, const TRANSFORM tx = TRANSFORM(), const OP op = OP())
@@ -599,7 +599,7 @@ void count_block_results(scalar_t *out_host, const int n_blocks, scalar_t *out_d
 {
     strided_reduction_collect_partials<scalar_t, STRIDE, 32, OP> <<< 1, 32, 0, thrust::global_thread_handle::get_stream()>>>(out_d, out_d, n_blocks);
     cudaCheckError();
-    cudaMemcpy(out_host, out_d, STRIDE * sizeof(scalar_t), cudaMemcpyDeviceToHost);
+    musaMemcpy(out_host, out_d, STRIDE * sizeof(scalar_t), musaMemcpyDeviceToHost);
 }
 
 template<class scalar_t, class OP>
@@ -681,14 +681,14 @@ struct square_transform
     }
 
     // specializations for complex datatypes
-    __device__ __forceinline__ float apply(const cuComplex &x) const
+    __device__ __forceinline__ float apply(const muComplex &x) const
     {
-        return cuCrealf(x)*cuCrealf(x) + cuCimagf(x)*cuCimagf(x);
+        return muCrealf(x)*muCrealf(x) + muCimagf(x)*muCimagf(x);
     }
 
-    __device__ __forceinline__ double apply(const cuDoubleComplex &x) const
+    __device__ __forceinline__ double apply(const muDoubleComplex &x) const
     {
-        return cuCreal(x)*cuCreal(x) + cuCimag(x)*cuCimag(x);
+        return muCreal(x)*muCreal(x) + muCimag(x)*muCimag(x);
     }
 };
 
@@ -711,15 +711,15 @@ void launch_strided_reduction(scalar_out *out_host, const scalar_t *in_d, const 
     const int n_blocks = min(  (long long int) 13 * 2, (N - 1) / (n_items_per_thread * cta_size) + 1   ); //just one wave of blocks
     const int out_size = n_blocks * STRIDE;
     scalar_out *out_d = 0;
-    thrust::global_thread_handle::cudaMalloc((void **) &out_d, out_size * sizeof(scalar_out));
-    cudaMemset(out_d, 0, out_size * sizeof(scalar_out));
-    cudaFuncSetCacheConfig(strided_reduction<STRIDE, cta_size, 32, 16, op_sum, scalar_t, scalar_out, TRANSFORM>, cudaFuncCachePreferL1);
+    thrust::global_thread_handle::musaMalloc((void **) &out_d, out_size * sizeof(scalar_out));
+    musaMemset(out_d, 0, out_size * sizeof(scalar_out));
+    musaFuncSetCacheConfig(strided_reduction<STRIDE, cta_size, 32, 16, op_sum, scalar_t, scalar_out, TRANSFORM>, musaFuncCachePreferL1);
     strided_reduction<STRIDE, cta_size, 32, 16, op_sum, scalar_t, scalar_out, TRANSFORM> <<< n_blocks, cta_size, 0, thrust::global_thread_handle::get_stream()>>>(in_d, N, out_d, tx);
     cudaCheckError();
     strided_reduction_collect_partials<scalar_out, STRIDE, 32, op_sum> <<< 1, 32, 0, thrust::global_thread_handle::get_stream()>>>(out_d, out_d, n_blocks);
     cudaCheckError();
-    cudaMemcpy(out_host, out_d, STRIDE * sizeof(scalar_out), cudaMemcpyDeviceToHost);
-    thrust::global_thread_handle::cudaFreeAsync((void *) out_d);
+    musaMemcpy(out_host, out_d, STRIDE * sizeof(scalar_out), musaMemcpyDeviceToHost);
+    thrust::global_thread_handle::musaFreeAsync((void *) out_d);
 }
 
 template< class scalar_t, class scalar_out, class TRANSFORM, bool real>

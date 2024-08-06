@@ -51,15 +51,15 @@ __inline__ __host__ double get_rand<double>()
 }
 
 template <>
-__inline__ __host__ cuComplex get_rand<cuComplex>()
+__inline__ __host__ muComplex get_rand<muComplex>()
 {
-    return make_cuComplex (1.f * rand() / RAND_MAX, 1.f * rand() / RAND_MAX);
+    return make_muComplex (1.f * rand() / RAND_MAX, 1.f * rand() / RAND_MAX);
 }
 
 template <>
-__inline__ __host__ cuDoubleComplex get_rand<cuDoubleComplex>()
+__inline__ __host__ muDoubleComplex get_rand<muDoubleComplex>()
 {
-    return make_cuDoubleComplex (1.*rand() / RAND_MAX, 1.*rand() / RAND_MAX);
+    return make_muDoubleComplex (1.*rand() / RAND_MAX, 1.*rand() / RAND_MAX);
 }
 
 } // namespace types

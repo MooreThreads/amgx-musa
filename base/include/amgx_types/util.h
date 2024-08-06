@@ -40,24 +40,24 @@ namespace types
 {
 
 // some utility
-static inline __host__ __device__ float get_re( const cuComplex &a)
+static inline __host__ __device__ float get_re( const muComplex &a)
 {
-    return cuCrealf(a);
+    return muCrealf(a);
 }
 
-static inline __host__ __device__ double get_re( const cuDoubleComplex &a)
+static inline __host__ __device__ double get_re( const muDoubleComplex &a)
 {
-    return cuCreal(a);
+    return muCreal(a);
 }
 
-static inline __host__ __device__ float get_im( const cuComplex &a)
+static inline __host__ __device__ float get_im( const muComplex &a)
 {
-    return cuCimagf(a);
+    return muCimagf(a);
 }
 
-static inline __host__ __device__ double get_im( const cuDoubleComplex &a)
+static inline __host__ __device__ double get_im( const muDoubleComplex &a)
 {
-    return cuCimag(a);
+    return muCimag(a);
 }
 
 
@@ -70,7 +70,7 @@ struct util;
     static __host__ __device__ __inline__ T get_zero();
     static __host__ __device__ __inline__ T get_one();
     static __host__ __device__ __inline__ T get_minus_one();
-    //maybe just overload operator== for cuComplex and cuDoubleComplex?
+    //maybe just overload operator== for muComplex and muDoubleComplex?
     static __host__ __device__ __inline__ bool is_zero(const T& val);
     static __host__ __device__ __inline__ bool is_equal(const T& val1, const T& val2);
 
@@ -203,156 +203,156 @@ struct util <double, PODTypes<double>::type>
 };
 
 template <>
-struct util <cuComplex, PODTypes<cuComplex>::type >
+struct util <muComplex, PODTypes<muComplex>::type >
 {
-    typedef cuDoubleComplex uptype;
-    typedef cuComplex downtype;
+    typedef muDoubleComplex uptype;
+    typedef muComplex downtype;
 
     static const bool is_real = false;
     static const bool is_complex = true;
 
-    static __host__ __device__ __inline__ cuComplex get_zero() { return make_cuComplex(0.f, 0.f); };
-    static __host__ __device__ __inline__ cuComplex get_one() { return make_cuComplex(1.f, 0.f); };
-    static __host__ __device__ __inline__ cuComplex get_minus_one() { return make_cuComplex(-1.f, 0.f); };
+    static __host__ __device__ __inline__ muComplex get_zero() { return make_muComplex(0.f, 0.f); };
+    static __host__ __device__ __inline__ muComplex get_one() { return make_muComplex(1.f, 0.f); };
+    static __host__ __device__ __inline__ muComplex get_minus_one() { return make_muComplex(-1.f, 0.f); };
 
-    static __host__ __device__ __inline__ bool is_zero(const cuComplex &val) { return (cuCrealf(val) == 0.f && cuCimagf(val) == 0.f); };
-    static __host__ __device__ __inline__ bool is_equal(const cuComplex &val1, const cuComplex &val2) { return (cuCrealf(val1) == cuCrealf(val2) && cuCimagf(val1) == cuCimagf(val2));} ;
+    static __host__ __device__ __inline__ bool is_zero(const muComplex &val) { return (muCrealf(val) == 0.f && muCimagf(val) == 0.f); };
+    static __host__ __device__ __inline__ bool is_equal(const muComplex &val1, const muComplex &val2) { return (muCrealf(val1) == muCrealf(val2) && muCimagf(val1) == muCimagf(val2));} ;
 
-    static __host__ __device__ __inline__ cuComplex invert(const cuComplex &val) {return make_cuComplex(-cuCrealf(val), -cuCimagf(val));};
-    static __host__ __device__ __inline__ cuComplex conjugate(const cuComplex &val) {return make_cuComplex(cuCrealf(val), -cuCimagf(val));};
-    static __host__ __device__ __inline__ void invert_inplace(cuComplex &val) {val = make_cuComplex(-cuCrealf(val), -cuCimagf(val));};
-    static __host__ __device__ __inline__ void conjugate_inplace(cuComplex &val) {val = make_cuComplex(cuCrealf(val), -cuCimagf(val));};
-    static __host__ __device__ __inline__ void divide_by_integer(cuComplex& val, int64_t &denom)
+    static __host__ __device__ __inline__ muComplex invert(const muComplex &val) {return make_muComplex(-muCrealf(val), -muCimagf(val));};
+    static __host__ __device__ __inline__ muComplex conjugate(const muComplex &val) {return make_muComplex(muCrealf(val), -muCimagf(val));};
+    static __host__ __device__ __inline__ void invert_inplace(muComplex &val) {val = make_muComplex(-muCrealf(val), -muCimagf(val));};
+    static __host__ __device__ __inline__ void conjugate_inplace(muComplex &val) {val = make_muComplex(muCrealf(val), -muCimagf(val));};
+    static __host__ __device__ __inline__ void divide_by_integer(muComplex& val, int64_t &denom)
     {
         float den = static_cast<float>(denom);
         val.x /= den;
         val.y /= den;
     };
 
-    static __host__ __device__ __inline__ float abs (const cuComplex &val)
+    static __host__ __device__ __inline__ float abs (const muComplex &val)
     {
-        return cuCabsf(val);
+        return muCabsf(val);
     }
 
     template <typename V>
-    static __host__ __device__ __inline__ void to_uptype (const cuComplex &src, V &dst)
+    static __host__ __device__ __inline__ void to_uptype (const muComplex &src, V &dst)
     {
         dst = (V)(src);
     }
 
-    static __host__ __device__ __inline__ cuComplex to_downtype (const cuComplex &src)
+    static __host__ __device__ __inline__ muComplex to_downtype (const muComplex &src)
     {
         return src;
     }
 
-    static __host__ __device__ __inline__ cuComplex volcast (const volatile cuComplex &val)
+    static __host__ __device__ __inline__ muComplex volcast (const volatile muComplex &val)
     {
-        return make_cuComplex(val.x, val.y);
+        return make_muComplex(val.x, val.y);
     }
-    static __host__ __device__ __inline__ void      volcast (const cuComplex &val, volatile cuComplex *ret)
+    static __host__ __device__ __inline__ void      volcast (const muComplex &val, volatile muComplex *ret)
     {
-        (*ret).x = cuCrealf(val);
-        (*ret).y = cuCimagf(val);
+        (*ret).x = muCrealf(val);
+        (*ret).y = muCimagf(val);
     }
 
     /*template <typename M>
-    static __host__ __device__ __inline__ cuComplex mulf(const cuComplex& val, const M& mult)
+    static __host__ __device__ __inline__ muComplex mulf(const muComplex& val, const M& mult)
     {
         static_assert(util<M>::is_real(), "Multiply is supported for real constant only");
-        return make_cuComplex(cuCrealf(val)*mult, cuCimagf(val)*mult);
+        return make_muComplex(muCrealf(val)*mult, muCimagf(val)*mult);
     }*/
 
-    static void printf(const char *fmt, const cuComplex &val)
+    static void printf(const char *fmt, const muComplex &val)
     {
-        ::printf(fmt, cuCrealf(val));
+        ::printf(fmt, muCrealf(val));
         ::printf(" ");
-        ::printf(fmt, cuCimagf(val));
+        ::printf(fmt, muCimagf(val));
     };
-    static void fprintf(FILE *f, const char *fmt, const cuComplex &val)
+    static void fprintf(FILE *f, const char *fmt, const muComplex &val)
     {
-        ::fprintf(f, fmt, cuCrealf(val));
+        ::fprintf(f, fmt, muCrealf(val));
         ::fprintf(f, " ");
-        ::fprintf(f, fmt, cuCimagf(val));
+        ::fprintf(f, fmt, muCimagf(val));
     };
 };
 
 template <>
-__host__ __device__ __inline__ void util<cuComplex>::to_uptype<cuDoubleComplex> (const cuComplex &src, cuDoubleComplex &dst)
+__host__ __device__ __inline__ void util<muComplex>::to_uptype<muDoubleComplex> (const muComplex &src, muDoubleComplex &dst)
 {
-    dst = make_cuDoubleComplex(cuCrealf(src), cuCimagf(src));
+    dst = make_muDoubleComplex(muCrealf(src), muCimagf(src));
 }
 
 template <>
-struct util <cuDoubleComplex, PODTypes<cuDoubleComplex>::type>
+struct util <muDoubleComplex, PODTypes<muDoubleComplex>::type>
 {
-    typedef cuDoubleComplex uptype;
-    typedef cuComplex downtype;
+    typedef muDoubleComplex uptype;
+    typedef muComplex downtype;
 
     static const bool is_real = false;
     static const bool is_complex = true;
 
-    static __host__ __device__ __inline__ cuDoubleComplex get_zero() { return make_cuDoubleComplex(0., 0.); };
-    static __host__ __device__ __inline__ cuDoubleComplex get_one() { return make_cuDoubleComplex(1., 0.); };
-    static __host__ __device__ __inline__ cuDoubleComplex get_minus_one() { return make_cuDoubleComplex(-1., 0.); };
+    static __host__ __device__ __inline__ muDoubleComplex get_zero() { return make_muDoubleComplex(0., 0.); };
+    static __host__ __device__ __inline__ muDoubleComplex get_one() { return make_muDoubleComplex(1., 0.); };
+    static __host__ __device__ __inline__ muDoubleComplex get_minus_one() { return make_muDoubleComplex(-1., 0.); };
 
-    static __host__ __device__ __inline__ bool is_zero(const cuDoubleComplex &val) { return (cuCreal(val) == 0.f && cuCimag(val) == 0.f); };
-    static __host__ __device__ __inline__ bool is_equal(const cuDoubleComplex &val1, const cuDoubleComplex &val2) { return (cuCreal(val1) == cuCreal(val2) && cuCimag(val1) == cuCimag(val2));} ;
+    static __host__ __device__ __inline__ bool is_zero(const muDoubleComplex &val) { return (muCreal(val) == 0.f && muCimag(val) == 0.f); };
+    static __host__ __device__ __inline__ bool is_equal(const muDoubleComplex &val1, const muDoubleComplex &val2) { return (muCreal(val1) == muCreal(val2) && muCimag(val1) == muCimag(val2));} ;
 
-    static __host__ __device__ __inline__ cuDoubleComplex invert(const cuDoubleComplex &val) {return make_cuDoubleComplex(-cuCreal(val), -cuCimag(val));};
-    static __host__ __device__ __inline__ cuDoubleComplex conjugate(const cuDoubleComplex &val) {return make_cuDoubleComplex(cuCreal(val), -cuCimag(val));};
-    static __host__ __device__ __inline__ void invert_inplace(cuDoubleComplex &val) {val =  make_cuDoubleComplex(-cuCreal(val), -cuCimag(val));};
-    static __host__ __device__ __inline__ void conjugate_inplace(cuDoubleComplex &val) {val = make_cuDoubleComplex(cuCreal(val), -cuCimag(val));};
-    static __host__ __device__ __inline__ void divide_by_integer(cuDoubleComplex& val, int64_t &denom)
+    static __host__ __device__ __inline__ muDoubleComplex invert(const muDoubleComplex &val) {return make_muDoubleComplex(-muCreal(val), -muCimag(val));};
+    static __host__ __device__ __inline__ muDoubleComplex conjugate(const muDoubleComplex &val) {return make_muDoubleComplex(muCreal(val), -muCimag(val));};
+    static __host__ __device__ __inline__ void invert_inplace(muDoubleComplex &val) {val =  make_muDoubleComplex(-muCreal(val), -muCimag(val));};
+    static __host__ __device__ __inline__ void conjugate_inplace(muDoubleComplex &val) {val = make_muDoubleComplex(muCreal(val), -muCimag(val));};
+    static __host__ __device__ __inline__ void divide_by_integer(muDoubleComplex& val, int64_t &denom)
     {
         double den = static_cast<double>(denom);
         val.x /= den;
         val.y /= den;
     };
 
-    static __host__ __device__ __inline__ double abs (const cuDoubleComplex &val)
+    static __host__ __device__ __inline__ double abs (const muDoubleComplex &val)
     {
-        return cuCabs(val);
+        return muCabs(val);
     }
 
     template <typename V>
-    static __host__ __device__ __inline__ void to_uptype (const cuDoubleComplex &src, V &dst)
+    static __host__ __device__ __inline__ void to_uptype (const muDoubleComplex &src, V &dst)
     {
         dst = (V)(src);
     }
 
-    static __host__ __device__ __inline__ cuComplex to_downtype (const cuDoubleComplex &src)
+    static __host__ __device__ __inline__ muComplex to_downtype (const muDoubleComplex &src)
     {
-        return make_cuComplex(cuCreal(src), cuCimag(src));;
+        return make_muComplex(muCreal(src), muCimag(src));;
     }
 
-    static __host__ __device__ __inline__ cuDoubleComplex volcast (const volatile cuDoubleComplex &val)
+    static __host__ __device__ __inline__ muDoubleComplex volcast (const volatile muDoubleComplex &val)
     {
-        return make_cuDoubleComplex(val.x, val.y);
+        return make_muDoubleComplex(val.x, val.y);
     }
-    static __host__ __device__ __inline__ void            volcast (const cuDoubleComplex &val, volatile cuDoubleComplex *ret)
+    static __host__ __device__ __inline__ void            volcast (const muDoubleComplex &val, volatile muDoubleComplex *ret)
     {
-        (*ret).x = cuCreal(val);
-        (*ret).y = cuCimag(val);
+        (*ret).x = muCreal(val);
+        (*ret).y = muCimag(val);
     }
 
     /*template <typename M>
-    static __host__ __device__ __inline__ cuDoubleComplex mulf(const cuDoubleComplex& val, const M& mult)
+    static __host__ __device__ __inline__ muDoubleComplex mulf(const muDoubleComplex& val, const M& mult)
     {
         static_assert(util<M>::is_real(), "Multiply is supported for real constant only");
-        return make_cuDoubleComplex(cuCreal(val)*mult, cuCimag(val)*mult);
+        return make_muDoubleComplex(muCreal(val)*mult, muCimag(val)*mult);
     }*/
 
-    static void printf(const char *fmt, const cuDoubleComplex &val)
+    static void printf(const char *fmt, const muDoubleComplex &val)
     {
-        ::printf(fmt, cuCreal(val));
+        ::printf(fmt, muCreal(val));
         ::printf(" ");
-        ::printf(fmt, cuCimag(val));
+        ::printf(fmt, muCimag(val));
     };
-    static void fprintf(FILE *f, const char *fmt, const cuDoubleComplex &val)
+    static void fprintf(FILE *f, const char *fmt, const muDoubleComplex &val)
     {
-        ::fprintf(f, fmt, cuCreal(val));
+        ::fprintf(f, fmt, muCreal(val));
         ::fprintf(f, " ");
-        ::fprintf(f, fmt, cuCimag(val));
+        ::fprintf(f, fmt, muCimag(val));
     };
 };
 

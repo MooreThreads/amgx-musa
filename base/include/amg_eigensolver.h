@@ -140,8 +140,8 @@ class AMG_EigenSolver
 
         // Do we include timings.
         bool m_with_timings;
-        cudaEvent_t m_setup_start, m_setup_stop;
-        cudaEvent_t m_solve_start, m_solve_stop;
+        musaEvent_t m_setup_start, m_setup_stop;
+        musaEvent_t m_solve_start, m_solve_stop;
 
         Matrix<T_Config> &get_A(void)
         {

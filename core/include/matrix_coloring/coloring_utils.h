@@ -378,10 +378,10 @@ unsigned long long int box_id :
     }
 };
 
-int eliminate_null_colors(int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.cu
-int reorder_colors_by_frequency(int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.cu
-void coloring_histogram(int *out_hist, int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.cu
-int reverse_colors(int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.cu
+int eliminate_null_colors(int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.mu
+int reorder_colors_by_frequency(int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.mu
+void coloring_histogram(int *out_hist, int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.mu
+int reverse_colors(int num_rows, int max_color, int *row_colors); //impl in greedy_recolor.mu
 
 
 }

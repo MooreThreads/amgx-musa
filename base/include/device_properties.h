@@ -30,6 +30,6 @@
 namespace amgx
 {
 
-cudaDeviceProp getDeviceProperties();
+musaDeviceProp getDeviceProperties();
 
 }

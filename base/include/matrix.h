@@ -217,7 +217,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
         {
             setDefaultParameters();
             resize(0, 0, 0, 1);
-            cusparseCheckError(cusparseCreateMatDescr(&cuMatDescr));
+            cusparseCheckError(musparseCreateMatDescr(&cuMatDescr));
 
             #ifndef DISABLE_MIXED_PRECISION
                 cusparseCheckError(CusparseMatPrec<T_Config>::set(cuMatDescr));
@@ -229,7 +229,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
             setDefaultParameters();
             this->props = props;
             resize(num_rows, num_cols, num_nz, 1);
-            cusparseCheckError(cusparseCreateMatDescr(&cuMatDescr));
+            cusparseCheckError(musparseCreateMatDescr(&cuMatDescr));
 
             #ifndef DISABLE_MIXED_PRECISION
                 cusparseCheckError(CusparseMatPrec<T_Config>::set(cuMatDescr));
@@ -240,7 +240,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
             setDefaultParameters();
             this->props = props;
             resize(num_rows, num_cols, num_nz, block_dimy, block_dimx, 1);
-            cusparseCheckError(cusparseCreateMatDescr(&cuMatDescr));
+            cusparseCheckError(musparseCreateMatDescr(&cuMatDescr));
 
             #ifndef DISABLE_MIXED_PRECISION
                 cusparseCheckError(CusparseMatPrec<T_Config>::set(cuMatDescr));
@@ -256,7 +256,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
 
             if (cuMatDescr != NULL)
             {
-                cusparseDestroyMatDescr(cuMatDescr);
+                musparseDestroyMatDescr(cuMatDescr);
                 cuMatDescr = NULL;
             }
 
@@ -277,12 +277,12 @@ class MatrixBase : public AuxData, public Operator<T_Config>
             }
         }
 
-        inline void copyCusparseMatDescr(cusparseMatDescr_t d_cuMatDescr, const cusparseMatDescr_t s_cuMatDescr)
+        inline void copyCusparseMatDescr(musparseMatDescr_t d_cuMatDescr, const musparseMatDescr_t s_cuMatDescr)
         {
-            cusparseSetMatType(d_cuMatDescr, cusparseGetMatType(s_cuMatDescr));
-            cusparseSetMatFillMode(d_cuMatDescr, cusparseGetMatFillMode(s_cuMatDescr));
-            cusparseSetMatDiagType(d_cuMatDescr, cusparseGetMatDiagType(s_cuMatDescr));
-            cusparseSetMatIndexBase(d_cuMatDescr, cusparseGetMatIndexBase(s_cuMatDescr));
+            musparseSetMatType(d_cuMatDescr, musparseGetMatType(s_cuMatDescr));
+            musparseSetMatFillMode(d_cuMatDescr, musparseGetMatFillMode(s_cuMatDescr));
+            musparseSetMatDiagType(d_cuMatDescr, musparseGetMatDiagType(s_cuMatDescr));
+            musparseSetMatIndexBase(d_cuMatDescr, musparseGetMatIndexBase(s_cuMatDescr));
         }
 
         template<class MatrixType>
@@ -380,7 +380,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
         }
 
         template<class MatrixType>
-        inline void copy_async(const MatrixType &a, cudaStream_t stream = 0)
+        inline void copy_async(const MatrixType &a, musaStream_t stream = 0)
         {
             this->set_initialized(0);
             copyAuxData(&a);
@@ -424,7 +424,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
         }
 
         template<class MatrixType>
-        inline void copy_structure_async(const MatrixType &a, cudaStream_t stream = 0)
+        inline void copy_structure_async(const MatrixType &a, musaStream_t stream = 0)
         {
             this->set_initialized(0);
             copyAuxData(&a);
@@ -523,12 +523,12 @@ class MatrixBase : public AuxData, public Operator<T_Config>
             and which matrix object should free it, at least not without careful
             reference counting.
             */
-            cusparseMatDescr_t t_cuMatDescr;
-            cusparseCreateMatDescr(&t_cuMatDescr);
+            musparseMatDescr_t t_cuMatDescr;
+            musparseCreateMatDescr(&t_cuMatDescr);
             copyCusparseMatDescr(t_cuMatDescr, cuMatDescr);
             copyCusparseMatDescr(cuMatDescr,  a.cuMatDescr);
             copyCusparseMatDescr(a.cuMatDescr, t_cuMatDescr);
-            cusparseDestroyMatDescr(t_cuMatDescr);
+            musparseDestroyMatDescr(t_cuMatDescr);
             //manager->swap(*(a.manager));
             amg_level_index = a.amg_level_index;
             this->set_initialized(was_init2);
@@ -867,7 +867,7 @@ class MatrixBase : public AuxData, public Operator<T_Config>
         IVector diag_copy;        //size: num_rows*block_size
 #endif
         /* cusparse */
-        cusparseMatDescr_t cuMatDescr;
+        musparseMatDescr_t cuMatDescr;
 
         Resources *m_resources;
         /* sequence */

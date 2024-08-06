@@ -21,12 +21,12 @@
 ///TODO: FIX ME:
 ///
 ///#if THRUST_VERSION >= 100600
-///#include <thrust/system/cuda/detail/arch.h>
+///#include <thrust/system/musa/detail/arch.h>
 ///#else
-///#include <thrust/detail/backend/cuda/arch.h>
+///#include <thrust/detail/backend/musa/arch.h>
 ///#endif
 
-#include <cuda_runtime_api.h>
+#include <musa_runtime_api.h>
 
 namespace cusp
 {
@@ -41,12 +41,12 @@ template <typename KernelFunction>
 size_t max_active_blocks(KernelFunction kernel, const size_t CTA_SIZE, const size_t dynamic_smem_bytes)
 {
 #if THRUST_VERSION >= 100600
-  ///return thrust::system::cuda::detail::arch::max_active_blocks(kernel, CTA_SIZE, dynamic_smem_bytes);//OLD Thrust
+  ///return thrust::system::musa::detail::arch::max_active_blocks(kernel, CTA_SIZE, dynamic_smem_bytes);//OLD Thrust
   int numBlocks = 0;
-  cudaOccupancyMaxActiveBlocksPerMultiprocessor ( &numBlocks, kernel, CTA_SIZE, dynamic_smem_bytes );//NEW Thrust: THRUST_VERSION >= 100802
+  musaOccupancyMaxActiveBlocksPerMultiprocessor ( &numBlocks, kernel, CTA_SIZE, dynamic_smem_bytes );//NEW Thrust: THRUST_VERSION >= 100802
   return numBlocks;
 #else
-  return thrust::detail::backend::cuda::arch::max_active_blocks(kernel, CTA_SIZE, dynamic_smem_bytes);//Ancient Thrust: This SHOULD trigger error
+  return thrust::detail::backend::musa::arch::max_active_blocks(kernel, CTA_SIZE, dynamic_smem_bytes);//Ancient Thrust: This SHOULD trigger error
 #endif
 }
 

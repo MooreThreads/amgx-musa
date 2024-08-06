@@ -27,7 +27,7 @@
 
 #pragma once
 
-#include <cuda_runtime.h>
+#include <musa_runtime.h>
 #include <list>
 #include <vector>
 
@@ -148,7 +148,7 @@ class ThreadWorker
 class ThreadManager
 {
         // The CUDA streams. The latest stream is the high priority stream (if any).
-        std::vector<cudaStream_t> m_cuda_streams;
+        std::vector<musaStream_t> m_cuda_streams;
         // Do we run the task sequentially?
         bool m_serialize_mode;
         // The work queues.
@@ -180,7 +180,7 @@ class InitTask : public AsyncTask
         // The device.
         int m_device;
         // The CUDA stream.
-        cudaStream_t m_stream;
+        musaStream_t m_stream;
         // A mutex to protect thrust global handles.
         int *m_mutex;
 
@@ -193,7 +193,7 @@ class InitTask : public AsyncTask
 
     public:
         InitTask(int device,
-                 cudaStream_t stream,
+                 musaStream_t stream,
                  int *mutex,
                  size_t pool_size,
                  size_t max_alloc_size) :

@@ -662,16 +662,16 @@ int glue_vector(Matrix<TConfig> &nv_mtx, MPI_Comm &A_comm, Vector<TConfig> &nv_v
 
         if (nv_vec.linear_buffers_size != 0)
         {
-            amgx::memory::cudaFreeHost(&(nv_vec.linear_buffers[0]));
+            amgx::memory::musaFreeHost(&(nv_vec.linear_buffers[0]));
             nv_vec.linear_buffers_size = 0;
         }
 
         if (nv_vec.explicit_host_buffer)
         {
-            amgx::memory::cudaFreeHost(nv_vec.explicit_host_buffer);
+            amgx::memory::musaFreeHost(nv_vec.explicit_host_buffer);
             nv_vec.explicit_host_buffer = NULL;
             nv_vec.explicit_buffer_size = 0;
-            cudaEventDestroy(nv_vec.mpi_event);
+            musaEventDestroy(nv_vec.mpi_event);
         }
 
         // resize
@@ -856,16 +856,16 @@ int unglue_vector(Matrix<TConfig> &nv_mtx, MPI_Comm &A_comm, Vector<TConfig> &nv
 
         if (nv_vec_unglued.linear_buffers_size != 0)
         {
-            amgx::memory::cudaFreeHost(&(nv_vec_unglued.linear_buffers[0]));
+            amgx::memory::musaFreeHost(&(nv_vec_unglued.linear_buffers[0]));
             nv_vec_unglued.linear_buffers_size = 0;
         }
 
         if (nv_vec_unglued.explicit_host_buffer)
         {
-            amgx::memory::cudaFreeHost(nv_vec_unglued.explicit_host_buffer);
+            amgx::memory::musaFreeHost(nv_vec_unglued.explicit_host_buffer);
             nv_vec_unglued.explicit_host_buffer = NULL;
             nv_vec_unglued.explicit_buffer_size = 0;
-            cudaEventDestroy(nv_vec_unglued.mpi_event);
+            musaEventDestroy(nv_vec_unglued.mpi_event);
         }
 
         // We should avoid copies between nv_vec and hv here
@@ -910,11 +910,11 @@ void exchange_halo_after_unglue(const Matrix<TConfig> &A, Vector<TConfig>  &data
 template <class TConfig>
 void CommsMPIHostBufferStream<T_Config>::setup(DVector &b, const Matrix<TConfig> &m, int num_rings) { do_setup_after_unglue((b, m, num_rings);}
 template <class T_Config>
-void CommsMPIHostBufferStream<T_Config>::exchange_halo(DVector &b, const Matrix<TConfig> &m, cudaEvent_t event, int tag, int num_rings) {  do_exchange_halo_after_unglue((b, m, num_rings);}
+void CommsMPIHostBufferStream<T_Config>::exchange_halo(DVector &b, const Matrix<TConfig> &m, musaEvent_t event, int tag, int num_rings) {  do_exchange_halo_after_unglue((b, m, num_rings);}
 template <class T_Config>
 void CommsMPIHostBufferStream<T_Config>::setup(FVector &b, const Matrix<TConfig> &m, int tag, int num_rings) { do_setup_after_unglue((b, m, num_rings);}
 template <class T_Config>
-void CommsMPIHostBufferStream<T_Config>::exchange_halo(FVector &b, const Matrix<TConfig> &m, cudaEvent_t event, int tag, int num_rings) {  do_exchange_halo_after_unglue((b, m, num_rings);}
+void CommsMPIHostBufferStream<T_Config>::exchange_halo(FVector &b, const Matrix<TConfig> &m, musaEvent_t event, int tag, int num_rings) {  do_exchange_halo_after_unglue((b, m, num_rings);}
 */
 template <class TConfig>
 void setup_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, int num_rings)
@@ -988,9 +988,9 @@ void setup_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, int num_ri
 
         if (b.linear_buffers_size < neighbors)
         {
-            if (b.linear_buffers_size != 0) { amgx::memory::cudaFreeHost(b.linear_buffers); }
+            if (b.linear_buffers_size != 0) { amgx::memory::musaFreeHost(b.linear_buffers); }
 
-            amgx::memory::cudaMallocHost((void **) & (b.linear_buffers), neighbors * sizeof(value_type *));
+            amgx::memory::musaMallocHost((void **) & (b.linear_buffers), neighbors * sizeof(value_type *));
             b.linear_buffers_size = neighbors;
         }
 
@@ -1014,7 +1014,7 @@ void setup_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, int num_ri
         {
             b.linear_buffers_ptrs.resize(neighbors);
             //thrust::copy(b.linear_buffers.begin(),b.linear_buffers.end(),b.linear_buffers_ptrs.begin());
-            cudaMemcpyAsync(thrust::raw_pointer_cast(&b.linear_buffers_ptrs[0]), &(b.linear_buffers[0]), neighbors * sizeof(value_type *), cudaMemcpyHostToDevice);
+            musaMemcpyAsync(thrust::raw_pointer_cast(&b.linear_buffers_ptrs[0]), &(b.linear_buffers[0]), neighbors * sizeof(value_type *), musaMemcpyHostToDevice);
             cudaCheckError();
         }
 
@@ -1026,16 +1026,16 @@ void setup_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, int num_ri
             if (b.explicit_host_buffer == NULL)
             {
                 b.host_buffer.resize(1);
-                cudaEventCreateWithFlags(&b.mpi_event, cudaEventDisableTiming);
+                musaEventCreateWithFlags(&b.mpi_event, musaEventDisableTiming);
                 cudaCheckError();
-                amgx::memory::cudaMallocHost((void **)&b.explicit_host_buffer, size * sizeof(value_type));
+                amgx::memory::musaMallocHost((void **)&b.explicit_host_buffer, size * sizeof(value_type));
                 cudaCheckError();
             }
             else if (size > b.explicit_buffer_size)
             {
-                amgx::memory::cudaFreeHost(b.explicit_host_buffer);
+                amgx::memory::musaFreeHost(b.explicit_host_buffer);
                 cudaCheckError();
-                amgx::memory::cudaMallocHost((void **)&b.explicit_host_buffer, size * sizeof(value_type));
+                amgx::memory::musaMallocHost((void **)&b.explicit_host_buffer, size * sizeof(value_type));
                 cudaCheckError();
             }
 
@@ -1101,7 +1101,7 @@ void exchange_halo_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, in
 
         if (b.buffer_size != 0)
         {
-            cudaMemcpy(&(b.explicit_host_buffer[0]), b.buffer->raw(), b.buffer_size * sizeof(typename TConfig::VecPrec), cudaMemcpyDeviceToHost);
+            musaMemcpy(&(b.explicit_host_buffer[0]), b.buffer->raw(), b.buffer_size * sizeof(typename TConfig::VecPrec), musaMemcpyDeviceToHost);
         }
 
         for (int i = 0; i < neighbors; i++)
@@ -1165,7 +1165,7 @@ void exchange_halo_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, in
             {
                 if (offset != 0)
                 {
-                    cudaMemcpy(b.raw() + m.manager->halo_offsets_before_glue[0]*bsize, &(b.explicit_host_buffer[b.buffer_size]), offset * sizeof(typename TConfig::VecPrec), cudaMemcpyHostToDevice);
+                    musaMemcpy(b.raw() + m.manager->halo_offsets_before_glue[0]*bsize, &(b.explicit_host_buffer[b.buffer_size]), offset * sizeof(typename TConfig::VecPrec), musaMemcpyHostToDevice);
                 }
             }
             else
@@ -1181,7 +1181,7 @@ void exchange_halo_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, in
                     {
                         VecPrec *halo_start = b.raw() + lda * s + m.manager->halo_offsets_before_glue[i];
                         VecPrec *received_halo = rank_start + s * halo_size;
-                        cudaMemcpy(halo_start, received_halo, halo_size * sizeof(VecPrec), cudaMemcpyHostToDevice);
+                        musaMemcpy(halo_start, received_halo, halo_size * sizeof(VecPrec), musaMemcpyHostToDevice);
                     }
 
                     rank_start += num_cols * halo_size;
@@ -1203,7 +1203,7 @@ void exchange_halo_after_unglue(Vector<TConfig> &b, const Matrix<TConfig> &m, in
 
                         if (size != 0)
                         {
-                            cudaMemcpy(b.raw() + m.manager->halo_offsets_before_glue[j * neighbors + i]*bsize, &(b.explicit_host_buffer[b.buffer_size + offset]), size * sizeof(typename TConfig::VecPrec), cudaMemcpyHostToDevice);
+                            musaMemcpy(b.raw() + m.manager->halo_offsets_before_glue[j * neighbors + i]*bsize, &(b.explicit_host_buffer[b.buffer_size + offset]), size * sizeof(typename TConfig::VecPrec), musaMemcpyHostToDevice);
                         }
 
                         offset += size;

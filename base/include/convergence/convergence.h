@@ -57,13 +57,13 @@ struct Epsilon_conv<double>
 };
 
 template<>
-struct Epsilon_conv<cuComplex>
+struct Epsilon_conv<muComplex>
 {
     static __device__ __host__ __forceinline__ float value( ) { return 1.0e-6f; }
 };
 
 template<>
-struct Epsilon_conv<cuDoubleComplex>
+struct Epsilon_conv<muDoubleComplex>
 {
     static __device__ __host__ __forceinline__ double value( ) { return 1.0e-12; }
 };

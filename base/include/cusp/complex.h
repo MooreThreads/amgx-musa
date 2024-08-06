@@ -68,7 +68,7 @@
 
 #include <math.h>
 #include <complex>
-#include <cuComplex.h>
+#include <muComplex.h>
 #include <sstream>
 #include <cusp/cmath.h>
 
@@ -337,11 +337,11 @@ public:
   __host__ __device__ inline void imag(ValueType);
 };
 
-// TODO make cuFloatComplex and cuDoubleComplex protected
+// TODO make muFloatComplex and muDoubleComplex protected
 // TODO see if returning references is a perf hazard
 
 template<>
-struct complex <float> : public cuFloatComplex
+struct complex <float> : public muFloatComplex
 {
 public:
   typedef float value_type;
@@ -358,11 +358,11 @@ public:
   // explicitly makes things faster with at least g++
   __host__ __device__
     complex<float>(const complex<float> & z)
-    : cuFloatComplex(z){}
+    : muFloatComplex(z){}
 
   __host__ __device__
-    complex<float>(cuFloatComplex z)
-    : cuFloatComplex(z){}
+    complex<float>(muFloatComplex z)
+    : muFloatComplex(z){}
   
   template <class X> 
     inline complex<float>(const std::complex<X> & z)
@@ -442,7 +442,7 @@ public:
 };
 
 template<>
-struct complex <double> : public cuDoubleComplex
+struct complex <double> : public muDoubleComplex
 {
 public:
   typedef double value_type;
@@ -459,11 +459,11 @@ public:
   // explicitly makes things faster with at least g++
   __host__ __device__
     inline complex<double>(const complex<double> & z)
-    : cuDoubleComplex(z) {}
+    : muDoubleComplex(z) {}
 
   __host__ __device__
-    inline complex<double>(cuDoubleComplex z)
-    : cuDoubleComplex(z) {}
+    inline complex<double>(muDoubleComplex z)
+    : muDoubleComplex(z) {}
 
   template <class X> 
     inline complex<double>(const std::complex<X> & z)
@@ -546,14 +546,14 @@ public:
 
   // Binary arithmetic operations
   // At the moment I'm implementing the basic functions, and the 
-  // corresponding cuComplex calls are commented.
+  // corresponding muComplex calls are commented.
 
   template<typename ValueType>
     __host__ __device__ 
     inline complex<ValueType> operator+(const complex<ValueType>& lhs,
 					    const complex<ValueType>& rhs){
     return complex<ValueType>(lhs.real()+rhs.real(),lhs.imag()+rhs.imag());
-    //  return cuCaddf(lhs,rhs);
+    //  return muCaddf(lhs,rhs);
   }
 
   template<typename ValueType>
@@ -561,39 +561,39 @@ public:
     inline complex<ValueType> operator+(const volatile complex<ValueType>& lhs,
 					    const volatile complex<ValueType>& rhs){
     return complex<ValueType>(lhs.real()+rhs.real(),lhs.imag()+rhs.imag());
-    //  return cuCaddf(lhs,rhs);
+    //  return muCaddf(lhs,rhs);
   }
 
   template <typename ValueType> 
     __host__ __device__ 
     inline complex<ValueType> operator+(const complex<ValueType>& lhs, const ValueType & rhs){
     return complex<ValueType>(lhs.real()+rhs,lhs.imag());
-    //  return cuCaddf(lhs,complex<ValueType>(rhs));
+    //  return muCaddf(lhs,complex<ValueType>(rhs));
   }
   template <typename ValueType> 
     __host__ __device__ 
     inline complex<ValueType> operator+(const ValueType& lhs, const complex<ValueType>& rhs){
     return complex<ValueType>(rhs.real()+lhs,rhs.imag());
-    //  return cuCaddf(complex<float>(lhs),rhs);
+    //  return muCaddf(complex<float>(lhs),rhs);
   }
 
   template <typename ValueType> 
     __host__ __device__ 
     inline complex<ValueType> operator-(const complex<ValueType>& lhs, const complex<ValueType>& rhs){
     return complex<ValueType>(lhs.real()-rhs.real(),lhs.imag()-rhs.imag());
-    //  return cuCsubf(lhs,rhs);
+    //  return muCsubf(lhs,rhs);
   }
   template <typename ValueType> 
     __host__ __device__
     inline complex<ValueType> operator-(const complex<ValueType>& lhs, const ValueType & rhs){
     return complex<ValueType>(lhs.real()-rhs,lhs.imag());
-    //  return cuCsubf(lhs,complex<float>(rhs));
+    //  return muCsubf(lhs,complex<float>(rhs));
   }
   template <typename ValueType> 
     __host__ __device__
     inline complex<ValueType> operator-(const ValueType& lhs, const complex<ValueType>& rhs){
     return complex<ValueType>(lhs-rhs.real(),-rhs.imag());
-    //  return cuCsubf(complex<float>(lhs),rhs);
+    //  return muCsubf(complex<float>(lhs),rhs);
   }
 
   template <typename ValueType> 
@@ -602,21 +602,21 @@ public:
 					    const complex<ValueType>& rhs){
     return complex<ValueType>(lhs.real()*rhs.real()-lhs.imag()*rhs.imag(),
 				  lhs.real()*rhs.imag()+lhs.imag()*rhs.real());
-    //  return cuCmulf(lhs,rhs);
+    //  return muCmulf(lhs,rhs);
   }
 
   template <typename ValueType> 
     __host__ __device__
     inline complex<ValueType> operator*(const complex<ValueType>& lhs, const ValueType & rhs){
     return complex<ValueType>(lhs.real()*rhs,lhs.imag()*rhs);
-    //  return cuCmulf(lhs,complex<float>(rhs));
+    //  return muCmulf(lhs,complex<float>(rhs));
   }
 
   template <typename ValueType> 
     __host__ __device__
     inline complex<ValueType> operator*(const ValueType& lhs, const complex<ValueType>& rhs){
     return complex<ValueType>(rhs.real()*lhs,rhs.imag()*lhs);
-    //  return cuCmulf(complex<float>(lhs),rhs);
+    //  return muCmulf(complex<float>(lhs),rhs);
   }
 
 
@@ -632,20 +632,20 @@ public:
   template <>
     __host__ __device__
     inline complex<float> operator/(const complex<float>& lhs, const complex<float>& rhs){
-    return cuCdivf(lhs,rhs);
+    return muCdivf(lhs,rhs);
   }
 
   template <>
     __host__ __device__
     inline complex<double> operator/(const complex<double>& lhs, const complex<double>& rhs){
-    return cuCdiv(lhs,rhs);
+    return muCdiv(lhs,rhs);
   }
 
   template <typename ValueType> 
     __host__ __device__
     inline complex<ValueType> operator/(const complex<ValueType>& lhs, const ValueType & rhs){
     return complex<ValueType>(lhs.real()/rhs,lhs.imag()/rhs);
-    //  return cuCdivf(lhs,complex<float>(rhs));
+    //  return muCdivf(lhs,complex<float>(rhs));
   }
 
   template <typename ValueType>
@@ -659,12 +659,12 @@ public:
   template <>
     __host__ __device__
     inline complex<float> operator/(const float& lhs, const complex<float>& rhs){
-    return cuCdivf(complex<float>(lhs),rhs);
+    return muCdivf(complex<float>(lhs),rhs);
   }
   template <>
     __host__ __device__
     inline complex<double> operator/(const double& lhs, const complex<double>& rhs){
-    return cuCdiv(complex<double>(lhs),rhs);
+    return muCdiv(complex<double>(lhs),rhs);
   }
 
 

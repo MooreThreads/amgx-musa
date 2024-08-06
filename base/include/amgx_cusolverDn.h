@@ -32,44 +32,44 @@
 
 #pragma once
 
-#include "cusolverDn.h"
+#include "musolverDn.h"
 
 namespace amgx
 {
 
-cusolverStatus_t
-cusolverDnXgetrf_bufferSize (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
                              int m,
                              int n,
                              float *A,
                              int lda,
                              int *Lwork );
-cusolverStatus_t
-cusolverDnXgetrf_bufferSize (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
                              int m,
                              int n,
                              double *A,
                              int lda,
                              int *Lwork );
 
-cusolverStatus_t
-cusolverDnXgetrf_bufferSize (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
                              int m,
                              int n,
-                             cuComplex *A,
+                             muComplex *A,
                              int lda,
                              int *Lwork );
 
-cusolverStatus_t
-cusolverDnXgetrf_bufferSize (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
                              int m,
                              int n,
-                             cuDoubleComplex *A,
+                             muDoubleComplex *A,
                              int lda,
                              int *Lwork );
 
-cusolverStatus_t
-cusolverDnXgetrf (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf (musolverDnHandle_t handle,
                   int m,
                   int n,
                   float *A,
@@ -78,8 +78,8 @@ cusolverDnXgetrf (cusolverDnHandle_t handle,
                   int *devIpiv,
                   int *info);
 
-cusolverStatus_t
-cusolverDnXgetrf (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf (musolverDnHandle_t handle,
                   int m,
                   int n,
                   double *A,
@@ -87,31 +87,31 @@ cusolverDnXgetrf (cusolverDnHandle_t handle,
                   double *wspace,
                   int *devIpiv,
                   int *info);
-cusolverStatus_t
-cusolverDnXgetrf (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf (musolverDnHandle_t handle,
                   int m,
                   int n,
-                  cuComplex *A,
+                  muComplex *A,
                   int lda,
-                  cuComplex *wspace,
+                  muComplex *wspace,
                   int *devIpiv,
                   int *info);
 
-cusolverStatus_t
-cusolverDnXgetrf (cusolverDnHandle_t handle,
+musolverStatus_t
+musolverDnXgetrf (musolverDnHandle_t handle,
                   int m,
                   int n,
-                  cuDoubleComplex *A,
+                  muDoubleComplex *A,
                   int lda,
-                  cuDoubleComplex *wspace,
+                  muDoubleComplex *wspace,
                   int *devIpiv,
                   int *info);
 
 //
 // solve
 //
-cusolverStatus_t cusolverDnXgetrs(cusolverDnHandle_t handle,
-                                  cublasOperation_t trans,
+musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+                                  mublasOperation_t trans,
                                   int n,
                                   int nrhs,
                                   const float *A,
@@ -121,8 +121,8 @@ cusolverStatus_t cusolverDnXgetrs(cusolverDnHandle_t handle,
                                   int ldb,
                                   int *devInfo );
 
-cusolverStatus_t cusolverDnXgetrs(cusolverDnHandle_t handle,
-                                  cublasOperation_t trans,
+musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+                                  mublasOperation_t trans,
                                   int n,
                                   int nrhs,
                                   const double *A,
@@ -132,25 +132,25 @@ cusolverStatus_t cusolverDnXgetrs(cusolverDnHandle_t handle,
                                   int ldb,
                                   int *devInfo );
 
-cusolverStatus_t cusolverDnXgetrs(cusolverDnHandle_t handle,
-                                  cublasOperation_t trans,
+musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+                                  mublasOperation_t trans,
                                   int n,
                                   int nrhs,
-                                  const cuComplex *A,
+                                  const muComplex *A,
                                   int lda,
                                   const int *devIpiv,
-                                  cuComplex *B,
+                                  muComplex *B,
                                   int ldb,
                                   int *devInfo );
 
-cusolverStatus_t cusolverDnXgetrs(cusolverDnHandle_t handle,
-                                  cublasOperation_t trans,
+musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+                                  mublasOperation_t trans,
                                   int n,
                                   int nrhs,
-                                  const cuDoubleComplex *A,
+                                  const muDoubleComplex *A,
                                   int lda,
                                   const int *devIpiv,
-                                  cuDoubleComplex *B,
+                                  muDoubleComplex *B,
                                   int ldb,
                                   int *devInfo );
 

@@ -29,154 +29,154 @@
 #include <basic_types.h>
 
 // add operator
-__host__ __device__ __inline__ cuComplex operator+(const cuComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muComplex operator+(const muComplex &lhs, const muComplex &rhs)
 {
-    return cuCaddf(lhs, rhs);
+    return muCaddf(lhs, rhs);
 }
-__host__ __device__ __inline__ cuComplex operator+(const cuComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muComplex operator+(const muComplex &lhs, const muDoubleComplex &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) + cuCreal(rhs), cuCimagf(lhs) + cuCimag(rhs));
+    return make_muComplex(muCrealf(lhs) + muCreal(rhs), muCimagf(lhs) + muCimag(rhs));
 }
-__host__ __device__ __inline__ cuComplex operator+(const cuComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muComplex operator+(const muComplex &lhs, const float &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) + rhs, cuCimagf(lhs));
+    return make_muComplex(muCrealf(lhs) + rhs, muCimagf(lhs));
 }
-__host__ __device__ __inline__ cuComplex operator+(const cuComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muComplex operator+(const muComplex &lhs, const double &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) + rhs, cuCimagf(lhs));
+    return make_muComplex(muCrealf(lhs) + rhs, muCimagf(lhs));
 }
 
-__host__ __device__ __inline__ cuDoubleComplex operator+(const cuDoubleComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator+(const muDoubleComplex &lhs, const muComplex &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) + cuCrealf(rhs), cuCimag(lhs) + cuCimagf(rhs));
+    return make_muDoubleComplex(muCreal(lhs) + muCrealf(rhs), muCimag(lhs) + muCimagf(rhs));
 }
-__host__ __device__ __inline__ cuDoubleComplex operator+(const cuDoubleComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator+(const muDoubleComplex &lhs, const muDoubleComplex &rhs)
 {
-    return cuCadd(lhs, rhs);
+    return muCadd(lhs, rhs);
 }
-__host__ __device__ __inline__ cuDoubleComplex operator+(const cuDoubleComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator+(const muDoubleComplex &lhs, const float &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) + rhs, cuCimag(lhs));
+    return make_muDoubleComplex(muCreal(lhs) + rhs, muCimag(lhs));
 }
-__host__ __device__ __inline__ cuDoubleComplex operator+(const cuDoubleComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator+(const muDoubleComplex &lhs, const double &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) + rhs, cuCimag(lhs));
+    return make_muDoubleComplex(muCreal(lhs) + rhs, muCimag(lhs));
 }
 
 // sub operator
-__host__ __device__ __inline__ cuComplex operator-(const cuComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muComplex operator-(const muComplex &lhs, const muComplex &rhs)
 {
-    return cuCsubf(lhs, rhs);
+    return muCsubf(lhs, rhs);
 }
-__host__ __device__ __inline__ cuComplex operator-(const cuComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muComplex operator-(const muComplex &lhs, const muDoubleComplex &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) - cuCreal(rhs), cuCimagf(lhs) - cuCimag(rhs));
+    return make_muComplex(muCrealf(lhs) - muCreal(rhs), muCimagf(lhs) - muCimag(rhs));
 }
-__host__ __device__ __inline__ cuComplex operator-(const cuComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muComplex operator-(const muComplex &lhs, const float &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) - rhs, cuCimagf(lhs));
+    return make_muComplex(muCrealf(lhs) - rhs, muCimagf(lhs));
 }
-__host__ __device__ __inline__ cuComplex operator-(const cuComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muComplex operator-(const muComplex &lhs, const double &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) - rhs, cuCimagf(lhs));
+    return make_muComplex(muCrealf(lhs) - rhs, muCimagf(lhs));
 }
 
-__host__ __device__ __inline__ cuDoubleComplex operator-(const cuDoubleComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator-(const muDoubleComplex &lhs, const muComplex &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) - cuCrealf(rhs), cuCimag(lhs) - cuCimagf(rhs));
+    return make_muDoubleComplex(muCreal(lhs) - muCrealf(rhs), muCimag(lhs) - muCimagf(rhs));
 }
-__host__ __device__ __inline__ cuDoubleComplex operator-(const cuDoubleComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator-(const muDoubleComplex &lhs, const muDoubleComplex &rhs)
 {
-    return cuCsub(lhs, rhs);
+    return muCsub(lhs, rhs);
 }
-__host__ __device__ __inline__ cuDoubleComplex operator-(const cuDoubleComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator-(const muDoubleComplex &lhs, const float &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) - rhs, cuCimag(lhs));
+    return make_muDoubleComplex(muCreal(lhs) - rhs, muCimag(lhs));
 }
-__host__ __device__ __inline__ cuDoubleComplex operator-(const cuDoubleComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator-(const muDoubleComplex &lhs, const double &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) - rhs, cuCimag(lhs));
+    return make_muDoubleComplex(muCreal(lhs) - rhs, muCimag(lhs));
 }
 
 
 // multiply operator
-__host__ __device__ __inline__ cuComplex operator*(const cuComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muComplex operator*(const muComplex &lhs, const muComplex &rhs)
 {
-    return cuCmulf(lhs, rhs);
+    return muCmulf(lhs, rhs);
 }
-__host__ __device__ __inline__ cuComplex operator*(const cuComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muComplex operator*(const muComplex &lhs, const muDoubleComplex &rhs)
 {
-    // basically copy of cuComplex.h cuCmulf
-    cuComplex prod;
-    prod = make_cuComplex   ((cuCrealf(lhs) * cuCreal(rhs)) -
-                             (cuCimagf(lhs) * cuCimag(rhs)),
-                             (cuCrealf(lhs) * cuCimag(rhs)) +
-                             (cuCimagf(lhs) * cuCreal(rhs)));
+    // basically copy of muComplex.h muCmulf
+    muComplex prod;
+    prod = make_muComplex   ((muCrealf(lhs) * muCreal(rhs)) -
+                             (muCimagf(lhs) * muCimag(rhs)),
+                             (muCrealf(lhs) * muCimag(rhs)) +
+                             (muCimagf(lhs) * muCreal(rhs)));
     return prod;
 }
-__host__ __device__ __inline__ cuComplex operator*(const cuComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muComplex operator*(const muComplex &lhs, const float &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) * rhs, cuCimagf(lhs) * rhs);
+    return make_muComplex(muCrealf(lhs) * rhs, muCimagf(lhs) * rhs);
 }
-__host__ __device__ __inline__ cuComplex operator*(const cuComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muComplex operator*(const muComplex &lhs, const double &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) * rhs, cuCimagf(lhs) * rhs);
+    return make_muComplex(muCrealf(lhs) * rhs, muCimagf(lhs) * rhs);
 }
 
 
-__host__ __device__ __inline__ cuDoubleComplex operator*(const cuDoubleComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator*(const muDoubleComplex &lhs, const muComplex &rhs)
 {
-    cuDoubleComplex prod;
-    prod = make_cuDoubleComplex ((cuCreal(lhs) * cuCrealf(rhs)) -
-                                 (cuCimag(lhs) * cuCimagf(rhs)),
-                                 (cuCreal(lhs) * cuCimagf(rhs)) +
-                                 (cuCimag(lhs) * cuCrealf(rhs)));
+    muDoubleComplex prod;
+    prod = make_muDoubleComplex ((muCreal(lhs) * muCrealf(rhs)) -
+                                 (muCimag(lhs) * muCimagf(rhs)),
+                                 (muCreal(lhs) * muCimagf(rhs)) +
+                                 (muCimag(lhs) * muCrealf(rhs)));
     return prod;
 }
-__host__ __device__ __inline__ cuDoubleComplex operator*(const cuDoubleComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator*(const muDoubleComplex &lhs, const muDoubleComplex &rhs)
 {
-    return cuCmul(lhs, rhs);
+    return muCmul(lhs, rhs);
 }
-__host__ __device__ __inline__ cuDoubleComplex operator*(const cuDoubleComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator*(const muDoubleComplex &lhs, const float &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) * rhs, cuCimag(lhs));
+    return make_muDoubleComplex(muCreal(lhs) * rhs, muCimag(lhs));
 }
-__host__ __device__ __inline__ cuDoubleComplex operator*(const cuDoubleComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator*(const muDoubleComplex &lhs, const double &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) * rhs, cuCimag(lhs));
+    return make_muDoubleComplex(muCreal(lhs) * rhs, muCimag(lhs));
 }
 
 // div operator
-__host__ __device__ __inline__ cuComplex operator/(const cuComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muComplex operator/(const muComplex &lhs, const muComplex &rhs)
 {
-    return cuCdivf(lhs, rhs);
+    return muCdivf(lhs, rhs);
 }
-__host__ __device__ __inline__ cuComplex operator/(const cuComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muComplex operator/(const muComplex &lhs, const muDoubleComplex &rhs)
 {
-    return cuCdivf(lhs, make_cuComplex(cuCreal(rhs), cuCimag(rhs)));
+    return muCdivf(lhs, make_muComplex(muCreal(rhs), muCimag(rhs)));
 }
-__host__ __device__ __inline__ cuComplex operator/(const cuComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muComplex operator/(const muComplex &lhs, const float &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) / rhs, cuCimagf(lhs) / rhs);
+    return make_muComplex(muCrealf(lhs) / rhs, muCimagf(lhs) / rhs);
 }
-__host__ __device__ __inline__ cuComplex operator/(const cuComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muComplex operator/(const muComplex &lhs, const double &rhs)
 {
-    return make_cuComplex(cuCrealf(lhs) / rhs, cuCimagf(lhs) / rhs);
+    return make_muComplex(muCrealf(lhs) / rhs, muCimagf(lhs) / rhs);
 }
 
-__host__ __device__ __inline__ cuDoubleComplex operator/(const cuDoubleComplex &lhs, const cuComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator/(const muDoubleComplex &lhs, const muComplex &rhs)
 {
-    return cuCdiv(lhs, make_cuDoubleComplex(cuCrealf(rhs), cuCimagf(rhs)));
+    return muCdiv(lhs, make_muDoubleComplex(muCrealf(rhs), muCimagf(rhs)));
 }
-__host__ __device__ __inline__ cuDoubleComplex operator/(const cuDoubleComplex &lhs, const cuDoubleComplex &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator/(const muDoubleComplex &lhs, const muDoubleComplex &rhs)
 {
-    return cuCdiv(lhs, rhs);
+    return muCdiv(lhs, rhs);
 }
-__host__ __device__ __inline__ cuDoubleComplex operator/(const cuDoubleComplex &lhs, const float &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator/(const muDoubleComplex &lhs, const float &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) / rhs, cuCimag(lhs) / rhs);
+    return make_muDoubleComplex(muCreal(lhs) / rhs, muCimag(lhs) / rhs);
 }
-__host__ __device__ __inline__ cuDoubleComplex operator/(const cuDoubleComplex &lhs, const double &rhs)
+__host__ __device__ __inline__ muDoubleComplex operator/(const muDoubleComplex &lhs, const double &rhs)
 {
-    return make_cuDoubleComplex(cuCreal(lhs) / rhs, cuCimag(lhs) / rhs);
+    return make_muDoubleComplex(muCreal(lhs) / rhs, muCimag(lhs) / rhs);
 }

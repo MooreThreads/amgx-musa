@@ -64,16 +64,16 @@ void allocMem(DataType *&ptr,
               IndexType numEntry,
               bool initToZero)
 {
-    if ( ptr != NULL ) { thrust::global_thread_handle::cudaFreeAsync(ptr); }
+    if ( ptr != NULL ) { thrust::global_thread_handle::musaFreeAsync(ptr); }
 
     cudaCheckError();
     size_t sz = numEntry * sizeof(DataType);
-    thrust::global_thread_handle::cudaMalloc((void **)&ptr, sz);
+    thrust::global_thread_handle::musaMalloc((void **)&ptr, sz);
     cudaCheckError();
 
     if (initToZero)
     {
-        cudaMemset(ptr, 0x0, sz);
+        musaMemset(ptr, 0x0, sz);
         cudaCheckError();
     }
 }
@@ -118,7 +118,7 @@ cudsStatus_t cudsXgetrs(cudsHandle_t handle,
 
 
 /*
- * Kernels used in em.cu
+ * Kernels used in em.mu
  */
 /*
 __global__

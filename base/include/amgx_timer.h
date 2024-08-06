@@ -91,7 +91,7 @@ class levelProfile
         inline void tic(const char *event)
         {
 #ifdef PROFILE
-            cudaDeviceSynchronize();
+            musaDeviceSynchronize();
             Tic[event] = high_resolution_clock::now();
 #endif
         }
@@ -99,7 +99,7 @@ class levelProfile
         inline void toc(const char *event)
         {
 #ifdef PROFILE
-            cudaDeviceSynchronize();
+            musaDeviceSynchronize();
             duration<double, std::nano> ns = t2 - t1;
             times[event] += ns.count();
 #endif
@@ -375,27 +375,27 @@ class TimerCPU : public Timer
 
 class TimerGPU_Events : public Timer
 {
-        cudaEvent_t m_start, m_stop, m_inter;
+        musaEvent_t m_start, m_stop, m_inter;
         bool        m_is_running;
     public:
         TimerGPU_Events(bool accumulate_average): Timer(accumulate_average), m_is_running(false)
         {
-            cudaEventCreate(&m_start);
-            cudaEventCreate(&m_stop);
+            musaEventCreate(&m_start);
+            musaEventCreate(&m_stop);
         }
 
         ~TimerGPU_Events()
         {
             this->stop();
-            cudaEventDestroy(m_start);
-            cudaEventDestroy(m_stop);
+            musaEventDestroy(m_start);
+            musaEventDestroy(m_stop);
         }
 
         void start()
         {
             if (!m_is_running)
             {
-                cudaEventRecord(m_start);
+                musaEventRecord(m_start);
                 m_is_running = true;
             }
         }
@@ -406,9 +406,9 @@ class TimerGPU_Events : public Timer
 
             if (m_is_running)
             {
-                cudaEventRecord(m_stop);
-                cudaEventSynchronize(m_stop);
-                cudaEventElapsedTime( &res, m_start, m_stop);
+                musaEventRecord(m_stop);
+                musaEventSynchronize(m_stop);
+                musaEventElapsedTime( &res, m_start, m_stop);
                 res *= 1e-3f;
                 m_accumulated_time += static_cast<double>(res);
                 m_is_running = false;
@@ -424,9 +424,9 @@ class TimerGPU_Events : public Timer
 
             if (m_is_running)
             {
-                cudaEventRecord(m_stop);
-                cudaEventSynchronize(m_stop);
-                cudaEventElapsedTime( &res, m_start, m_stop);
+                musaEventRecord(m_stop);
+                musaEventSynchronize(m_stop);
+                musaEventElapsedTime( &res, m_start, m_stop);
                 res *= 1e-3f;
             }
 

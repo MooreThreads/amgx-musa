@@ -182,7 +182,7 @@ void spmm_coo(const Matrix1& A,
     {
       // TODO abstract this
       size_t free, total;
-      cudaMemGetInfo(&free, &total);
+      musaMemGetInfo(&free, &total);
 
       // divide free bytes by the size of each workspace unit
       size_t max_workspace_capacity = free / (4 * sizeof(IndexType) + sizeof(ValueType));

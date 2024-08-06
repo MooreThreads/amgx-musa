@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include <cuda.h>
+#include <musa.h>
 
 namespace cusp
 {
@@ -29,8 +29,8 @@ class timer
     size_t calls;
     bool paused;
     double milliseconds;
-    cudaEvent_t _start;
-    cudaEvent_t _end;
+    musaEvent_t _start;
+    musaEvent_t _end;
 
     timer() : _start(NULL), _end(NULL)
     { 
@@ -53,24 +53,24 @@ class timer
 
     void unpause(void) 
     { 
-      cudaEventRecord(_start,0);
+      musaEventRecord(_start,0);
       paused = false; 
     }
 
     void pause(void) 
     { 
       stop();
-      cudaEventCreate(&_start); 
-      cudaEventCreate(&_end);
+      musaEventCreate(&_start); 
+      musaEventCreate(&_end);
       paused = true; 
     }            
 
     void start(void) 
     { 
       ++calls; 
-      cudaEventCreate(&_start); 
-      cudaEventCreate(&_end);
-      cudaEventRecord(_start,0);
+      musaEventCreate(&_start); 
+      musaEventCreate(&_end);
+      musaEventRecord(_start,0);
     }
 
     void stop(void) 
@@ -79,8 +79,8 @@ class timer
       {
         milliseconds += milliseconds_elapsed(); 
 
-        cudaEventDestroy(_start);
-        cudaEventDestroy(_end);
+        musaEventDestroy(_start);
+        musaEventDestroy(_end);
 
         _start = NULL;
         _end   = NULL;
@@ -95,11 +95,11 @@ class timer
 
     void reset(void) 
     { 
-      if(_start != NULL ) cudaEventDestroy(_start);
-      if(_end   != NULL ) cudaEventDestroy(_end);
+      if(_start != NULL ) musaEventDestroy(_start);
+      if(_end   != NULL ) musaEventDestroy(_end);
 
-      cudaEventCreate(&_start); 
-      cudaEventCreate(&_end);
+      musaEventCreate(&_start); 
+      musaEventCreate(&_end);
 
       calls = 0;
       paused = false;
@@ -111,18 +111,18 @@ class timer
       calls = 0; 
       milliseconds = 0.0; 
 
-      cudaEventDestroy(_start);
-      cudaEventDestroy(_end);
-      cudaEventCreate(&_start); 
-      cudaEventCreate(&_end);
+      musaEventDestroy(_start);
+      musaEventDestroy(_end);
+      musaEventCreate(&_start); 
+      musaEventCreate(&_end);
     }
 
     float milliseconds_elapsed()
     { 
       float elapsed_time;
-      cudaEventRecord(_end, 0);
-      cudaEventSynchronize(_end);
-      cudaEventElapsedTime(&elapsed_time, _start, _end);
+      musaEventRecord(_end, 0);
+      musaEventSynchronize(_end);
+      musaEventElapsedTime(&elapsed_time, _start, _end);
       return elapsed_time;
     }
 

@@ -28,7 +28,7 @@ namespace detail
 {
 namespace device
 {
-namespace cuda
+namespace musa
 {
 
 template <int BLOCK_SIZE,
@@ -113,7 +113,7 @@ void spmv_csr_scalar(SizeType        num_rows,
          combine, reduce);
 }
 
-} // end namespace cuda
+} // end namespace musa
 } // end namespace device
 } // end namespace detail
 } // end namespace cusp

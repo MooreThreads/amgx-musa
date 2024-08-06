@@ -61,7 +61,7 @@ struct PODTypes <double>
 };
 
 template <>
-struct PODTypes <cuComplex>
+struct PODTypes <muComplex>
 {
     typedef float type;
     static const AMGX_VecPrecision vec_prec = AMGX_vecFloat;
@@ -69,7 +69,7 @@ struct PODTypes <cuComplex>
 };
 
 template <>
-struct PODTypes <cuDoubleComplex>
+struct PODTypes <muDoubleComplex>
 {
     typedef double type;
     static const AMGX_VecPrecision vec_prec = AMGX_vecDouble;

@@ -126,17 +126,17 @@ int AMGX_GetErrorString( AMGX_ERROR error, char *buffer, int buf_len);
   _where << __FILE__ << ':' << __LINE__;                                        \
   std::stringstream _trace;                                                     \
   printStackTrace(_trace);                                                      \
-  cudaDeviceSynchronize();                                                      \
+  musaDeviceSynchronize();                                                      \
   throw amgx_exception(std::string(s) + "\n", _where.str(), _trace.str(), reason); \
 }
 
 #ifndef NDEBUG
 #define cudaCheckError() {                                              \
-  cudaDeviceSynchronize();                                              \
-  cudaError_t e=cudaGetLastError();                                     \
-  if(e!=cudaSuccess) {                                                  \
+  musaDeviceSynchronize();                                              \
+  musaError_t e=musaGetLastError();                                     \
+  if(e!=musaSuccess) {                                                  \
     std::stringstream _error;                                           \
-    _error << "Cuda failure: '" << cudaGetErrorString(e) << "'";        \
+    _error << "Cuda failure: '" << musaGetErrorString(e) << "'";        \
     FatalError(_error.str(), AMGX_ERR_CUDA_FAILURE);                   \
   }                                                                     \
 }
@@ -144,10 +144,10 @@ int AMGX_GetErrorString( AMGX_ERROR error, char *buffer, int buf_len);
 #else
 
 #define cudaCheckError() {                                              \
-  cudaError_t e=cudaGetLastError();                                     \
-  if(e!=cudaSuccess) {                                                  \
+  musaError_t e=musaGetLastError();                                     \
+  if(e!=musaSuccess) {                                                  \
     std::stringstream _error;                                           \
-    _error << "Cuda failure: '" << cudaGetErrorString(e) << "'";        \
+    _error << "Cuda failure: '" << musaGetErrorString(e) << "'";        \
     FatalError(_error.str(), AMGX_ERR_CUDA_FAILURE);                   \
   }                                                                     \
 }

@@ -34,25 +34,25 @@ class AsyncEvent
 {
     public:
         AsyncEvent() : async_event(NULL) { }
-        AsyncEvent(int size) : async_event(NULL) { cudaEventCreate(&async_event); }
-        ~AsyncEvent() { if (async_event != NULL) cudaEventDestroy(async_event); }
+        AsyncEvent(int size) : async_event(NULL) { musaEventCreate(&async_event); }
+        ~AsyncEvent() { if (async_event != NULL) musaEventDestroy(async_event); }
 
-        void create() { cudaEventCreate(&async_event); }
-        void record(cudaStream_t s = 0)
+        void create() { musaEventCreate(&async_event); }
+        void record(musaStream_t s = 0)
         {
             if (async_event == NULL)
             {
-                cudaEventCreate(&async_event);    // check if we haven't created the event yet
+                musaEventCreate(&async_event);    // check if we haven't created the event yet
             }
 
-            cudaEventRecord(async_event, s);
+            musaEventRecord(async_event, s);
         }
         void sync()
         {
-            cudaEventSynchronize(async_event);
+            musaEventSynchronize(async_event);
         }
     private:
-        cudaEvent_t async_event;
+        musaEvent_t async_event;
 };
 
 }

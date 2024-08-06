@@ -71,7 +71,7 @@ void reorder_partition(index_type n, index_type nnz, index_type *Ap, index_type 
                        index_type *Bp, index_type *Bc, mat_value_type *Bv, index_type l, index_type *p)
 {
     using namespace amgx;
-    cudaError_t st1, st2, st3, st4;
+    musaError_t st1, st2, st3, st4;
     //applies reordering P from left adn right on matrix A, so that B=P'*A*P.
     //notice that matrix A may be rectangular (does not need to be square).
     //for now implement device by copying matrices to the host and calling host.
@@ -95,25 +95,25 @@ void reorder_partition(index_type n, index_type nnz, index_type *Ap, index_type 
         FatalError("reorder_partition (one of the (host) mallocs failed", AMGX_ERR_CORE);
     }
 
-    st1 = cudaMemcpy(p_h,  p,    l * sizeof( p[0]), cudaMemcpyDeviceToHost);
-    st2 = cudaMemcpy(Ap_h, Ap, (n + 1) * sizeof(Ap[0]), cudaMemcpyDeviceToHost);
-    st3 = cudaMemcpy(Ac_h, Ac,  nnz * sizeof(Ac[0]), cudaMemcpyDeviceToHost);
-    st4 = cudaMemcpy(Av_h, Av,  nnz * sizeof(Av[0]), cudaMemcpyDeviceToHost);
+    st1 = musaMemcpy(p_h,  p,    l * sizeof( p[0]), musaMemcpyDeviceToHost);
+    st2 = musaMemcpy(Ap_h, Ap, (n + 1) * sizeof(Ap[0]), musaMemcpyDeviceToHost);
+    st3 = musaMemcpy(Ac_h, Ac,  nnz * sizeof(Ac[0]), musaMemcpyDeviceToHost);
+    st4 = musaMemcpy(Av_h, Av,  nnz * sizeof(Av[0]), musaMemcpyDeviceToHost);
 
-    if ((st1 != cudaSuccess) || (st2 != cudaSuccess) || (st3 != cudaSuccess) || (st4 != cudaSuccess))
+    if ((st1 != musaSuccess) || (st2 != musaSuccess) || (st3 != musaSuccess) || (st4 != musaSuccess))
     {
-        FatalError("reorder_partition (one of the cudaMemcpy back to host failed", AMGX_ERR_CORE);
+        FatalError("reorder_partition (one of the musaMemcpy back to host failed", AMGX_ERR_CORE);
     }
 
     reorder_partition_host<index_type, mat_value_type, reorder_rows, reorder_cols>
     (n, nnz, Ap_h, Ac_h, Av_h, Bp_h, Bc_h, Bv_h, l, p_h);
-    st1 = cudaMemcpy(Bp, Bp_h, (n + 1) * sizeof(Bp[0]), cudaMemcpyHostToDevice);
-    st2 = cudaMemcpy(Bc, Bc_h,  nnz * sizeof(Bc[0]), cudaMemcpyHostToDevice);
-    st3 = cudaMemcpy(Bv, Bv_h,  nnz * sizeof(Bv[0]), cudaMemcpyHostToDevice);
+    st1 = musaMemcpy(Bp, Bp_h, (n + 1) * sizeof(Bp[0]), musaMemcpyHostToDevice);
+    st2 = musaMemcpy(Bc, Bc_h,  nnz * sizeof(Bc[0]), musaMemcpyHostToDevice);
+    st3 = musaMemcpy(Bv, Bv_h,  nnz * sizeof(Bv[0]), musaMemcpyHostToDevice);
 
-    if ((st1 != cudaSuccess) || (st2 != cudaSuccess) || (st3 != cudaSuccess))
+    if ((st1 != musaSuccess) || (st2 != musaSuccess) || (st3 != musaSuccess))
     {
-        FatalError("reorder_partition (one of the cudaMemcpy back to device failed", AMGX_ERR_CORE);
+        FatalError("reorder_partition (one of the musaMemcpy back to device failed", AMGX_ERR_CORE);
     }
 
     if (p_h) { free(p_h); }

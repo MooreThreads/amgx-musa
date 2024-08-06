@@ -30,5 +30,5 @@
 #include <basic_types.h>
 #include <ostream>
 
-std::ostream &operator<<(std::ostream &os, const cuComplex &x);
-std::ostream &operator<<(std::ostream &os, const cuDoubleComplex &x);
+std::ostream &operator<<(std::ostream &os, const muComplex &x);
+std::ostream &operator<<(std::ostream &os, const muDoubleComplex &x);

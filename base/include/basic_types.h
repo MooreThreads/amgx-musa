@@ -38,7 +38,7 @@
 #include <cstdio>
 #include <amgx_config.h>
 #include <cusp/memory.h>
-#include <cuComplex.h>
+#include <muComplex.h>
 
 #if ( defined( _MSC_VER ) && ( _MSC_VER < 1600 ) )
 
@@ -79,8 +79,8 @@ template <> struct MemorySpaceMap<AMGX_device>    { typedef cusp::device_memory 
 template <AMGX_VecPrecision> struct VecPrecisionMap;
 template <> struct VecPrecisionMap<AMGX_vecDouble>  { typedef double Type;    static const AMGX_VecPrecision id = AMGX_vecDouble; static const char *getName() { return "double"; }};
 template <> struct VecPrecisionMap<AMGX_vecFloat>   { typedef float Type;     static const AMGX_VecPrecision id = AMGX_vecFloat;  static const char *getName() { return "float"; }};
-template <> struct VecPrecisionMap<AMGX_vecDoubleComplex>   { typedef cuDoubleComplex Type;   static const AMGX_VecPrecision id = AMGX_vecDoubleComplex; static const char *getName() { return "doublecomplex"; }};
-template <> struct VecPrecisionMap<AMGX_vecComplex>         { typedef cuComplex Type;         static const AMGX_VecPrecision id = AMGX_vecComplex;       static const char *getName() { return "complex"; }};
+template <> struct VecPrecisionMap<AMGX_vecDoubleComplex>   { typedef muDoubleComplex Type;   static const AMGX_VecPrecision id = AMGX_vecDoubleComplex; static const char *getName() { return "doublecomplex"; }};
+template <> struct VecPrecisionMap<AMGX_vecComplex>         { typedef muComplex Type;         static const AMGX_VecPrecision id = AMGX_vecComplex;       static const char *getName() { return "complex"; }};
 template <> struct VecPrecisionMap<AMGX_vecInt>     { typedef int Type;       static const AMGX_VecPrecision id = AMGX_vecInt;    static const char *getName() { return "int"; }};
 template <> struct VecPrecisionMap<AMGX_vecUSInt>     { typedef unsigned short int Type;       static const AMGX_VecPrecision id = AMGX_vecUSInt;    static const char *getName() { return "unsigned short"; }};
 template <> struct VecPrecisionMap<AMGX_vecUInt>     { typedef unsigned int Type;       static const AMGX_VecPrecision id = AMGX_vecUInt;    static const char *getName() { return "unsigned"; }};
@@ -90,8 +90,8 @@ template <> struct VecPrecisionMap<AMGX_vecBool>    { typedef bool Type;      st
 template <AMGX_MatPrecision> struct MatPrecisionMap;
 template <> struct MatPrecisionMap<AMGX_matDouble>  { typedef double Type;    static const AMGX_MatPrecision id = AMGX_matDouble; static const char *getName() { return "double"; }};
 template <> struct MatPrecisionMap<AMGX_matFloat>   { typedef float Type;     static const AMGX_MatPrecision id = AMGX_matFloat;  static const char *getName() { return "float"; }};
-template <> struct MatPrecisionMap<AMGX_matDoubleComplex>   { typedef cuDoubleComplex Type;   static const AMGX_MatPrecision id = AMGX_matDoubleComplex; static const char *getName() { return "doublecomplex"; }};
-template <> struct MatPrecisionMap<AMGX_matComplex>         { typedef cuComplex Type;         static const AMGX_MatPrecision id = AMGX_matComplex;       static const char *getName() { return "complex"; }};
+template <> struct MatPrecisionMap<AMGX_matDoubleComplex>   { typedef muDoubleComplex Type;   static const AMGX_MatPrecision id = AMGX_matDoubleComplex; static const char *getName() { return "doublecomplex"; }};
+template <> struct MatPrecisionMap<AMGX_matComplex>         { typedef muComplex Type;         static const AMGX_MatPrecision id = AMGX_matComplex;       static const char *getName() { return "complex"; }};
 template <AMGX_IndPrecision> struct IndPrecisionMap;
 template <> struct IndPrecisionMap<AMGX_indInt>     { typedef int Type;       static const AMGX_IndPrecision id = AMGX_indInt;    static const char *getName() { return "int"; }};
 template <> struct IndPrecisionMap<AMGX_indInt64>     { typedef int64_t Type;       static const AMGX_IndPrecision id = AMGX_indInt64;    static const char *getName() { return "int64_t"; }};

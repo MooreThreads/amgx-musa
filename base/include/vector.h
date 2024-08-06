@@ -215,15 +215,15 @@ class Vector<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > : publ
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
             }
 
             if (host_send_recv_buffer != NULL) { delete host_send_recv_buffer; }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
-                cudaEventDestroy(mpi_event);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
+                musaEventDestroy(mpi_event);
             }
         }
 
@@ -260,21 +260,21 @@ class Vector<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > : publ
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
                 linear_buffers_size = 0;
             }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
                 explicit_host_buffer = NULL;
                 explicit_buffer_size = 0;
-                cudaEventDestroy(mpi_event);
+                musaEventDestroy(mpi_event);
             }
         }
 
         //inline void copy_async(const Vector<ScalarType,host_memory> & a) { ... }  No host to host asynchronous copy
-        inline void copy_async(const Vector<TConfig_d> &a, cudaStream_t s = 0)
+        inline void copy_async(const Vector<TConfig_d> &a, musaStream_t s = 0)
         {
             //copy dimensions
             this->set_block_dimx( a.get_block_dimx());
@@ -284,7 +284,7 @@ class Vector<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > : publ
             this->set_lda(a.get_lda());
             this->resize(a.size(), value_type());
             //copy data
-            cudaMemcpyAsync(raw(), a.raw(), bytes(), cudaMemcpyDefault, s);
+            musaMemcpyAsync(raw(), a.raw(), bytes(), musaMemcpyDefault, s);
             event.record();
 
             //reset distributed flags and buffers
@@ -302,16 +302,16 @@ class Vector<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > : publ
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
                 linear_buffers_size = 0;
             }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
                 explicit_host_buffer = NULL;
                 explicit_buffer_size = 0;
-                cudaEventDestroy(mpi_event);
+                musaEventDestroy(mpi_event);
             }
         }
 
@@ -400,7 +400,7 @@ class Vector<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > : publ
         value_type *explicit_host_buffer;  //A separate pinned memory buffer to be used by async host-copy comms module
         int explicit_buffer_size;
         int buffer_size;
-        cudaEvent_t mpi_event;
+        musaEvent_t mpi_event;
 
 #ifdef AMGX_WITH_MPI
         std::vector<MPI_Request> requests;
@@ -478,15 +478,15 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
             }
 
             if (host_send_recv_buffer != NULL) { delete host_send_recv_buffer; }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
-                cudaEventDestroy(mpi_event);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
+                musaEventDestroy(mpi_event);
             }
         }
 
@@ -523,20 +523,20 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
                 linear_buffers_size = 0;
             }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
                 explicit_host_buffer = NULL;
                 explicit_buffer_size = 0;
-                cudaEventDestroy(mpi_event);
+                musaEventDestroy(mpi_event);
             }
         }
 
-        inline void copy_async(const Vector<TConfig_h> &a, cudaStream_t s = 0)
+        inline void copy_async(const Vector<TConfig_h> &a, musaStream_t s = 0)
         {
             //copy dimensions
             this->set_block_dimx( a.get_block_dimx());
@@ -546,7 +546,7 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
             this->set_lda(a.get_lda());
             this->resize(a.size(), value_type());
             //copy data
-            cudaMemcpyAsync(raw(), a.raw(), bytes(), cudaMemcpyDefault, s);
+            musaMemcpyAsync(raw(), a.raw(), bytes(), musaMemcpyDefault, s);
             event.record();
 
             //reset distributed flags and buffers
@@ -564,20 +564,20 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
                 linear_buffers_size = 0;
             }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
                 explicit_host_buffer = NULL;
                 explicit_buffer_size = 0;
-                cudaEventDestroy(mpi_event);
+                musaEventDestroy(mpi_event);
             }
         }
 
-        inline void copy_async(const Vector<TConfig_d> &a, cudaStream_t s = 0)
+        inline void copy_async(const Vector<TConfig_d> &a, musaStream_t s = 0)
         {
             //copy dimensions
             this->set_block_dimx( a.get_block_dimx());
@@ -587,7 +587,7 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
             this->set_lda(a.get_lda());
             this->resize(a.size(), value_type());
             //copy data
-            cudaMemcpyAsync(raw(), a.raw(), bytes(), cudaMemcpyDefault, s);
+            musaMemcpyAsync(raw(), a.raw(), bytes(), musaMemcpyDefault, s);
             event.record();
 
             //reset distributed flags and buffers
@@ -605,16 +605,16 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
 
             if (linear_buffers_size != 0)
             {
-                amgx::memory::cudaFreeHost(&(linear_buffers[0]));
+                amgx::memory::musaFreeHost(&(linear_buffers[0]));
                 linear_buffers_size = 0;
             }
 
             if (explicit_host_buffer)
             {
-                amgx::memory::cudaFreeHost(explicit_host_buffer);
+                amgx::memory::musaFreeHost(explicit_host_buffer);
                 explicit_host_buffer = NULL;
                 explicit_buffer_size = 0;
-                cudaEventDestroy(mpi_event);
+                musaEventDestroy(mpi_event);
             }
         }
 
@@ -695,7 +695,7 @@ class Vector<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> > : pu
         value_type *explicit_host_buffer;  //A separate pinned memory buffer to be used by async host-copy comms module
         int explicit_buffer_size;
         int buffer_size;
-        cudaEvent_t mpi_event;
+        musaEvent_t mpi_event;
 
 #ifdef AMGX_WITH_MPI
         std::vector<MPI_Request> requests;
