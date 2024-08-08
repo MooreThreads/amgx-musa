@@ -25,9 +25,27 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 cmake_minimum_required (VERSION 3.18)
+# Set MCC and MUSA path
+set(MUSA_ROOT "/usr/local/musa" CACHE STRING "Set MUSA root directory")
+set(MUSA_BIN "${MUSA_ROOT}/bin" CACHE STRING "Set MUSA bin directory")
+
+# Set C and C++ compiler
+set(MCC_C_COMPILER "${MUSA_BIN}/clang" CACHE STRING "Set MCC C Compiler path")
+set(MCC_CXX_COMPILER "${MUSA_BIN}/clang++" CACHE STRING "Set MCC C++ Compiler path")
+set(CMAKE_C_COMPILER ${MCC_C_COMPILER})
+set(CMAKE_CXX_COMPILER ${MCC_CXX_COMPILER})
+
+# Set MUSA include and library path
+set(MUSA_INC "${MUSA_ROOT}/include" CACHE STRING "Set MUSA_INC path")
+set(MUSA_LIB "${MUSA_ROOT}/lib" CACHE PATH "Set MUSA_LIB path")
+add_compile_options(-x musa --musa-path=${MUSA_ROOT})
+
+set(CMAKE_CXX_STANDARD 17)
+# set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# set(CMAKE_CXX_EXTENSIONS OFF)
 
 # the project
-project (AMG LANGUAGES C CXX CUDA)
+project (AMG)
 
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
 
@@ -44,7 +62,6 @@ IF(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release CACHE STRING "Choose the type of build, options are Debug Release Profile RelWithTraces" FORCE)
 ENDIF(NOT CMAKE_BUILD_TYPE)
 
-find_package(CUDAToolkit 10.0 REQUIRED)
 
 # update/define the compilation flags.
 IF(WIN32)
@@ -168,43 +185,42 @@ endif()
 # Configuration specific nvcc flags
 GET_FILENAME_COMPONENT(CMAKE_CXX_COMPILER_NAME "${CMAKE_CXX_COMPILER}" NAME)
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_NAME MATCHES "clang")
-  set(CUDA_NVCC_FLAGS_DEBUG "-g;-G" CACHE STRING "Debug compiler flags")
-  set(CUDA_NVCC_FLAGS_RELEASE "-O3;-DNDEBUG" CACHE STRING "Release compiler flags")
-  set(CUDA_NVCC_FLAGS_PROFILE "-O3;-DPROFILE" CACHE STRING "Profile compiler flags")
-  set(CUDA_NVCC_FLAGS_RELWITHTRACES "-O3;-DNDEBUG;-DAMGX_USE_CPU_PROFILER" CACHE STRING "RelWithTraces compiler flags")
+  set(MUSA_MCC_FLAGS_DEBUG "-g;-G" CACHE STRING "Debug compiler flags")
+  set(MUSA_MCC_FLAGS_RELEASE "-O3;-DNDEBUG" CACHE STRING "Release compiler flags")
+  set(MUSA_MCC_FLAGS_PROFILE "-O3;-DPROFILE" CACHE STRING "Profile compiler flags")
+  set(MUSA_MCC_FLAGS_RELWITHTRACES "-O3;-DNDEBUG;-DAMGX_USE_CPU_PROFILER" CACHE STRING "RelWithTraces compiler flags")
 else()
-  set(CUDA_NVCC_FLAGS_DEBUG "-g;-G" CACHE STRING "Debug compiler flags")
-  set(CUDA_NVCC_FLAGS_RELEASE "-O3;-DNDEBUG" CACHE STRING "Release compiler flags")
-  set(CUDA_NVCC_FLAGS_PROFILE "-O3;-DPROFILE" CACHE STRING "Profile compiler flags")
-  set(CUDA_NVCC_FLAGS_RELWITHTRACES "-O3;-DNDEBUG;-DAMGX_USE_CPU_PROFILER" CACHE STRING "RelWithTraces compiler flags")
+  set(MUSA_MCC_FLAGS_DEBUG "-g;-G" CACHE STRING "Debug compiler flags")
+  set(MUSA_MCC_FLAGS_RELEASE "-O3;-DNDEBUG" CACHE STRING "Release compiler flags")
+  set(MUSA_MCC_FLAGS_PROFILE "-O3;-DPROFILE" CACHE STRING "Profile compiler flags")
+  set(MUSA_MCC_FLAGS_RELWITHTRACES "-O3;-DNDEBUG;-DAMGX_USE_CPU_PROFILER" CACHE STRING "RelWithTraces compiler flags")
   if(WIN32)
-    set(CUDA_NVCC_FLAGS_RELEASE "${CUDA_NVCC_FLAGS_RELEASE} -DNOMINMAX")
+    set(MUSA_MCC_FLAGS_RELEASE "${MUSA_MCC_FLAGS_RELEASE} -DNOMINMAX")
   endif()
 endif()
 
 # Add the build-specific flags to the NVCC flags
 string(TOUPPER ${CMAKE_BUILD_TYPE} UPP_BUILD_NAME)
-set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS_${UPP_BUILD_NAME}}")
+set(MUSA_MCC_FLAGS "${MUSA_MCC_FLAGS_${UPP_BUILD_NAME}}")
 
 # Add errors for execution space warnings and enable NVTX ranges
-set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} --Werror cross-execution-space-call ${NVTXRANGE_FLAG})
+set(MUSA_MCC_FLAGS ${MUSA_MCC_FLAGS} --Werror cross-execution-space-call ${NVTXRANGE_FLAG})
 
 # Keep intermediate files
 if (AMGX_keep_intermediate)
-  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-Xcompiler=-keep")
+  set(MUSA_MCC_FLAGS ${MUSA_MCC_FLAGS} "-Xcompiler=-keep")
 endif(AMGX_keep_intermediate)
 
 # Windows/linux specific settings for C
 GET_FILENAME_COMPONENT(CMAKE_C_COMPILER_NAME "${CMAKE_C_COMPILER}" NAME)
 IF(CMAKE_C_COMPILER_NAME MATCHES cl AND NOT CMAKE_C_COMPILER_NAME MATCHES clang)
-  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS}" CACHE STRING "nvcc flags")
+  set(MUSA_MCC_FLAGS "${MUSA_MCC_FLAGS}" CACHE STRING "nvcc flags")
 ELSE(CMAKE_C_COMPILER_NAME MATCHES cl AND NOT CMAKE_C_COMPILER_NAME MATCHES clang)
-  set(CUDA_NVCC_FLAGS "${CUDA_NVCC_FLAGS};-Xcompiler=-rdynamic;-Xcompiler=-fPIC;-Xcompiler=-fvisibility=default" CACHE STRING "nvcc flags")
+  set(MUSA_MCC_FLAGS "${MUSA_MCC_FLAGS};-Xcompiler=-rdynamic;-Xcompiler=-fPIC;-Xcompiler=-fvisibility=default" CACHE STRING "nvcc flags")
 ENDIF(CMAKE_C_COMPILER_NAME MATCHES cl AND NOT CMAKE_C_COMPILER_NAME MATCHES clang)
 
 # VS: include object files in target property SOURCES
 # otherwise a workaround for extracting ${obj_all} is necessary below
-set(CUDA_ATTACH_VS_BUILD_RULE_TO_CUDA_FILE OFF)
 
 if(MPI_FOUND)
   set(VAMPIR_TRACE_INCLUDE_PATH "${MPI_INCLUDE_PATH}/vampirtrace")
@@ -216,7 +232,7 @@ if(MPI_FOUND)
     set(VAMPIR_TRACE_INCLUDE_PATH "${VAMPIR_TRACE_PATH}/include/vampirtrace")
   endif (DEFINED ENV{VAMPIR_TRACE_PATH})
   set(CMAKE_CXX_FLAGS_RELWITHTRACES "${CMAKE_CXX_FLAGS_RELWITHTRACES} -DAMGX_WITH_MPI;-DAMGX_USE_VAMPIR_TRACE;-DVTRACE;-I${VAMPIR_TRACE_INCLUDE_PATH}")
-  set(CUDA_NVCC_FLAGS_RELWITHTRACES "${CUDA_NVCC_FLAGS_RELWITHTRACES} -DAMGX_WITH_MPI;-DAMGX_USE_VAMPIR_TRACE;-DVTRACE;-I${VAMPIR_TRACE_INCLUDE_PATH}")
+  set(MUSA_MCC_FLAGS_RELWITHTRACES "${MUSA_MCC_FLAGS_RELWITHTRACES} -DAMGX_WITH_MPI;-DAMGX_USE_VAMPIR_TRACE;-DVTRACE;-I${VAMPIR_TRACE_INCLUDE_PATH}")
   set(CMAKE_EXE_LINKER_FLAGS_RELWITHTRACES "-L${VAMPIR_TRACE_LIB_PATH} -lvt-mpi -L${CUDA_TOOLKIT_ROOT_DIR}/extras/CUPTI/lib64 -lcupti ${CMAKE_EXE_LINKER_FLAGS_RELWITHTRACES}")
   set(CMAKE_SHARED_LINKER_FLAGS_RELWITHTRACES "-L${VAMPIR_TRACE_LIB_PATH} -lvt-mpi -L${CUDA_TOOLKIT_ROOT_DIR}/extras/CUPTI/lib64 -lcupti ${CMAKE_SHARED_LINKER_FLAGS_RELWITHTRACES}")
   if (DEFINED ENV{VAMPIR_TRACE_PATH})
@@ -226,52 +242,11 @@ if(MPI_FOUND)
   endif (DEFINED ENV{VAMPIR_TRACE_PATH})
 endif(MPI_FOUND)
 
-#if compiling against CUDA Toolkit 11.x + 
-IF(CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 11.0.0)
 
-  SET(CUDA_ALLOW_ARCH "60;70;80")
-
-  # Use the generic cuSPARSE interfaces available from 10.1 on Linux, cusparseSpGEMM from 11.0
-  SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} 
-      -DDISABLE_MIXED_PRECISION 
-      -DCUSPARSE_GENERIC_INTERFACES 
-      -DCUSPARSE_USE_GENERIC_SPGEMM)
-
-#if compiling against CUDA Toolkit 10.x
-ELSEIF(CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 10.0.0)
-
-  SET(CUDA_ALLOW_ARCH "35;52;60;70")
-
-  IF(CMAKE_CUDA_COMPILER_VERSION VERSION_GREATER_EQUAL 10.1.0)
-
-      # Disable mixed precision for CUDA 10.1+
-      SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} 
-          -DDISABLE_MIXED_PRECISION 
-          -DCUSPARSE_GENERIC_INTERFACES)
-
-  ENDIF()
-ENDIF()
-
-if(DEFINED CUDA_ARCH)
-    # User passed a CUDA_ARCH so check it matches
-    # Error if incorrect CUDA_ARCH passed
-    FOREACH(ARCH IN LISTS CUDA_ARCH)
-        message(STATUS "Checking if arch " ${ARCH} " is supported...")
-        IF(NOT ${ARCH} IN_LIST CUDA_ALLOW_ARCH)
-            message(STATUS
-                "Chosen CUDA_ARCH ${ARCH} not expected for current CUDA version. " 
-                "Please choose one or more of ${CUDA_ALLOW_ARCH}.")
-        ENDIF()
-    ENDFOREACH()
-ELSE()
-
-    # Set a default
-    SET(CUDA_ARCH "${CUDA_ALLOW_ARCH}" CACHE STRING "Target Architectures (SM60 SM70 SM80), multiple are allowed")
-
-ENDIF()
 
 # Add the CXX flags to the host set of CUDA flags
-SET(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} -Xcompiler ${CMAKE_CXX_FLAGS})
+SET(MUSA_MCC_FLAGS ${MUSA_MCC_FLAGS} -Xcompiler ${CMAKE_CXX_FLAGS})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 
 # write version
 set(versionFile "ReleaseVersion.txt")
@@ -320,50 +295,76 @@ endif(${pluginConf} IS_NEWER_THAN ${pluginCode})
 
 #include magma
 if (MAGMA_ROOT_DIR)
-  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-DAMGX_USE_MAGMA")
-  CUDA_INCLUDE_DIRECTORIES(${MAGMA_ROOT_DIR}/include)
+  set(MUSA_MCC_FLAGS ${MUSA_MCC_FLAGS} "-DAMGX_USE_MAGMA")
+  MUSA_INCLUDE_DIRECTORIES(${MAGMA_ROOT_DIR}/include)
   set(magma_libs ${MAGMA_ROOT_DIR}/lib/libmagma.a)
 endif(MAGMA_ROOT_DIR)
-#include lapack (MKL)
+
+# lapack (MKL)
 if (MKL_ROOT_DIR)
-  set(CUDA_NVCC_FLAGS ${CUDA_NVCC_FLAGS} "-DAMGX_USE_LAPACK")
-  CUDA_INCLUDE_DIRECTORIES(${MKL_ROOT_DIR}/include)
+  set(MUSA_MCC_FLAGS ${MUSA_MCC_FLAGS} "-DAMGX_USE_LAPACK")
+  MUSA_INCLUDE_DIRECTORIES(${MKL_ROOT_DIR}/include)
   #WARNING: MKL link line flags vary significantly (please double check http://software.intel.com/en-us/articles/intel-mkl-link-line-advisor)
   set(mkl_libs -Wl,--start-group ${MKL_ROOT_DIR}/lib/intel64/libmkl_intel_lp64.a ${MKL_ROOT_DIR}/lib/intel64/libmkl_gnu_thread.a ${MKL_ROOT_DIR}/lib/intel64/libmkl_core.a -Wl,--end-group -lpthread -fopenmp)
 endif(MKL_ROOT_DIR)
 
-add_library(amgx_libs OBJECT "")
+
 
 #create a list of all sources in amgx
 foreach( lib ${libList} )
   add_subdirectory(${lib})
+  message("-----------------lib: ${lib}")
   FILE(GLOB_RECURSE TESTS "${CMAKE_SOURCE_DIR}/${lib}/tests/*.cu")
 endforeach(lib)
 
+
+FILE(GLOB_RECURSE SRCS 
+  "base/src/*.cpp"
+  "core/src/*.cpp"
+  "eigensolvers/src/*.cpp"
+  "template_plugin/src/*.cpp"
+  plugin_config.cpp)
+list(FILTER SRCS EXCLUDE REGEX "base/src/amgx_cusparse.cpp")
+list(FILTER SRCS EXCLUDE REGEX "base/src/csr_multiply_*.cpp")
+list(FILTER SRCS EXCLUDE REGEX "base/src/multiply.cpp")
+list(FILTER SRCS EXCLUDE REGEX "base/src/amgx_cusolverDn.cpp")
+
 # set arch for main libs target
-set_target_properties(amgx_libs PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-
-target_compile_options(amgx_libs PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${CUDA_NVCC_FLAGS} >)
-
+add_library(amgx_libs OBJECT "")
+target_compile_options(amgx_libs PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
+target_sources(amgx_libs PRIVATE ${SRCS})
+FILE(GLOB_RECURSE INC 
+  "base/src/*.cpp"
+  "core/src/*.cpp"
+  "eigensolvers/src/*.cpp"
+  "template_plugin/src/*.cpp"
+  plugin_config.cpp)
+target_include_directories(amgx_libs PUBLIC 
+  ${THRUST_DIR}
+  "base/include"
+  "core/include"
+  "template_plugin/include"
+  )
 # build amgx
+
 add_library(amgx STATIC $<TARGET_OBJECTS:amgx_libs>)  # static lib
 target_link_libraries(amgx amgx_libs)
 
 add_library(amgxsh SHARED $<TARGET_OBJECTS:amgx_libs>)  # shared lib
 target_link_libraries(amgxsh amgx_libs)
 
-set_target_properties(amgx PROPERTIES LINKER_LANGUAGE CUDA)
-set_target_properties(amgxsh PROPERTIES LINKER_LANGUAGE CUDA)
+set_target_properties(amgx PROPERTIES LINKER_LANGUAGE CXX)
+set_target_properties(amgxsh PROPERTIES LINKER_LANGUAGE CXX)
 
-target_compile_options(amgx PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${CUDA_NVCC_FLAGS} >)
-target_compile_options(amgxsh PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${CUDA_NVCC_FLAGS} >)
+target_compile_options(amgx PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
+target_compile_options(amgxsh PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${MUSA_MCC_FLAGS} >)
 
 IF (WIN32)
-  target_link_libraries( amgx CUDA::cublas CUDA::cusparse CUDA::cusolver)
-  target_link_libraries( amgxsh CUDA::cublas CUDA::cusparse CUDA::cusolver)
+  target_link_libraries( amgx mublas musparse musolver)
+  target_link_libraries( amgxsh mublas musparse musolver)
 ELSE (WIN32)
-  target_link_libraries( amgx CUDA::cublas CUDA::cusparse CUDA::cusolver CUDA::nvToolsExt m pthread)
-  target_link_libraries( amgxsh CUDA::cublas CUDA::cusparse CUDA::cusolver CUDA::nvToolsExt m pthread)
+  target_link_libraries( amgx mublas musparse musolver)
+  target_link_libraries( amgxsh mublas musparse musolver)
 ENDIF(WIN32)
 
 if(MPI_FOUND)
@@ -382,22 +383,19 @@ if (MKL_ROOT_DIR)
   target_link_libraries(amgxsh ${mkl_libs})
 endif(MKL_ROOT_DIR)
 
-# set arch for main libs
-set_target_properties(amgx PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-set_target_properties(amgxsh PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
 
 install(TARGETS amgx   DESTINATION "lib")
 install(TARGETS amgxsh DESTINATION "lib")
 
 #export(TARGETS amgxsh FILE ${CMAKE_SOURCE_DIR}/amgxsh.cmake)
 
-# build examples
+# # build examples
 add_subdirectory(examples)
-if(EXISTS ${CMAKE_SOURCE_DIR}/eigen_examples)
-  add_subdirectory(eigen_examples)
-endif(EXISTS ${CMAKE_SOURCE_DIR}/eigen_examples)
+# if(EXISTS ${CMAKE_SOURCE_DIR}/eigen_examples)
+#   add_subdirectory(eigen_examples)
+# endif(EXISTS ${CMAKE_SOURCE_DIR}/eigen_examples)
 
-# build unit tests
-if(EXISTS ${CMAKE_SOURCE_DIR}/tests)
-   add_subdirectory(tests)
-endif(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+# # build unit tests
+# if(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+#    add_subdirectory(tests)
+# endif(EXISTS ${CMAKE_SOURCE_DIR}/tests)

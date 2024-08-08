@@ -539,14 +539,14 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I >
 void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrf()
 {
     int wsize = 0;
-    musolverStatus_t status1 = musolverDnXgetrf_bufferSize(m_cuds_handle,
+    mublasStatus_t status1 = musolverDnXgetrf_bufferSize(m_cuds_handle,
                                m_num_rows,
                                m_num_cols,
                                m_dense_A,
                                m_lda,
                                &wsize);
 
-    if ( status1 != MUSOLVER_STATUS_SUCCESS)
+    if ( status1 != MUBLAS_STATUS_SUCCESS)
     {
         FatalError( "Failed kernel in DenseLU", AMGX_ERR_INTERNAL);
     }
@@ -556,7 +556,7 @@ void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrf()
     status1 = musolverDnXgetrf(m_cuds_handle, m_num_rows, m_num_cols,
                                m_dense_A, m_lda, m_trf_wspace, m_ipiv, m_cuds_info);
 
-    if ( status1 != MUSOLVER_STATUS_SUCCESS)
+    if ( status1 != MUBLAS_STATUS_SUCCESS)
     {
         FatalError( "failed kernel in Dense LU is likely due to invalid input parameters",
                     AMGX_ERR_INTERNAL);
@@ -598,7 +598,7 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I >
 void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrs( Vector_d &x )
 {
     //Solve L*X = RHS
-    musolverStatus_t status = musolverDnXgetrs(m_cuds_handle,
+    mublasStatus_t status = musolverDnXgetrs(m_cuds_handle,
                               MUBLAS_OP_N,
                               m_num_rows,
                               1,
@@ -609,7 +609,7 @@ void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrs( Vector
                               m_num_rows,
                               m_cuds_info);
 
-    if (status != MUSOLVER_STATUS_SUCCESS)
+    if (status != MUBLAS_STATUS_SUCCESS)
     {
         FatalError( "cuSolver trsv failed to solve Lx=rhs", AMGX_ERR_INTERNAL);
     }
@@ -659,9 +659,9 @@ DenseLUSolver(AMG_Config &cfg,
       m_trf_wspace(0)
 {
     // Allocate a handle for cudense
-    musolverStatus_t status = musolverDnCreate(&m_cuds_handle);
+    mublasStatus_t status = mublasCreate(&m_cuds_handle);
 
-    if ( status != MUSOLVER_STATUS_SUCCESS )
+    if ( status != MUBLAS_STATUS_SUCCESS )
     {
         FatalError( "Could not create the CUDENSE handle", AMGX_ERR_CUDA_FAILURE );
     }
@@ -675,9 +675,9 @@ DenseLUSolver(AMG_Config &cfg,
     }
 
     // Define the cudense stream.
-    status = musolverDnSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
+    status = mublasSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
 
-    if ( status != MUSOLVER_STATUS_SUCCESS )
+    if ( status != MUBLAS_STATUS_SUCCESS )
     {
         FatalError( "Could not set the stream for CUDENSE", AMGX_ERR_CUDA_FAILURE );
     }
@@ -696,7 +696,7 @@ DenseLUSolver(AMG_Config &cfg,
 template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I >
 DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::~DenseLUSolver()
 {
-    if (m_cuds_handle) { musolverDnDestroy(m_cuds_handle); }
+    if (m_cuds_handle) { mublasDestroy(m_cuds_handle); }
 
     if (m_cublas_handle) { mublasDestroy(m_cublas_handle); }
 
@@ -950,7 +950,7 @@ solve_iteration(Vector_d &rhs,
         //Solve L*X = RHS
         MVector_d x_global(m_num_rows);
         thrust::copy(rhs_global_h.begin(), rhs_global_h.end(), x_global.begin());
-        musolverStatus_t status = 
+        mublasStatus_t status = 
             musolverDnXgetrs(m_cuds_handle,
                              MUBLAS_OP_N,
                              m_num_rows,
@@ -965,7 +965,7 @@ solve_iteration(Vector_d &rhs,
         // Copy the local portion of the solution back into x
         thrust::copy(x_global.begin() + row_displs[rank], x_global.begin() + row_displs[rank] + num_rows, x.begin());
 
-        if (status != MUSOLVER_STATUS_SUCCESS)
+        if (status != MUBLAS_STATUS_SUCCESS)
         {
             FatalError("cuSolver trsv failed to solve Lx=rhs", AMGX_ERR_INTERNAL);
         }

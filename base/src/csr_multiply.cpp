@@ -348,7 +348,7 @@ musparseStatus_t cusparseCsrgemm2(musparseHandle_t handle,             \
                                  type *csrValC,                       \
                                  const int *csrRowPtrC,               \
                                  int *csrColIndC,                     \
-                                 const csrgemm2Info_t info,           \
+                                 const musparseMatInfo_t info,           \
                                  void* pBuffer                        \
                                  )                                    \
 {                                                                     \
@@ -386,7 +386,7 @@ musparseStatus_t cusparseCsrgemmBufferSize(musparseHandle_t handle,             
                                  int nnzD,                            \
                                  const int *csrRowPtrD,               \
                                  const int *csrColIndD,               \
-                                 const csrgemm2Info_t info,           \
+                                 const musparseMatInfo_t info,           \
                                  size_t* pBufferSizeInBytes           \
                                  )                                    \
 {                                                                     \
@@ -525,7 +525,7 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
     // Note: If we are re-setup this step then most of this could have been cached...
 
     // Setup the info structure
-    csrgemm2Info_t info = NULL;
+    musparseMatInfo_t info = NULL;
     cusparseCheckError(
         musparseCreateMatInfo(&info));
 

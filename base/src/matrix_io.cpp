@@ -57,7 +57,7 @@ namespace amgx
 {
 
 template<class T_Config>
-MatrixIO<T_Config>::readerMap &MatrixIO<T_Config>::getReaderMap()
+typename MatrixIO<T_Config>::readerMap &MatrixIO<T_Config>::getReaderMap()
 {
     static readerMap readers_map;
     return readers_map;
@@ -86,7 +86,7 @@ void MatrixIO<T_Config>::unregisterReaders()
 }
 
 template<class T_Config>
-MatrixIO<T_Config>::writerMap &MatrixIO<T_Config>::getWriterMap()
+typename MatrixIO<T_Config>::writerMap &MatrixIO<T_Config>::getWriterMap()
 {
     static writerMap writer_map;
     return writer_map;
@@ -508,7 +508,7 @@ AMGX_ERROR MatrixIO<T_Config>::writeSystem (const char *filename, const Matrix<T
             FatalError("Couldn't get resources from matrix or vector", AMGX_ERR_BAD_PARAMETERS);
         }
 
-        format = cfg->AMG_Config::getParameter<std::string>("matrix_writer", "default");
+        format = cfg->AMG_Config::template getParameter<std::string>("matrix_writer", "default");
     }
     catch (amgx_exception e)
     {

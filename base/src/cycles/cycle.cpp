@@ -170,7 +170,7 @@ template<class T_Config>
 Cycle<T_Config> *CycleFactory<T_Config>::allocate(AMG_Class *amg, AMG_Level<T_Config> *level, VVector &b, VVector &c)
 {
     std::map<std::string, CycleFactory<T_Config>*> &factories = getFactories( );
-    std::string cycle_name = amg->m_cfg->AMG_Config::getParameter<string>("cycle", amg->m_cfg_scope);
+    std::string cycle_name = amg->m_cfg->AMG_Config::template getParameter<string>("cycle", amg->m_cfg_scope);
     typename map<string, CycleFactory<T_Config> *>::const_iterator it = factories.find(cycle_name);
 
     if (it == factories.end())

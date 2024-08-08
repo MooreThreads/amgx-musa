@@ -29,11 +29,11 @@ cmake_minimum_required (VERSION 3.18)
 #select all sources
 FILE(GLOB_RECURSE SRCS "src/*.cu")
 
-target_sources(amgx_libs PRIVATE ${SRCS})
+# target_sources(amgx_libs PRIVATE ${SRCS})
 
-target_include_directories(amgx_libs PUBLIC 
-    ${CMAKE_CURRENT_SOURCE_DIR}/include 
-    ${CMAKE_CURRENT_SOURCE_DIR}/../base/include)
+# target_include_directories(amgx_libs PUBLIC 
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include 
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../base/include)
 
 #copy configs to build directory
 add_custom_target(copy_configs_core ALL)

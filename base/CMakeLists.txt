@@ -29,9 +29,10 @@ cmake_minimum_required (VERSION 3.13)
 # Add base source
 FILE(GLOB_RECURSE SRCS "src/*.cu")
 
-target_sources(amgx_libs PRIVATE ${SRCS} ${CMAKE_SOURCE_DIR}/plugin_config.cu)
+# target_sources(amgx_libs PRIVATE ${SRCS} ${CMAKE_SOURCE_DIR}/plugin_config.cu)
 
-target_include_directories(amgx_libs PUBLIC ${THRUST_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+# target_include_directories(amgx_libs PUBLIC ${THRUST_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/include)
+
 
 install(FILES
   include/amgx_config.h

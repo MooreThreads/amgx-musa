@@ -49,7 +49,7 @@ IDRMSYNC_Solver_Base<T_Config>::IDRMSYNC_Solver_Base( AMG_Config &cfg, const std
 {
     std::string solverName, new_scope, tmp_scope;
     cfg.getParameter<std::string>( "preconditioner", solverName, cfg_scope, new_scope );
-    s = cfg.AMG_Config::getParameter<int>("subspace_dim_s", cfg_scope);
+    s = cfg.AMG_Config::template getParameter<int>("subspace_dim_s", cfg_scope);
 
     if (solverName.compare("NOSOLVER") == 0)
     {
@@ -606,7 +606,7 @@ void IDRMSYNC_Solver<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> 
 
 
 template <AMGX_VecPrecision t_vecPrec, AMGX_MatPrecision t_matPrec, AMGX_IndPrecision t_indPrec>
-IDRMSYNC_Solver< TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >::ValueTypeB
+typename IDRMSYNC_Solver< TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >::ValueTypeB
 IDRMSYNC_Solver<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >::dotc_div(VVector &a, VVector &b, int offseta, int offsetb, int size, VVector &denom, int i, int s, ValueTypeB *ratio)
 {
     ValueTypeB dnr;
@@ -627,7 +627,7 @@ IDRMSYNC_Solver<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >::
 
 
 template <AMGX_VecPrecision t_vecPrec, AMGX_MatPrecision t_matPrec, AMGX_IndPrecision t_indPrec>
-IDRMSYNC_Solver< TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > ::ValueTypeB
+typename IDRMSYNC_Solver< TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> > ::ValueTypeB
 IDRMSYNC_Solver<TemplateConfig<AMGX_host, t_vecPrec, t_matPrec, t_indPrec> >::dotc_div(VVector &a, VVector &b, int offseta, int offsetb, int size, VVector &denom, int i, int s, ValueTypeB *ratio)
 {
     ValueTypeB alpha_iter;

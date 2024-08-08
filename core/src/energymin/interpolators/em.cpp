@@ -633,17 +633,17 @@ EM_Interpolator() : EM_InterpolatorBase<TConfig_d>(),
     m_cuds_wspace(0)
 {
     // Allocate a handle for cudense
-    musolverStatus_t status = musolverDnCreate(&m_cuds_handle);
+    mublasStatus_t status = mublasCreate(&m_cuds_handle);
 
-    if ( status != MUSOLVER_STATUS_SUCCESS )
+    if ( status != MUBLAS_STATUS_SUCCESS )
     {
         FatalError( "Could not create the CUDENSE handle", AMGX_ERR_CUDA_FAILURE );
     }
 
     // Define the cudense stream.
-    status = musolverDnSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
+    status = mublasSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
 
-    if ( status != MUSOLVER_STATUS_SUCCESS )
+    if ( status != MUBLAS_STATUS_SUCCESS )
     {
         FatalError( "Could not set the stream for CUDENSE", AMGX_ERR_CUDA_FAILURE );
     }
@@ -657,7 +657,7 @@ EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >::
 {
     if (m_cuds_handle)
     {
-        musolverDnDestroy(m_cuds_handle);
+       mublasDestroy(m_cuds_handle);
     }
 
     if (m_dense_Aijs)
@@ -780,7 +780,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
 ::computeAijSubmatrices(const Matrix_d &A, const int numCoarse, const Matrix_d &P,
                         ValueType *dense_Aijs, ValueType *dense_invAijs,
                         const IntVector &AijOffsets, int *ipiv,
-                        musolverDnHandle_t &cuds_handle, int *cuds_info)
+                        mublasHandle_t &cuds_handle, int *cuds_info)
 {
     typedef typename Matrix_d::index_type IndexType;
     typedef typename Matrix_d::value_type ValueType;
@@ -811,21 +811,21 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
     // Sequentially perform dense LU factorization on all Aij's
     // LU factors stored in place of the Aij's
     // Then, perform inversion of Aij submatrices by solving with RHS == identity matrix
-    musolverStatus_t cudsStat;
+    mublasStatus_t cudsStat;
 
     if (!cuds_handle)
     {
-        musolverStatus_t status = musolverDnCreate(&m_cuds_handle);
+        mublasStatus_t status = mublasCreate(&m_cuds_handle);
 
-        if ( status != MUSOLVER_STATUS_SUCCESS )
+        if ( status != MUBLAS_STATUS_SUCCESS )
         {
             FatalError( "Could not create the CUDENSE handle", AMGX_ERR_CUDA_FAILURE );
         }
 
         // Define the cudense stream.
-        status = musolverDnSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
+        status = mublasSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
 
-        if ( status != MUSOLVER_STATUS_SUCCESS )
+        if ( status != MUBLAS_STATUS_SUCCESS )
         {
             FatalError( "Could not set the stream for CUDENSE", AMGX_ERR_CUDA_FAILURE );
         }
@@ -845,9 +845,9 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
         int AijOffset  = AijOffsets[j];
         int AijNumRows = P.row_offsets[j + 1] - P.row_offsets[j];
         int lda = AijNumRows;
-        musolverStatus_t status = musolverDnXgetrf_bufferSize(cuds_handle, AijNumRows, AijNumRows, dense_Aijs + AijOffset, lda, &cur_wsize);
+        mublasStatus_t status = musolverDnXgetrf_bufferSize(cuds_handle, AijNumRows, AijNumRows, dense_Aijs + AijOffset, lda, &cur_wsize);
 
-        if (status != MUSOLVER_STATUS_SUCCESS)
+        if (status != MUBLAS_STATUS_SUCCESS)
         {
             FatalError("failed to perform LU factorization", AMGX_ERR_INTERNAL);
         }
@@ -868,7 +868,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
                                     dense_Aijs + AijOffset, lda, m_cuds_wspace,
                                     ipiv + ipivOffset, cuds_info);
 
-        if (cudsStat != MUSOLVER_STATUS_SUCCESS)
+        if (cudsStat != MUBLAS_STATUS_SUCCESS)
         {
             FatalError("failed to perform LU factorization", AMGX_ERR_INTERNAL);
         }
@@ -878,7 +878,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
                                     dense_Aijs + AijOffset, lda,
                                     ipiv + ipivOffset, dense_invAijs + AijOffset, lda, cuds_info );
 
-        if (cudsStat != MUSOLVER_STATUS_SUCCESS)
+        if (cudsStat != MUBLAS_STATUS_SUCCESS)
         {
             FatalError("failed to perform triangular solve", AMGX_ERR_INTERNAL);
         }
@@ -1010,7 +1010,7 @@ template <AMGX_VecPrecision t_vecPrec, AMGX_MatPrecision t_matPrec, AMGX_IndPrec
 void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >
 ::computePvalues( const int AnumRows, const int numCoarse, Matrix_d &P, const Vector_d &v_x,
                   const ValueType *dense_Aijs, const IntVector &AijOffsets, const int *ipiv,
-                  musolverDnHandle_t &cuds_handle, int *cuds_info )
+                  mublasHandle_t &cuds_handle, int *cuds_info )
 {
     typedef typename Matrix_d::index_type IndexType;
     typedef typename Matrix_d::value_type ValueType;
@@ -1026,21 +1026,21 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
     <<< numBlocks, blocksize>>>(PcolOffsets_ptr, ProwInd_ptr, numCoarse,
                                 v_x.raw(), Pvalues_ptr);
     cudaCheckError();
-    musolverStatus_t cudsStat;
+    mublasStatus_t cudsStat;
 
     if (!cuds_handle)
     {
-        musolverStatus_t status = musolverDnCreate(&m_cuds_handle);
+        mublasStatus_t status = mublasCreate(&m_cuds_handle);
 
-        if ( status != MUSOLVER_STATUS_SUCCESS )
+        if ( status != MUBLAS_STATUS_SUCCESS )
         {
             FatalError( "Could not create the CUDENSE handle", AMGX_ERR_CUDA_FAILURE );
         }
 
         // Define the cudense stream.
-        status = musolverDnSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
+        status = mublasSetStream(m_cuds_handle, thrust::global_thread_handle::get_stream());
 
-        if ( status != MUSOLVER_STATUS_SUCCESS )
+        if ( status != MUBLAS_STATUS_SUCCESS )
         {
             FatalError( "Could not set the stream for CUDENSE", AMGX_ERR_CUDA_FAILURE );
         }
@@ -1067,7 +1067,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
                                     dense_Aijs + AijOffset, lda,
                                     ipiv + ipivOffset, Pvalues_ptr + PcolOffset, lda, cuds_info);
 
-        if (cudsStat != MUSOLVER_STATUS_SUCCESS)
+        if (cudsStat != MUBLAS_STATUS_SUCCESS)
         { FatalError("failed to perform triangular solve", AMGX_ERR_INTERNAL); }
 
         ipivOffset += AijNumRows;   // starting offset of the next pivoting sequence

@@ -42,6 +42,8 @@
 #if MUSART_VERSION < 11000
 #define MUSPARSE_SPMM_ALG_DEFAULT MUSPARSE_MM_ALG_DEFAULT
 #endif
+#define CUSPARSE_GENERIC_INTERFACES
+ //wqq todo: delete after adapting to musparseScsrmv
 
 namespace amgx
 {
@@ -1083,6 +1085,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_32F, MUSA_R_32F, stream);
         #else
             cusparseCheckError(cusparseScsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
+            //wqq/hzy todo: adapt to musparseScsrmv
         #endif
     }
     else
@@ -1117,7 +1120,8 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_64F, MUSA_R_64F, stream);
 
         #else
-            cusparseCheckError(cusparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
+            cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
+             //wqq/hzy todo: adapt to musparseScsrmv
         #endif
     }
     else
@@ -1259,7 +1263,8 @@ inline void Cusparse::bsrxmv_internal(musparseHandle_t handle, musparseDirection
 {
     if (bsrEndPtr == NULL && bsrMaskPtr == NULL)
     {
-        cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+        cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
+        //wqq todo: cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
         //      bsrmv(handle, dir, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, blockDim, x, beta, y);
     }
     else
@@ -1297,7 +1302,7 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
                                        const double *beta,
                                        double *y)
 {
-    cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+    cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
 }
 
 // bsrxmv
@@ -1319,7 +1324,7 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
 {
     if (bsrEndPtr == NULL && bsrMaskPtr == NULL)
     {
-        cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+        cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
     }
     else
     {
@@ -1364,6 +1369,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_32F, MUSA_C_32F, stream);
         #else
             cusparseCheckError(cusparseCcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
+             //wqq/hzy todo: adapt to musparseScsrmv
         #endif
     }
     else
@@ -1398,6 +1404,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_64F, MUSA_C_64F, stream);
         #else
             cusparseCheckError(cusparseZcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
+             //wqq/hzy todo: adapt to musparseScsrmv
         #endif
     }
     else
@@ -1458,7 +1465,8 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
 {
     if (bsrEndPtr == NULL && bsrMaskPtr == NULL)
     {
-        cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+        cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
+        // wqq todo: cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
         //      bsrmv(handle, dir, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, blockDim, x, beta, y);
     }
     else
@@ -1496,7 +1504,8 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
                                        const muDoubleComplex *beta,
                                        muDoubleComplex *y)
 {
-    cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+    cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
+    // wqq todo: cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
 }
 
 // bsrxmv
@@ -1518,7 +1527,8 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
 {
     if (bsrEndPtr == NULL && bsrMaskPtr == NULL)
     {
-        cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+        cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
+        // wqq todo: cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
     }
     else
     {
@@ -1611,6 +1621,7 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_R_32F);
     #else
         cusparseCheckError(cusparseScsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
+         //wqq/hzy todo: adapt to musparseScsrmv
     #endif
 }
 
@@ -1624,7 +1635,8 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
                const double            *B, int ldb,
                const double           *beta, double          *C, int ldc)
 {
-    cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+    cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);
+    // wqq todo: cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
 }
 
 void
@@ -1641,6 +1653,7 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_R_64F);
     #else
         cusparseCheckError(cusparseDcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
+         //wqq/hzy todo: adapt to musparseScsrmv
     #endif
 }
 
@@ -1658,6 +1671,7 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_C_32F);
     #else
         cusparseCheckError(cusparseCcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
+         //wqq/hzy todo: adapt to musparseScsrmv
     #endif
 }
 
@@ -1671,7 +1685,8 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
                const muDoubleComplex            *B, int ldb,
                const muDoubleComplex           *beta, muDoubleComplex          *C, int ldc)
 {
-    cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
+    cusparseCheckError(MUSPARSE_STATUS_NOT_IMPLEMENTED);   
+    //wqq todo:  should be: cusparseCheckError(MUSPARSE_STATUS_MATRIX_TYPE_NOT_SUPPORTED);
 }
 
 void
@@ -1688,9 +1703,10 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_C_64F);
     #else
         cusparseCheckError(cusparseZcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
+         //wqq/hzy todo: adapt to musparseScsrmv
     #endif
 }
-}
+
 
 
 template <class TConfig>

@@ -443,66 +443,66 @@ void HybridCoarseAGenerator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_
     {
         fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 16, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
     }
-    else if (max_nonzero_per_row < 20)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 20, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 24)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 24, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 28)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 28, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 32)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 32, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 36)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 36, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 40)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 40, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 44)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 44, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 48)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 48, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 52)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 52, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 56)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 56, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 60)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 60, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 64)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 64, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 128)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 128, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 256)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 256, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
-    else if (max_nonzero_per_row < 512)
-    {
-        fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 256, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
-    }
+    // else if (max_nonzero_per_row < 20)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 20, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 24)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 24, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 28)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 28, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 32)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 32, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 36)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 36, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 40)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 40, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 44)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 44, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 48)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 48, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 52)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 52, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 56)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 56, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 60)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 60, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 64)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 64, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 128)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 128, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 256)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 256, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
+    // else if (max_nonzero_per_row < 512)
+    // {
+    //     fillA_4by4Blocks_Thrust_Kernel<IndexType, ValueType, 256, threads_per_block, 16, 4> <<< num_blocks2, threads_per_block>>>(A_row_offsets_ptr, A_column_indices_ptr, A_dia_values_ptr, A_nonzero_values_ptr, R_row_offsets_ptr, R_column_indices_ptr, Ac_row_offsets_ptr, Ac_column_indices_ptr, Ac_dia_values_ptr, Ac_nonzero_values_ptr, aggregates_ptr, num_aggregates, num_threads);
+    // }
     else
     {
         FatalError("Maximum number of nonzeros is too large", AMGX_ERR_BAD_PARAMETERS);

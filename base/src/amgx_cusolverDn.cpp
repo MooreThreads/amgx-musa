@@ -33,47 +33,47 @@ namespace amgx
 //
 // LU factorization
 //
-musolverStatus_t musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
         int m,
         int n,
         float *A,
         int lda,
         int *Lwork )
 {
-    return musolverDnSgetrf_bufferSize(handle, m, n, A, lda, Lwork);
+    return musolverSgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-musolverStatus_t musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
         int m,
         int n,
         double *A,
         int lda,
         int *Lwork )
 {
-    return musolverDnDgetrf_bufferSize(handle, m, n, A, lda, Lwork);
+    return musolverDgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-musolverStatus_t musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
         int m,
         int n,
         muComplex *A,
         int lda,
         int *Lwork )
 {
-    return musolverDnCgetrf_bufferSize(handle, m, n, A, lda, Lwork);
+    return musolverCgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-musolverStatus_t musolverDnXgetrf_bufferSize (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
         int m,
         int n,
         muDoubleComplex *A,
         int lda,
         int *Lwork )
 {
-    return musolverDnZgetrf_bufferSize(handle, m, n, A, lda, Lwork);
+    return musolverZgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    float *A,
@@ -82,10 +82,10 @@ musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverDnSgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
+    return musolverSgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
-musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    double *A,
@@ -94,10 +94,10 @@ musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverDnDgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
+    return musolverDgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
-musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    muComplex *A,
@@ -106,10 +106,10 @@ musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverDnCgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
+    return musolverCgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
-musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    muDoubleComplex *A,
@@ -118,13 +118,13 @@ musolverStatus_t musolverDnXgetrf (musolverDnHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverDnZgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
+    return musolverZgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
 //
 // solve
 //
-musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -135,10 +135,10 @@ musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    return musolverDnSgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
+    return musolverSgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
 }
 
-musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -149,10 +149,10 @@ musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    return musolverDnDgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
+    return musolverDgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
 }
 
-musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -163,10 +163,10 @@ musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    return musolverDnCgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
+    return musolverCgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
 }
 
-musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
+mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -177,7 +177,7 @@ musolverStatus_t musolverDnXgetrs(musolverDnHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    return musolverDnZgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
+    return musolverZgetrs(handle, trans, n, 1, A, lda, devIpiv, B, ldb, devInfo );
 }
 
 } // namespace amgx

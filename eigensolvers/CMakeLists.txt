@@ -29,9 +29,9 @@ cmake_minimum_required (VERSION 3.18)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
 
 # Select all sources
-FILE(GLOB_RECURSE SRCS "src/*.cu")
+FILE(GLOB_RECURSE SRCS "src/*.cpp")
 
-target_sources(amgx_libs PRIVATE ${SRCS})
+# target_sources(amgx_libs PRIVATE ${SRCS})
 
 add_library(amgx_eigensolvers STATIC ${SRCS})
 
@@ -46,9 +46,6 @@ target_include_directories(amgx_eigensolvers PUBLIC
 
 find_library(CUDART_LIBRARY cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 
-target_link_libraries(amgx_eigensolvers amgxsh CUDA::cudart CUDA::cublas)
-
-# set arch for eigensolvers lib target
-set_target_properties(amgx_eigensolvers PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
+target_link_libraries(amgx_eigensolvers amgxsh musart mublas)
 
 install(TARGETS amgx_eigensolvers DESTINATION "lib/sublibs")

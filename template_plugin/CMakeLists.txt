@@ -37,14 +37,14 @@ FILE(GLOB_RECURSE SRCS "src/*.cu")
 
 add_library(amgx_template_plugin STATIC ${SRCS})
 
-set(AMGX_INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../base/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
+# set(AMGX_INCLUDES
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../base/include
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
 
-target_sources(amgx_libs PRIVATE ${SRCS})
+# target_sources(amgx_libs PRIVATE ${SRCS})
 
-target_include_directories(amgx_libs PUBLIC ${AMGX_INCLUDES})
+# target_include_directories(amgx_libs PUBLIC ${AMGX_INCLUDES})
 
 target_include_directories(amgx_template_plugin PUBLIC ${THRUST_DIR} ${AMGX_INCLUDES})
 

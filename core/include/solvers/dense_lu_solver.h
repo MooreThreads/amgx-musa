@@ -116,7 +116,7 @@ class DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >
 
     private:
 
-        musolverDnHandle_t m_cuds_handle;
+        mublasHandle_t m_cuds_handle;
         mublasHandle_t m_cublas_handle;
         int m_num_rows, m_num_cols, m_lda;
         int m_nnz_global;

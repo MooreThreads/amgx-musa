@@ -38,6 +38,7 @@
 #include <vector>
 #include <algorithm>
 #include <assert.h>
+#include <math.h>
 
 #include <thrust/count.h>
 

@@ -42,12 +42,8 @@ class Cublas;
 #define cublasCheckError(status) {\
     switch(status) {\
     case MUBLAS_STATUS_SUCCESS:                   break;\
-    case MUBLAS_STATUS_NOT_INITIALIZED:           FatalError("MUBLAS_STATUS_NOT_INITIALIZED", AMGX_ERR_CUDA_FAILURE);\
-    case MUBLAS_STATUS_ALLOC_FAILED:              FatalError("MUBLAS_STATUS_ALLOC_FAILED", AMGX_ERR_CUDA_FAILURE);\
+    case MUBLAS_STATUS_MEMORY_ERROR:              FatalError("MUBLAS_STATUS_MEMORY_ERROR", AMGX_ERR_CUDA_FAILURE);\
     case MUBLAS_STATUS_INVALID_VALUE:             FatalError("MUBLAS_STATUS_INVALID_VALUE", AMGX_ERR_CUDA_FAILURE);\
-    case MUBLAS_STATUS_ARCH_MISMATCH:             FatalError("MUBLAS_STATUS_ARCH_MISMATCH", AMGX_ERR_CUDA_FAILURE);\
-    case MUBLAS_STATUS_MAPPING_ERROR:             FatalError("MUBLAS_STATUS_MAPPING_ERROR", AMGX_ERR_CUDA_FAILURE);\
-    case MUBLAS_STATUS_EXECUTION_FAILED:          FatalError("MUBLAS_STATUS_EXECUTION_FAILED", AMGX_ERR_CUDA_FAILURE);\
     case MUBLAS_STATUS_INTERNAL_ERROR:            FatalError("MUBLAS_STATUS_INTERNAL_ERROR", AMGX_ERR_CUDA_FAILURE);\
     default:                                        FatalError("unknown CUBLAS error", AMGX_ERR_CUDA_FAILURE);\
     }\
