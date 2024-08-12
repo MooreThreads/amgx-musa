@@ -1009,7 +1009,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
 template <AMGX_VecPrecision t_vecPrec, AMGX_MatPrecision t_matPrec, AMGX_IndPrecision t_indPrec>
 void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec> >
 ::computePvalues( const int AnumRows, const int numCoarse, Matrix_d &P, const Vector_d &v_x,
-                  const ValueType *dense_Aijs, const IntVector &AijOffsets, const int *ipiv,
+                  ValueType *dense_Aijs, const IntVector &AijOffsets, const int *ipiv,
                   mublasHandle_t &cuds_handle, int *cuds_info )
 {
     typedef typename Matrix_d::index_type IndexType;

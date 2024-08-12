@@ -147,7 +147,7 @@ class EM_Interpolator< TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPr
         void solveMa_e( Matrix_d &Ma, const int AnumRows, Vector<TConfig_d> &v_x );
 
         void computePvalues(const int AnumRows, const int numCoarse, Matrix_d &P, const Vector_d &v_x,
-                            const ValueType *dense_Aijs, const IntVector &AijOffsets, const int *ipiv,
+                            ValueType *dense_Aijs, const IntVector &AijOffsets, const int *ipiv,
                             mublasHandle_t &cuds_handle, int *cuds_info = 0);
 
         void computePvalues(const int AnumRows, const int numCoarse, Matrix_d &P, const Vector_d &v_x,

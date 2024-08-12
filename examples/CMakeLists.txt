@@ -38,22 +38,23 @@ ELSE(CMAKE_C_COMPILER_NAME MATCHES cl AND NOT CMAKE_C_COMPILER_NAME MATCHES clan
 ENDIF(CMAKE_C_COMPILER_NAME MATCHES cl AND NOT CMAKE_C_COMPILER_NAME MATCHES clang)
 
 ADD_EXECUTABLE(amgx_capi amgx_capi.c)
+# target_link_libraries(YourExecutableName stdc++)
 
 set(AMGX_INCLUDES ${THRUST_DIR} ${CMAKE_CURRENT_SOURCE_DIR}/../base/include ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
 target_include_directories( amgx_capi PUBLIC ${AMGX_INCLUDES})
-target_link_libraries ( amgx_capi ${dyn_libs} )
+target_link_libraries ( amgx_capi ${dyn_libs} stdc++ m musa musparse) 
 
 IF(WIN32)
     IF(MSVC)
       set_source_files_properties( amgx_capi.c PROPERTIES LANGUAGE CXX)
       set_target_properties ( amgx_capi PROPERTIES LINKER_LANGUAGE CXX )
     ENDIF(MSVC)
-ELSE(WIN32)
-  SET_SOURCE_FILES_PROPERTIES( amgx_capi.c PROPERTIES COMPILE_FLAGS -std=c99 )
+# ELSE(WIN32)
+#   SET_SOURCE_FILES_PROPERTIES( amgx_capi.c PROPERTIES COMPILE_FLAGS -std=c99 )
 ENDIF(WIN32)
 
 # wqq todo: more examples
-# add_executable(generate_poisson generate_poisson.cu)
+# add_executable(generate_poisson generate_poisson.cpp)
 # target_compile_options(generate_poisson PUBLIC "-Xcompiler=-I$ENV{METIS_INSTALL_PATH}/include")
 # target_link_libraries(generate_poisson amgx ${libs_all} )
 # set_target_properties(generate_poisson PROPERTIES LINK_FLAGS "")
@@ -61,7 +62,7 @@ ENDIF(WIN32)
 
 # set_target_properties(generate_poisson PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
 
-# add_executable(generate_poisson7_dist_renum generate_poisson7_dist_renum.cu)
+# add_executable(generate_poisson7_dist_renum generate_poisson7_dist_renum.cpp)
 # target_compile_options(generate_poisson7_dist_renum PUBLIC "-Xcompiler=-I$ENV{METIS_INSTALL_PATH}/include")
 # target_link_libraries(generate_poisson7_dist_renum amgx ${libs_all} )
 # set_target_properties(generate_poisson7_dist_renum PROPERTIES LINK_FLAGS "")

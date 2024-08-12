@@ -42,8 +42,6 @@
 #if MUSART_VERSION < 11000
 #define MUSPARSE_SPMM_ALG_DEFAULT MUSPARSE_MM_ALG_DEFAULT
 #endif
-#define CUSPARSE_GENERIC_INTERFACES
- //wqq todo: delete after adapting to musparseScsrmv
 
 namespace amgx
 {
@@ -70,19 +68,19 @@ template <class T_Config>
 musparseStatus_t
 CusparseMatPrec<T_Config>::set(musparseMatDescr_t &cuMatDescr)
 {
-    return cusparseSetMatFullPrecision(cuMatDescr, true);
+    return musparseSetMatFullPrecision(cuMatDescr, true); //hzy:  undefined reference to `musparseSetMatFullPrecision'
 }
 
 template <AMGX_MemorySpace t_memSpace, AMGX_IndPrecision t_indPrec>
 musparseStatus_t CusparseMatPrec< TemplateConfig<t_memSpace, AMGX_vecDouble, AMGX_matFloat, t_indPrec> >::set(musparseMatDescr_t &cuMatDescr)
 {
-    return cusparseSetMatFullPrecision(cuMatDescr, false);
+    return musparseSetMatFullPrecision(cuMatDescr, false);//hzy:  undefined reference to `musparseSetMatFullPrecision'
 }
 
 template <AMGX_MemorySpace t_memSpace, AMGX_IndPrecision t_indPrec>
 musparseStatus_t CusparseMatPrec< TemplateConfig<t_memSpace, AMGX_vecDoubleComplex, AMGX_matComplex, t_indPrec> >::set(musparseMatDescr_t &cuMatDescr)
 {
-    return cusparseSetMatFullPrecision(cuMatDescr, false);
+    return musparseSetMatFullPrecision(cuMatDescr, false);//hzy:  undefined reference to `musparseSetMatFullPrecision'
 }
 #endif
 
@@ -1706,7 +1704,7 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
          //wqq/hzy todo: adapt to musparseScsrmv
     #endif
 }
-
+}
 
 
 template <class TConfig>
@@ -1742,7 +1740,7 @@ void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, 
     size_t bufferSize;
     cusparseCheckError(musparseCsr2cscEx2_bufferSize(
         handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols, valType,
-        MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, MUSPARSE_CSR2CSC_ALG2, &bufferSize));
+        MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, MUSPARSE_CSR2CSC_ALG2, &bufferSize));   //hzy: undeclared identifier 'MUSPARSE_CSR2CSC_ALG2'
 
     void *buffer = nullptr;
     if (bufferSize > 0)
@@ -1752,7 +1750,7 @@ void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, 
 
     cusparseCheckError(musparseCsr2cscEx2(
         handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols, valType,
-        MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, MUSPARSE_CSR2CSC_ALG2, buffer));
+        MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, MUSPARSE_CSR2CSC_ALG2, buffer));  //hzy: undeclared identifier 'MUSPARSE_CSR2CSC_ALG2'
 
     if(bufferSize > 0)
     {

@@ -33,9 +33,9 @@ ENDIF (WIN32)
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/../cmake" ${CMAKE_MODULE_PATH})
 
 #select all sources
-FILE(GLOB_RECURSE SRCS "src/*.cu")
+# FILE(GLOB_RECURSE SRCS "src/*.cpp")
 
-add_library(amgx_template_plugin STATIC ${SRCS})
+# add_library(amgx_template_plugin STATIC ${SRCS})
 
 # set(AMGX_INCLUDES
 #     ${CMAKE_CURRENT_SOURCE_DIR}/include
@@ -46,13 +46,13 @@ add_library(amgx_template_plugin STATIC ${SRCS})
 
 # target_include_directories(amgx_libs PUBLIC ${AMGX_INCLUDES})
 
-target_include_directories(amgx_template_plugin PUBLIC ${THRUST_DIR} ${AMGX_INCLUDES})
+# target_include_directories(amgx_template_plugin PUBLIC ${THRUST_DIR} ${AMGX_INCLUDES})
 
-target_link_libraries(amgx_template_plugin amgx_libs)
+# target_link_libraries(amgx_template_plugin amgx_libs)
 
-if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.18.0")
-  set_target_properties(amgx_template_plugin PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-endif()
+# if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.18.0")
+#   set_target_properties(amgx_template_plugin PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
+# endif()
 
-install(TARGETS amgx_template_plugin DESTINATION "lib/sublibs")
+# install(TARGETS amgx_template_plugin DESTINATION "lib/sublibs")
 

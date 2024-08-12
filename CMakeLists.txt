@@ -247,10 +247,11 @@ endif(MPI_FOUND)
 # Add the CXX flags to the host set of CUDA flags
 SET(MUSA_MCC_FLAGS ${MUSA_MCC_FLAGS} -Xcompiler ${CMAKE_CXX_FLAGS})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC")
 
 # write version
 set(versionFile "ReleaseVersion.txt")
-set(versionCode "core/src/version.cu")
+set(versionCode "core/src/version.cpp")
 if(${versionFile} IS_NEWER_THAN ${versionCode})
   file(STRINGS ${versionFile} versionString)
   file(WRITE ${versionCode} "#include <version.h>\n")
@@ -262,7 +263,7 @@ endif(${versionFile} IS_NEWER_THAN ${versionCode})
 
 # plugin management
 set(pluginConf "PluginConfig.txt")                     # plugin configuration
-set(pluginCode "${CMAKE_SOURCE_DIR}/plugin_config.cu") # plugin code
+set(pluginCode "${CMAKE_SOURCE_DIR}/plugin_config.cpp") # plugin code
 file(STRINGS ${pluginConf} pluginList)                 # plugin list
 set(libList base core ${pluginList})                   # lib list
 
@@ -285,7 +286,7 @@ if(${pluginConf} IS_NEWER_THAN ${pluginCode})
     file(APPEND ${pluginCode} "  ${plugin}::finalize();\n")
   endforeach(plugin)
   file(APPEND ${pluginCode} "}\n")
-  file(APPEND ${pluginCode} "} // namespace amgx\n")
+  file(APPEND ${pluginCode} "} // namespace amgx\n") 
 endif(${pluginConf} IS_NEWER_THAN ${pluginCode})
 
 # WARNING: the placement of the following two if statements is important, they have to come after
@@ -313,8 +314,7 @@ endif(MKL_ROOT_DIR)
 #create a list of all sources in amgx
 foreach( lib ${libList} )
   add_subdirectory(${lib})
-  message("-----------------lib: ${lib}")
-  FILE(GLOB_RECURSE TESTS "${CMAKE_SOURCE_DIR}/${lib}/tests/*.cu")
+  FILE(GLOB_RECURSE TESTS "${CMAKE_SOURCE_DIR}/${lib}/tests/*.cpp")
 endforeach(lib)
 
 
@@ -324,10 +324,10 @@ FILE(GLOB_RECURSE SRCS
   "eigensolvers/src/*.cpp"
   "template_plugin/src/*.cpp"
   plugin_config.cpp)
-list(FILTER SRCS EXCLUDE REGEX "base/src/amgx_cusparse.cpp")
-list(FILTER SRCS EXCLUDE REGEX "base/src/csr_multiply_*.cpp")
-list(FILTER SRCS EXCLUDE REGEX "base/src/multiply.cpp")
-list(FILTER SRCS EXCLUDE REGEX "base/src/amgx_cusolverDn.cpp")
+# list(FILTER SRCS EXCLUDE REGEX "base/src/amgx_cusparse.cpp")
+# list(FILTER SRCS EXCLUDE REGEX "base/src/csr_multiply_*.cpp")
+# list(FILTER SRCS EXCLUDE REGEX "base/src/multiply.cpp")
+# list(FILTER SRCS EXCLUDE REGEX "base/src/amgx_cusolverDn.cpp")
 
 # set arch for main libs target
 add_library(amgx_libs OBJECT "")
@@ -357,7 +357,7 @@ set_target_properties(amgx PROPERTIES LINKER_LANGUAGE CXX)
 set_target_properties(amgxsh PROPERTIES LINKER_LANGUAGE CXX)
 
 target_compile_options(amgx PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
-target_compile_options(amgxsh PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${MUSA_MCC_FLAGS} >)
+target_compile_options(amgxsh PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
 
 IF (WIN32)
   target_link_libraries( amgx mublas musparse musolver)

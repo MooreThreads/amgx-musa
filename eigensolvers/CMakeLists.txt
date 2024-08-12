@@ -33,19 +33,19 @@ FILE(GLOB_RECURSE SRCS "src/*.cpp")
 
 # target_sources(amgx_libs PRIVATE ${SRCS})
 
-add_library(amgx_eigensolvers STATIC ${SRCS})
+# add_library(amgx_eigensolvers STATIC ${SRCS})
 
-set(AMGX_INCLUDES
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../base/include
-    ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
+# set(AMGX_INCLUDES
+#     ${CMAKE_CURRENT_SOURCE_DIR}/include
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../base/include
+#     ${CMAKE_CURRENT_SOURCE_DIR}/../core/include)
 
-target_include_directories(amgx_eigensolvers PUBLIC 
-    ${THRUST_DIR}
-    ${AMGX_INCLUDES})
+# target_include_directories(amgx_eigensolvers PUBLIC 
+#     ${THRUST_DIR}
+#     ${AMGX_INCLUDES})
 
-find_library(CUDART_LIBRARY cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
+# find_library(CUDART_LIBRARY cudart ${CMAKE_CUDA_IMPLICIT_LINK_DIRECTORIES})
 
-target_link_libraries(amgx_eigensolvers amgxsh musart mublas)
+# target_link_libraries(amgx_eigensolvers amgxsh musart mublas)
 
-install(TARGETS amgx_eigensolvers DESTINATION "lib/sublibs")
+# install(TARGETS amgx_eigensolvers DESTINATION "lib/sublibs")

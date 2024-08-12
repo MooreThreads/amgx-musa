@@ -36,7 +36,7 @@ set(AMGX_INCLUDES
     ${CMAKE_SOURCE_DIR}/core/include 
     ${CMAKE_SOURCE_DIR}/base/include)
 
-set(tests_all ${tests_all} src/testframework.cu src/test_utils.cu src/unit_test.cu)
+set(tests_all ${tests_all} src/testframework.cpp src/test_utils.cpp src/unit_test.cpp)
 
 add_library(amgx_tests_libs OBJECT ${tests_all})
 
@@ -48,7 +48,7 @@ add_dependencies(amgx_tests_library amgx)
 
 target_link_libraries(amgx_tests_library amgx)
 
-add_executable(amgx_tests_launcher src/utest.cu $<TARGET_OBJECTS:amgx_tests_libs>)
+add_executable(amgx_tests_launcher src/utest.cpp $<TARGET_OBJECTS:amgx_tests_libs>)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.18.0")
   set_target_properties(amgx_tests_launcher PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")

@@ -27,7 +27,7 @@
 cmake_minimum_required (VERSION 3.18)
 
 #select all sources
-FILE(GLOB_RECURSE SRCS "src/*.cu")
+# FILE(GLOB_RECURSE SRCS "src/*.cpp")
 
 # target_sources(amgx_libs PRIVATE ${SRCS})
 

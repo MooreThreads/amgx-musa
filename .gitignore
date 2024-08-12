@@ -2,8 +2,8 @@
 /build*/
 .logamgx
 *.cmake
-plugin_config.cu
+plugin_config.cpp
 *.sublime-project
 *.sublime-workspace
-core/src/version.cu
+core/src/version.cpp
 ci/docker/

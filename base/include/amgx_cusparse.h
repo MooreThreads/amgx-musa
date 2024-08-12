@@ -79,7 +79,8 @@ class Cusparse;
 
 #if defined(__cplusplus)
 extern "C" {
-musparseStatus_t MUSPARSEAPI cusparseSetMatFullPrecision(musparseMatDescr_t descrA, bool fullprec);
+musparseStatus_t MUSPARSEAPI musparseSetMatFullPrecision(musparseMatDescr_t descrA, bool fullprec);
+// hzy:undefined reference to `musparseSetMatFullPrecision'
 }
 #endif
 
@@ -92,7 +93,7 @@ namespace amgx
 // C++ CUSPARSE API for NVAMG
 //-------------------------------------------------------
 
-// The internal function cusparseSetMatFullPrecision is no longer exposed since CUDA 10.1.
+// The internal function musparseSetMatFullPrecision is no longer exposed since CUDA 10.1.
 // The generic cuSPARSE routines must be used to achieve the same functionality
 #ifndef DISABLE_MIXED_PRECISION
 template <class T_Config>

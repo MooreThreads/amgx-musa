@@ -360,10 +360,10 @@ musparseStatus_t cusparseCsrgemm2(musparseHandle_t handle,             \
               descrC, csrValC, csrRowPtrC, csrColIndC, info, pBuffer);  \
 }
 
-CUSPARSE_CSRGEMM(float,           musparseScsrgemm)
-CUSPARSE_CSRGEMM(double,          musparseDcsrgemm)
-CUSPARSE_CSRGEMM(muComplex,       musparseCcsrgemm)
-CUSPARSE_CSRGEMM(muDoubleComplex, musparseZcsrgemm)
+CUSPARSE_CSRGEMM(float,           musparseScsrgemm)    //hzy
+CUSPARSE_CSRGEMM(double,          musparseDcsrgemm)   //hzy
+CUSPARSE_CSRGEMM(muComplex,       musparseCcsrgemm)   //hzy
+CUSPARSE_CSRGEMM(muDoubleComplex, musparseZcsrgemm)   //hzy
 #endif
 
 #ifndef CUSPARSE_USE_GENERIC_SPGEMM
@@ -396,10 +396,10 @@ musparseStatus_t cusparseCsrgemmBufferSize(musparseHandle_t handle,             
               csrRowPtrD, csrColIndD, info, pBufferSizeInBytes);       \
 }
 
-CUSPARSE_CSRGEMMBUFSZ(float,           musparseScsrgemm_bufferSizeExt)
-CUSPARSE_CSRGEMMBUFSZ(double,          musparseDcsrgemm_bufferSizeExt)
-CUSPARSE_CSRGEMMBUFSZ(muComplex,       musparseCcsrgemm_bufferSizeExt)
-CUSPARSE_CSRGEMMBUFSZ(muDoubleComplex, musparseZcsrgemm_bufferSizeExt)
+CUSPARSE_CSRGEMMBUFSZ(float,           musparseScsrgemm_bufferSizeExt)     //hzy
+CUSPARSE_CSRGEMMBUFSZ(double,          musparseDcsrgemm_bufferSizeExt)   //hzy
+CUSPARSE_CSRGEMMBUFSZ(muComplex,       musparseCcsrgemm_bufferSizeExt)   //hzy
+CUSPARSE_CSRGEMMBUFSZ(muDoubleComplex, musparseZcsrgemm_bufferSizeExt)   //hzy
 #endif
 
 // ====================================================================================================================
@@ -538,7 +538,7 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
             A.cuMatDescr, A.get_num_nz(), A.row_offsets.raw(), A.col_indices.raw(),
             B.cuMatDescr, B.get_num_nz(), B.row_offsets.raw(), B.col_indices.raw(),
             NULL, A.cuMatDescr, 0, A.row_offsets.raw(), A.col_indices.raw(),
-            info, &pBufferSizeInBytes));
+            info, &pBufferSizeInBytes));   //hzy
 
     // Allocate the intermediary buffer
     amgx::memory::musaMalloc(&pBuffer, pBufferSizeInBytes);
@@ -560,13 +560,13 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
 
     // Compute the row offsets for C
     cusparseCheckError(
-        musparseXcsrgemm2Nnz(
+        musparseXcsrgemm2Nnz(  
             handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(),
             A.cuMatDescr, A.get_num_nz(), A.row_offsets.raw(), A.col_indices.raw(),
             B.cuMatDescr, B.get_num_nz(), B.row_offsets.raw(), B.col_indices.raw(),
             A.cuMatDescr, 0, A.row_offsets.raw(), A.col_indices.raw(),
             C.cuMatDescr, C.row_offsets.raw(), nnzTotalDevHostPtr,
-            info, pBuffer));
+            info, pBuffer));    // hzy
 
     // Note the number of non-zeros in C
     int baseC;
@@ -588,7 +588,7 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
             NULL,
             A.cuMatDescr, 0, A.values.raw(), A.row_offsets.raw(), A.col_indices.raw(),
             C.cuMatDescr, C.values.raw(), C.row_offsets.raw(), C.col_indices.raw(),
-            info, pBuffer));
+            info, pBuffer));    //hzy
 
     // Finalise
     C.set_initialized(1);
