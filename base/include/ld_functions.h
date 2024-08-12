@@ -38,74 +38,84 @@ namespace amgx
 #define _ASM_PTR_ "r"
 #endif
 
-
-__device__   __inline__ double ld_cg(const double *address)
-{
-    double reg;
-    asm("ld.global.cg.f64 %0, [%1];" : "=d"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__   __inline__ float ld_cg(const float *address)
-{
-    float reg;
-    asm("ld.global.cg.f32 %0, [%1];" : "=f"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__  __inline__ int ld_cg(const int *address)
-{
-    int reg;
-    asm("ld.global.cg.s32 %0, [%1];" : "=r"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__   __inline__ double ld_ca(const double *address)
-{
-    double reg;
-    asm("ld.global.ca.f64 %0, [%1];" : "=d"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__   __inline__ float ld_ca(const float *address)
-{
-    float reg;
-    asm("ld.global.ca.f32 %0, [%1];" : "=f"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__  __inline__ int ld_ca(const int *address)
-{
-    int reg;
-    asm("ld.global.ca.s32 %0, [%1];" : "=r"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__   __inline__ double ld_cs(const double *address)
-{
-    double reg;
-    asm("ld.global.cs.f64 %0, [%1];" : "=d"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__   __inline__ float ld_cs(const float *address)
-{
-    float reg;
-    asm("ld.global.cs.f32 %0, [%1];" : "=f"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
-__device__  __inline__ int ld_cs(const int *address)
-{
-    int reg;
-    asm("ld.global.cs.s32 %0, [%1];" : "=r"(reg) : _ASM_PTR_(address));
-    return reg;
-}
-
 template <class T>
 __device__ __inline T ldg(const T *address)
 {
     return __ldg(address);
 }
+
+__device__   __inline__ double ld_cg(const double *address)
+{
+    // double reg;
+    // asm("ld.global.cg.f64 %0, [%1];" : "=d"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__   __inline__ float ld_cg(const float *address)
+{
+    // float reg;
+    // asm("ld.global.cg.f32 %0, [%1];" : "=f"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__  __inline__ int ld_cg(const int *address)
+{
+    // int reg;
+    // asm("ld.global.cg.s32 %0, [%1];" : "=r"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__   __inline__ double ld_ca(const double *address)
+{
+    // double reg;
+    // asm("ld.global.ca.f64 %0, [%1];" : "=d"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__   __inline__ float ld_ca(const float *address)
+{
+    // float reg;
+    // asm("ld.global.ca.f32 %0, [%1];" : "=f"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__  __inline__ int ld_ca(const int *address)
+{
+    // int reg;
+    // asm("ld.global.ca.s32 %0, [%1];" : "=r"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__   __inline__ double ld_cs(const double *address)
+{
+    // double reg;
+    // asm("ld.global.cs.f64 %0, [%1];" : "=d"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__   __inline__ float ld_cs(const float *address)
+{
+    // float reg;
+    // asm("ld.global.cs.f32 %0, [%1];" : "=f"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+__device__  __inline__ int ld_cs(const int *address)
+{
+    // int reg;
+    // asm("ld.global.cs.s32 %0, [%1];" : "=r"(reg) : _ASM_PTR_(address));
+    // return reg;
+    return ldg(address);
+}
+
+
 
 } //end namespace amgx

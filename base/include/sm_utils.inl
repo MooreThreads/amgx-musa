@@ -27,6 +27,8 @@
 
 #include "amgx_types/util.h"
 #include "amgx_types/math.h"
+#include "ld_functions.h"
+#include <__clang_musa_device_functions.h>
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /////////////   Device-level generalized utils, should be included only in files compiled by nvcc  ////////////////////
@@ -75,16 +77,16 @@ static __device__ __forceinline__ void atomic_add( double *address, double value
 #endif
 }
 
-static __device__ __forceinline__ void atomic_add( cuComplex *address, cuComplex value )
+static __device__ __forceinline__ void atomic_add( muComplex  *address, muComplex  value )
 {
-    atomicAdd((float *)(address), cuCrealf(value));
-    atomicAdd((float *)((char *)(address) + sizeof(float)), cuCimagf(value));
+    atomicAdd((float *)(address), muCrealf(value));
+    atomicAdd((float *)((char *)(address) + sizeof(float)), muCimagf(value));
 }
 
-static __device__ __forceinline__ void atomic_add( cuDoubleComplex *address, cuDoubleComplex value )
+static __device__ __forceinline__ void atomic_add( muDoubleComplex *address, muDoubleComplex value )
 {
-    atomic_add((double *)(address), cuCreal(value));
-    atomic_add((double *)((char *)(address) + sizeof(double)), cuCimag(value));
+    atomic_add((double *)(address), muCreal(value));
+    atomic_add((double *)((char *)(address) + sizeof(double)), muCimag(value));
 }
 
 static __device__ __forceinline__ int64_t atomic_CAS(int64_t* address, int64_t compare, int64_t val)
@@ -104,29 +106,38 @@ static __device__ __forceinline__ int atomic_CAS(int* address, int compare, int 
 
 static __device__ __forceinline__ int bfe( int src, int num_bits )
 {
-    unsigned mask;
-    asm( "bfe.u32 %0, %1, 0, %2;" : "=r"(mask) : "r"(src), "r"(num_bits) );
-    return mask;
+    // unsigned mask;
+    // asm( "bfe.u32 %0, %1, 0, %2;" : "=r"(mask) : "r"(src), "r"(num_bits) );
+    // return mask;
+    return (src >> 0) & ((1 << num_bits) - 1);
 }
 
 static __device__ __forceinline__ int bfind( int src )
 {
-    int msb;
-    asm( "bfind.u32 %0, %1;" : "=r"(msb) : "r"(src) );
-    return msb;
+    // int msb;
+    // asm( "bfind.u32 %0, %1;" : "=r"(msb) : "r"(src) );
+    // return msb;
+    return (31 - __clz(src)); 
 }
 
 static __device__ __forceinline__ int bfind( unsigned long long src )
 {
-    int msb;
-    asm( "bfind.u64 %0, %1;" : "=r"(msb) : "l"(src) );
-    return msb;
+    // int msb;
+    // asm( "bfind.u64 %0, %1;" : "=r"(msb) : "l"(src) );
+    // return msb;
+    return (63 - __clzll(src));
 }
 
 static __device__ __forceinline__ unsigned long long brev( unsigned long long src )
 {
-    unsigned long long rev;
-    asm( "brev.b64 %0, %1;" : "=l"(rev) : "l"(src) );
+    // unsigned long long rev;
+    // asm( "brev.b64 %0, %1;" : "=l"(rev) : "l"(src) );
+    // return rev;
+    unsigned long long rev = 0;
+    for (int i = 0; i < 64; ++i) {
+        rev = (rev << 1) | (src & 1);
+        src >>= 1;
+    }
     return rev;
 }
 
@@ -136,9 +147,10 @@ static __device__ __forceinline__ unsigned long long brev( unsigned long long sr
 
 static __device__ __forceinline__ int lane_id()
 {
-    int id;
-    asm( "mov.u32 %0, %%laneid;" : "=r"(id) );
-    return id;
+    // int id;
+    // asm( "mov.u32 %0, %%laneid;" : "=r"(id) );
+    // return id;
+    return threadIdx.x & 31; 
 }
 
 static __device__ __forceinline__ int lane_mask_lt()
@@ -174,37 +186,42 @@ struct Ld<LD_CG>
 {
     static __device__ __forceinline__ int load( const int *ptr )
     {
-        int ret;
-        asm volatile ( "ld.global.cg.s32 %0, [%1];"  : "=r"(ret) : __PTR(ptr) );
-        return ret;
+        // int ret;
+        // asm volatile ( "ld.global.cg.s32 %0, [%1];"  : "=r"(ret) : __PTR(ptr) );
+        // return ret;
+        return amgx::ldg(ptr);
     }
 
     static __device__ __forceinline__ float load( const float *ptr )
     {
-        float ret;
-        asm volatile ( "ld.global.cg.f32 %0, [%1];"  : "=f"(ret) : __PTR(ptr) );
-        return ret;
+        // float ret;
+        // asm volatile ( "ld.global.cg.f32 %0, [%1];"  : "=f"(ret) : __PTR(ptr) );
+        // return ret;
+        return amgx::ldg(ptr);
     }
 
     static __device__ __forceinline__ double load( const double *ptr )
     {
-        double ret;
-        asm volatile ( "ld.global.cg.f64 %0, [%1];"  : "=d"(ret) : __PTR(ptr) );
-        return ret;
+        // double ret;
+        // asm volatile ( "ld.global.cg.f64 %0, [%1];"  : "=d"(ret) : __PTR(ptr) );
+        // return ret;
+        return amgx::ldg(ptr);
     }
 
-    static __device__ __forceinline__ cuComplex load( const cuComplex *ptr )
+    static __device__ __forceinline__ muComplex load( const muComplex *ptr )
     {
-        float ret[2];
-        asm volatile ( "ld.global.cg.v2.f32 {%0, %1}, [%2];"  : "=f"(ret[0]), "=f"(ret[1]) : __PTR( (float *)(ptr) ) );
-        return make_cuComplex(ret[0], ret[1]);
+        // float ret[2];
+        // asm volatile ( "ld.global.cg.v2.f32 {%0, %1}, [%2];"  : "=f"(ret[0]), "=f"(ret[1]) : __PTR( (float *)(ptr) ) );
+        // return make_muComplex(ret[0], ret[1]);
+        return amgx::ldg(ptr);
     }
 
-    static __device__ __forceinline__ cuDoubleComplex load( const cuDoubleComplex *ptr )
+    static __device__ __forceinline__ muDoubleComplex load( const muDoubleComplex *ptr )
     {
-        double ret[2];
-        asm volatile ( "ld.global.cg.v2.f64 {%0, %1}, [%2];"  : "=d"(ret[0]), "=d"(ret[1]) : __PTR( (double *)(ptr) ) );
-        return make_cuDoubleComplex(ret[0], ret[1]);
+        // double ret[2];
+        // asm volatile ( "ld.global.cg.v2.f64 {%0, %1}, [%2];"  : "=d"(ret[0]), "=d"(ret[1]) : __PTR( (double *)(ptr) ) );
+        // return make_muDoubleComplex(ret[0], ret[1]);
+        return amgx::ldg(ptr);
     }
 
 };
@@ -214,37 +231,43 @@ struct Ld<LD_CA>
 {
     static __device__ __forceinline__ int load( const int *ptr )
     {
-        int ret;
-        asm volatile ( "ld.global.ca.s32 %0, [%1];"  : "=r"(ret) : __PTR(ptr) );
-        return ret;
+        // int ret;
+        // asm volatile ( "ld.global.ca.s32 %0, [%1];"  : "=&r"(ret) : __PTR(ptr) );
+        // return ret;
+        return amgx::ldg(ptr);
+
     }
 
     static __device__ __forceinline__ float load( const float *ptr )
     {
-        float ret;
-        asm volatile ( "ld.global.ca.f32 %0, [%1];"  : "=f"(ret) : __PTR(ptr) );
-        return ret;
+        // float ret;
+        // asm volatile ( "ld.global.ca.f32 %0, [%1];"  : "=f"(ret) : __PTR(ptr) );
+        // return ret;
+        return amgx::ldg(ptr);
     }
 
     static __device__ __forceinline__ double load( const double *ptr )
     {
-        double ret;
-        asm volatile ( "ld.global.ca.f64 %0, [%1];"  : "=d"(ret) : __PTR(ptr) );
-        return ret;
+        // double ret;
+        // asm volatile ( "ld.global.ca.f64 %0, [%1];"  : "=d"(ret) : __PTR(ptr) );
+        // return ret;
+        return amgx::ldg(ptr);
     }
 
-    static __device__ __forceinline__ cuComplex load( const cuComplex *ptr )
+    static __device__ __forceinline__ muComplex load( const muComplex *ptr )
     {
-        float ret[2];
-        asm volatile ( "ld.global.ca.v2.f32 {%0, %1}, [%2];"  : "=f"(ret[0]), "=f"(ret[1]) : __PTR( (float *)(ptr) ) );
-        return make_cuComplex(ret[0], ret[1]);
+        // float ret[2];
+        // asm volatile ( "ld.global.ca.v2.f32 {%0, %1}, [%2];"  : "=f"(ret[0]), "=f"(ret[1]) : __PTR( (float *)(ptr) ) );
+        // return make_muComplex(ret[0], ret[1]);
+        return amgx::ldg(ptr);
     }
 
-    static __device__ __forceinline__ cuDoubleComplex load( const cuDoubleComplex *ptr )
+    static __device__ __forceinline__ muDoubleComplex load( const muDoubleComplex *ptr )
     {
-        double ret[2];
-        asm volatile ( "ld.global.ca.v2.f64 {%0, %1}, [%2];"  : "=d"(ret[0]), "=d"(ret[1]) : __PTR( (double *)(ptr) ) );
-        return make_cuDoubleComplex(ret[0], ret[1]);
+        // double ret[2];
+        // asm volatile ( "ld.global.ca.v2.f64 {%0, %1}, [%2];"  : "=d"(ret[0]), "=d"(ret[1]) : __PTR( (double *)(ptr) ) );
+        // return make_muDoubleComplex(ret[0], ret[1]);
+        return amgx::ldg(ptr);
     }
 };
 
@@ -262,23 +285,23 @@ struct Ld<LD_NC>
 
 static __device__ __forceinline__ void load_vec2( float (&u)[2], const float *ptr )
 {
-    asm( "ld.global.cg.v2.f32 {%0, %1}, [%2];" : "=f"(u[0]), "=f"(u[1]) : __PTR(ptr) );
+    // asm( "ld.global.cg.v2.f32 {%0, %1}, [%2];" : "=f"(u[0]), "=f"(u[1]) : __PTR(ptr) );
 }
 
 static __device__ __forceinline__ void load_vec2( double (&u)[2], const double *ptr )
 {
-    asm( "ld.global.cg.v2.f64 {%0, %1}, [%2];" : "=d"(u[0]), "=d"(u[1]) : __PTR(ptr) );
+    // asm( "ld.global.cg.v2.f64 {%0, %1}, [%2];" : "=d"(u[0]), "=d"(u[1]) : __PTR(ptr) );
 }
 
 static __device__ __forceinline__ void load_vec4( float (&u)[4], const float *ptr )
 {
-    asm( "ld.global.cg.v4.f32 {%0, %1, %2, %3}, [%4];" : "=f"(u[0]), "=f"(u[1]), "=f"(u[2]), "=f"(u[3]) : __PTR(ptr) );
+    // asm( "ld.global.cg.v4.f32 {%0, %1, %2, %3}, [%4];" : "=f"(u[0]), "=f"(u[1]), "=f"(u[2]), "=f"(u[3]) : __PTR(ptr) );
 }
 
 static __device__ __forceinline__ void load_vec4( double (&u)[4], const double *ptr )
 {
-    asm( "ld.global.cg.v2.f64 {%0, %1}, [%2];" : "=d"(u[0]), "=d"(u[1]) : __PTR(ptr + 0) );
-    asm( "ld.global.cg.v2.f64 {%0, %1}, [%2];" : "=d"(u[2]), "=d"(u[3]) : __PTR(ptr + 2) );
+    // asm( "ld.global.cg.v2.f64 {%0, %1}, [%2];" : "=d"(u[0]), "=d"(u[1]) : __PTR(ptr + 0) );
+    // asm( "ld.global.cg.v2.f64 {%0, %1}, [%2];" : "=d"(u[2]), "=d"(u[3]) : __PTR(ptr + 2) );
 }
 
 // ====================================================================================================================
@@ -286,47 +309,47 @@ static __device__ __forceinline__ void load_vec4( double (&u)[4], const double *
 // ====================================================================================================================
 static __device__ __forceinline__ unsigned int ballot(int p, unsigned int mask = DEFAULT_MASK)
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __ballot_sync(mask, p);
-#else
-    return __ballot(p);   
-#endif
+// #else
+//     return __ballot(p);   
+// #endif
 }
 
 static __device__ __forceinline__ unsigned int any(int p, unsigned int mask = DEFAULT_MASK)
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __any_sync(mask, p);
-#else
-    return __any(p);   
-#endif
+// #else
+//     return __any(p);   
+// #endif
 }
 
 static __device__ __forceinline__ unsigned int all(int p, unsigned int mask = DEFAULT_MASK)
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __all_sync(mask, p);
-#else
-    return __all(p);   
-#endif
+// #else
+//     return __all(p);   
+// #endif
 }
 
 static __device__ __forceinline__ unsigned int activemask()
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __activemask();
-#else
-    return 0xffffffff;
-#endif
+// #else
+//     return 0xffffffff;
+// #endif
 }
 
 static __device__ __forceinline__ void syncwarp(unsigned int mask = 0xffffffff)
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __syncwarp(mask);
-#else
-    return;
-#endif
+// #else
+//     return;
+// #endif
 }
 
 // ====================================================================================================================
@@ -334,201 +357,201 @@ static __device__ __forceinline__ void syncwarp(unsigned int mask = 0xffffffff)
 // ====================================================================================================================
 static __device__ __forceinline__ int shfl( int r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_sync( mask, r, lane, bound );
-#else
-    return __shfl( r, lane, bound );
-#endif
+// #else
+//     return __shfl( r, lane, bound );
+// #endif
 }
 
 
 static __device__ __forceinline__ float shfl( float r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_sync( mask, r, lane, bound );
-#else
-    return __shfl( r, lane, bound );
-#endif
+// #else
+//     return __shfl( r, lane, bound );
+// #endif
 }
 
 static __device__ __forceinline__ double shfl( double r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_sync(mask, r, lane, bound );
-#else
-    int hi = __shfl( __double2hiint(r), lane, bound );
-    int lo = __shfl( __double2loint(r), lane, bound );
-    return __hiloint2double( hi, lo );
-#endif
+// #else
+//     int hi = __shfl( __double2hiint(r), lane, bound );
+//     int lo = __shfl( __double2loint(r), lane, bound );
+//     return __hiloint2double( hi, lo );
+// #endif
 }
 
-static __device__ __forceinline__ cuComplex shfl( cuComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muComplex shfl( muComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
-    float re = __shfl_sync( mask, cuCrealf(r), lane, bound );
-    float im = __shfl_sync( mask, cuCimagf(r), lane, bound );
-    return make_cuComplex(re, im);
-#else
-    float re = __shfl( cuCrealf(r), lane, bound );
-    float im = __shfl( cuCimagf(r), lane, bound );
-    return make_cuComplex(re, im);
-#endif
+// #if CUDART_VERSION >= 9000
+    float re = __shfl_sync( mask, muCrealf(r), lane, bound );
+    float im = __shfl_sync( mask, muCimagf(r), lane, bound );
+    return make_muComplex(re, im);
+// #else
+//     float re = __shfl( muCrealf(r), lane, bound );
+//     float im = __shfl( muCimagf(r), lane, bound );
+//     return make_muComplex(re, im);
+// #endif
 }
 
-static __device__ __forceinline__ cuDoubleComplex shfl( cuDoubleComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muDoubleComplex shfl( muDoubleComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-    double re = shfl( cuCreal(r), lane, mask, bound );
-    double im = shfl( cuCimag(r), lane, mask, bound );
-    return make_cuDoubleComplex( re, im );
+    double re = shfl( muCreal(r), lane, mask, bound );
+    double im = shfl( muCimag(r), lane, mask, bound );
+    return make_muDoubleComplex( re, im );
 }
 
 static __device__ __forceinline__ int shfl_xor( int r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_xor_sync( mask, r, lane_mask, bound );
-#else
-    return __shfl_xor( r, lane_mask, bound );
-#endif
+// #else
+//     return __shfl_xor( r, lane_mask, bound );
+// #endif
 }
 
 
 static __device__ __forceinline__ float shfl_xor( float r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_xor_sync( mask, r, lane_mask, bound );
-#else
-    return __shfl_xor( r, lane_mask, bound );
-#endif
+// #else
+//     return __shfl_xor( r, lane_mask, bound );
+// #endif
 }
 
 static __device__ __forceinline__ double shfl_xor( double r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_xor_sync( mask, r, lane_mask, bound );
-#else
-    int hi = __shfl_xor( __double2hiint(r), lane_mask, bound );
-    int lo = __shfl_xor( __double2loint(r), lane_mask, bound );
-    return __hiloint2double( hi, lo );
-#endif
+// #else
+//     int hi = __shfl_xor( __double2hiint(r), lane_mask, bound );
+//     int lo = __shfl_xor( __double2loint(r), lane_mask, bound );
+//     return __hiloint2double( hi, lo );
+// #endif
 }
 
-static __device__ __forceinline__ cuComplex shfl_xor( cuComplex r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muComplex shfl_xor( muComplex r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
-    float re = __shfl_xor_sync( mask, cuCrealf(r), lane_mask, bound );
-    float im = __shfl_xor_sync( mask, cuCimagf(r), lane_mask, bound );
-    return make_cuComplex(re, im);
-#else
-    float re = __shfl_xor( cuCrealf(r), lane_mask, bound );
-    float im = __shfl_xor( cuCimagf(r), lane_mask, bound );
-    return make_cuComplex(re, im);
-#endif
+// #if CUDART_VERSION >= 9000
+    float re = __shfl_xor_sync( mask, muCrealf(r), lane_mask, bound );
+    float im = __shfl_xor_sync( mask, muCimagf(r), lane_mask, bound );
+    return make_muComplex(re, im);
+// #else
+//     float re = __shfl_xor( muCrealf(r), lane_mask, bound );
+//     float im = __shfl_xor( muCimagf(r), lane_mask, bound );
+//     return make_muComplex(re, im);
+// #endif
 }
 
-static __device__ __forceinline__ cuDoubleComplex shfl_xor( cuDoubleComplex r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muDoubleComplex shfl_xor( muDoubleComplex r, int lane_mask, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-    double re = shfl_xor( cuCreal(r), lane_mask, mask, bound );
-    double im = shfl_xor( cuCimag(r), lane_mask, mask, bound );
-    return make_cuDoubleComplex( re, im );
+    double re = shfl_xor( muCreal(r), lane_mask, mask, bound );
+    double im = shfl_xor( muCimag(r), lane_mask, mask, bound );
+    return make_muDoubleComplex( re, im );
 }
 
 static __device__ __forceinline__ int shfl_down( int r, int offset, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_down_sync( mask, r, offset, bound );
-#else
-    return __shfl_down( r, offset, bound );
-#endif
+// #else
+//     return __shfl_down( r, offset, bound );
+// #endif
 }
 
 static __device__ __forceinline__ float shfl_down( float r, int offset, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_down_sync( mask, r, offset, bound );
-#else
-    return __shfl_down( r, offset, bound );
-#endif
+// #else
+//     return __shfl_down( r, offset, bound );
+// #endif
 }
 
 static __device__ __forceinline__ double shfl_down( double r, int offset, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_down_sync( mask, r, offset, bound );
-#else
-    int hi = __shfl_down( __double2hiint(r), offset, bound );
-    int lo = __shfl_down( __double2loint(r), offset, bound );
-    return __hiloint2double( hi, lo );
-#endif
+// #else
+//     int hi = __shfl_down( __double2hiint(r), offset, bound );
+//     int lo = __shfl_down( __double2loint(r), offset, bound );
+//     return __hiloint2double( hi, lo );
+// #endif
 }
 
-static __device__ __forceinline__ cuComplex shfl_down( cuComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muComplex shfl_down( muComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
-    float re = __shfl_down_sync( mask, cuCrealf(r), lane, bound );
-    float im = __shfl_down_sync( mask, cuCimagf(r), lane, bound );
-    return make_cuComplex(re, im);
-#else
-    float re = __shfl_down( cuCrealf(r), lane, bound );
-    float im = __shfl_down( cuCimagf(r), lane, bound );
-    return make_cuComplex(re, im);
-#endif
+// #if CUDART_VERSION >= 9000
+    float re = __shfl_down_sync( mask, muCrealf(r), lane, bound );
+    float im = __shfl_down_sync( mask, muCimagf(r), lane, bound );
+    return make_muComplex(re, im);
+// #else
+//     float re = __shfl_down( muCrealf(r), lane, bound );
+//     float im = __shfl_down( muCimagf(r), lane, bound );
+//     return make_muComplex(re, im);
+// #endif
 }
 
-static __device__ __forceinline__ cuDoubleComplex shfl_down( cuDoubleComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muDoubleComplex shfl_down( muDoubleComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-    double re = shfl_down( cuCreal(r), lane, bound );
-    double im = shfl_down( cuCimag(r), lane, bound );
-    return make_cuDoubleComplex( re, im );
+    double re = shfl_down( muCreal(r), lane, bound );
+    double im = shfl_down( muCimag(r), lane, bound );
+    return make_muDoubleComplex( re, im );
 }
 
 
 static __device__ __forceinline__ int shfl_up( int r, int offset, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_up_sync( mask, r, offset, bound );
-#else
-    return __shfl_up( r, offset, bound );
-#endif
+// #else
+//     return __shfl_up( r, offset, bound );
+// #endif
 }
 
 static __device__ __forceinline__ float shfl_up( float r, int offset, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_up_sync( mask, r, offset, bound );
-#else
-    return __shfl_up( r, offset, bound );
-#endif
+// #else
+//     return __shfl_up( r, offset, bound );
+// #endif
 }
 
 static __device__ __forceinline__ double shfl_up( double r, int offset, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
+// #if CUDART_VERSION >= 9000
     return __shfl_up_sync( mask, r, offset, bound );
-#else
-    int hi = __shfl_up( __double2hiint(r), offset, bound );
-    int lo = __shfl_up( __double2loint(r), offset, bound );
-    return __hiloint2double( hi, lo );
-#endif
+// #else
+//     int hi = __shfl_up( __double2hiint(r), offset, bound );
+//     int lo = __shfl_up( __double2loint(r), offset, bound );
+//     return __hiloint2double( hi, lo );
+// #endif
 }
 
-static __device__ __forceinline__ cuComplex shfl_up( cuComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muComplex shfl_up( muComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-#if CUDART_VERSION >= 9000
-    float re = __shfl_up_sync( mask, cuCrealf(r), lane, bound );
-    float im = __shfl_up_sync( mask, cuCimagf(r), lane, bound );
-    return make_cuComplex(re, im);
-#else
-    float re = __shfl_up( cuCrealf(r), lane, bound );
-    float im = __shfl_up( cuCimagf(r), lane, bound );
-    return make_cuComplex(re, im);
-#endif
+// #if CUDART_VERSION >= 9000
+    float re = __shfl_up_sync( mask, muCrealf(r), lane, bound );
+    float im = __shfl_up_sync( mask, muCimagf(r), lane, bound );
+    return make_muComplex(re, im);
+// #else
+//     float re = __shfl_up( muCrealf(r), lane, bound );
+//     float im = __shfl_up( muCimagf(r), lane, bound );
+//     return make_muComplex(re, im);
+// #endif
 }
 
-static __device__ __forceinline__ cuDoubleComplex shfl_up( cuDoubleComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
+static __device__ __forceinline__ muDoubleComplex shfl_up( muDoubleComplex r, int lane, int bound = warpSize, unsigned int mask = DEFAULT_MASK )
 {
-    double re = shfl_up( cuCreal(r), lane, bound );
-    double im = shfl_up( cuCimag(r), lane, bound );
-    return make_cuDoubleComplex( re, im );
+    double re = shfl_up( muCreal(r), lane, bound );
+    double im = shfl_up( muCimag(r), lane, bound );
+    return make_muDoubleComplex( re, im );
 }
 
 // ====================================================================================================================
