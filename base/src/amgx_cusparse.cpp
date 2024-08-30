@@ -68,19 +68,25 @@ template <class T_Config>
 musparseStatus_t
 CusparseMatPrec<T_Config>::set(musparseMatDescr_t &cuMatDescr)
 {
-    return musparseSetMatFullPrecision(cuMatDescr, true); //hzy:  undefined reference to `musparseSetMatFullPrecision'
+    // return musparseSetMatFullPrecision(cuMatDescr, true); 
+    //  hzy : this interface will not be called ...
+    return MUSPARSE_STATUS_SUCCESS;
 }
 
 template <AMGX_MemorySpace t_memSpace, AMGX_IndPrecision t_indPrec>
 musparseStatus_t CusparseMatPrec< TemplateConfig<t_memSpace, AMGX_vecDouble, AMGX_matFloat, t_indPrec> >::set(musparseMatDescr_t &cuMatDescr)
 {
-    return musparseSetMatFullPrecision(cuMatDescr, false);//hzy:  undefined reference to `musparseSetMatFullPrecision'
+    // return musparseSetMatFullPrecision(cuMatDescr, false);
+    //  hzy : this interface will not be called ...
+    return MUSPARSE_STATUS_SUCCESS;
 }
 
 template <AMGX_MemorySpace t_memSpace, AMGX_IndPrecision t_indPrec>
 musparseStatus_t CusparseMatPrec< TemplateConfig<t_memSpace, AMGX_vecDoubleComplex, AMGX_matComplex, t_indPrec> >::set(musparseMatDescr_t &cuMatDescr)
 {
-    return musparseSetMatFullPrecision(cuMatDescr, false);//hzy:  undefined reference to `musparseSetMatFullPrecision'
+    // return musparseSetMatFullPrecision(cuMatDescr, false);
+    //  hzy : this interface will not be called ...
+    return MUSPARSE_STATUS_SUCCESS;
 }
 #endif
 
@@ -1082,8 +1088,8 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_32F, MUSA_R_32F, stream);
         #else
-            cusparseCheckError(cusparseScsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
-            //wqq/hzy todo: adapt to musparseScsrmv
+	     musparseMatInfo_t info;
+             cusparseCheckError(musparseScsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
     else
@@ -1118,8 +1124,8 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_64F, MUSA_R_64F, stream);
 
         #else
-            cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
-             //wqq/hzy todo: adapt to musparseScsrmv
+	     musparseMatInfo_t info;
+             cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
     else
@@ -1366,8 +1372,8 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_32F, MUSA_C_32F, stream);
         #else
-            cusparseCheckError(cusparseCcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
-             //wqq/hzy todo: adapt to musparseScsrmv
+	     musparseMatInfo_t info;
+             cusparseCheckError(musparseCcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
     else
@@ -1401,8 +1407,8 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_64F, MUSA_C_64F, stream);
         #else
-            cusparseCheckError(cusparseZcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, x, beta, y));
-             //wqq/hzy todo: adapt to musparseScsrmv
+	     musparseMatInfo_t info;
+             cusparseCheckError(musparseZcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
     else
@@ -1549,6 +1555,7 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
 
 namespace
 {
+#define CUSPARSE_GENERIC_INTERFACES
 #ifdef CUSPARSE_GENERIC_INTERFACES
 template<class MatType, class IndType>
 inline void
@@ -1572,26 +1579,32 @@ generic_SpMM(musparseHandle_t handle, musparseOperation_t transA,
         musparseCreateCsr(&matA_descr, m, k, nnz, const_cast<IndType*>(rowPtr), const_cast<IndType*>(colInd),
                           const_cast<MatType*>(Avals), MUSPARSE_INDEX_32I, MUSPARSE_INDEX_32I, MUSPARSE_INDEX_BASE_ZERO, matType));
     cusparseCheckError(
-        musparseCreateDnMat(&matB_descr, k, n, ldb, const_cast<MatType*>(Bvals), matType, MUSPARSE_ORDER_COL));
+        musparseCreateDnMat(&matB_descr, k, n, ldb, const_cast<MatType*>(Bvals), matType, MUSPARSE_ORDER_ROW));
     cusparseCheckError(
-        musparseCreateDnMat(&matC_descr, m, n, ldc, const_cast<MatType*>(Cvals), matType, MUSPARSE_ORDER_COL));
+        musparseCreateDnMat(&matC_descr, m, n, ldc, const_cast<MatType*>(Cvals), matType, MUSPARSE_ORDER_COLUMN));
 
     // Check if a buffer is required, and if so allocate it using caching allocator
     size_t bufferSize = 0;
+    //cusparseCheckError(
+    //  musparseSpMM_bufferSize(handle, transA, MUSPARSE_OPERATION_NON_TRANSPOSE, alpha, matA_descr, matB_descr,
+    //                            beta, matC_descr, matType, MUSPARSE_SPMM_ALG_DEFAULT, &bufferSize));
     cusparseCheckError(
-        musparseSpMM_bufferSize(handle, transA, MUSPARSE_OPERATION_NON_TRANSPOSE, alpha, matA_descr, matB_descr,
-                                beta, matC_descr, matType, MUSPARSE_SPMM_ALG_DEFAULT, &bufferSize));
-
+        musparseSpMM(handle, transA, MUSPARSE_OPERATION_NON_TRANSPOSE, alpha, matA_descr, matB_descr,
+                                beta, matC_descr, matType,MUSPARSE_SPMM_ALG_DEFAULT, MUSPARSE_SPMM_STAGE_BUFFER_SIZE, &bufferSize, nullptr));
     void* dBuffer = NULL;
     if(bufferSize > 0)
     {
         amgx::memory::musaMalloc(&dBuffer, bufferSize);
     }
 
+    cusparseCheckError(
+        musparseSpMM(handle, transA, MUSPARSE_OPERATION_NON_TRANSPOSE, alpha, matA_descr, matB_descr,
+                                beta, matC_descr, matType,MUSPARSE_SPMM_ALG_DEFAULT, MUSPARSE_SPMM_STAGE_PREPROCESS, &bufferSize, dBuffer));
+
     // Compute the sparse matrix - dense matrix product
     cusparseCheckError(
-        musparseSpMM(handle, transA, MUSPARSE_OPERATION_NON_TRANSPOSE, alpha, matA_descr, matB_descr, beta,
-                     matC_descr, matType, MUSPARSE_SPMM_ALG_DEFAULT, dBuffer));
+        musparseSpMM(handle, transA, MUSPARSE_OPERATION_NON_TRANSPOSE, alpha, matA_descr, matB_descr,
+                                beta, matC_descr, matType, MUSPARSE_SPMM_ALG_DEFAULT, MUSPARSE_SPMM_STAGE_COMPUTE, &bufferSize, dBuffer));
 
     // Clean up
     cusparseCheckError(musparseDestroySpMat(matA_descr));
@@ -1604,6 +1617,7 @@ generic_SpMM(musparseHandle_t handle, musparseOperation_t transA,
     }
 }
 #endif
+#undef CUSPARSE_GENERIC_INTERFACES
 
 void
 cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
@@ -1615,12 +1629,14 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
                const float            *B, int ldb,
                const float            *beta, float          *C, int ldc)
 {
+        generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_R_32F);
+	/*
     #ifdef CUSPARSE_GENERIC_INTERFACES
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_R_32F);
     #else
-        cusparseCheckError(cusparseScsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
-         //wqq/hzy todo: adapt to musparseScsrmv
+         cusparseCheckError(cusparseScsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
     #endif
+    */
 }
 
 void
@@ -1647,12 +1663,14 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
                const double           *B, int ldb,
                const double           *beta, double         *C, int ldc)
 {
+        generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_R_64F);
+	/*
     #ifdef CUSPARSE_GENERIC_INTERFACES
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_R_64F);
     #else
-        cusparseCheckError(cusparseDcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
-         //wqq/hzy todo: adapt to musparseScsrmv
+         cusparseCheckError(cusparseDcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
     #endif
+    */
 }
 
 void
@@ -1665,12 +1683,14 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
                const muComplex            *B, int ldb,
                const muComplex            *beta, muComplex          *C, int ldc)
 {
+        generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_C_32F);
+	/*
     #ifdef CUSPARSE_GENERIC_INTERFACES
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_C_32F);
     #else
-        cusparseCheckError(cusparseCcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
-         //wqq/hzy todo: adapt to musparseScsrmv
+         cusparseCheckError(cusparseCcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
     #endif
+    */
 }
 
 void
@@ -1697,12 +1717,14 @@ cusparse_csrmm(musparseHandle_t handle, musparseOperation_t transA,
                const muDoubleComplex           *B, int ldb,
                const muDoubleComplex           *beta, muDoubleComplex         *C, int ldc)
 {
+        generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_C_64F);
+	/*
     #ifdef CUSPARSE_GENERIC_INTERFACES
         generic_SpMM(handle, transA, m, n, k, nnz, ldb, ldc, alpha, csrValA, B, C, csrRowPtrA, csrColIndA, beta, MUSA_C_64F);
     #else
         cusparseCheckError(cusparseZcsrmm(handle, transA, m, n, k, nnz, alpha, descrA, csrValA, csrRowPtrA, csrColIndA, B, ldb, beta, C, ldc));
-         //wqq/hzy todo: adapt to musparseScsrmv
     #endif
+    */
 }
 }
 
@@ -1735,12 +1757,15 @@ void Cusparse::csrmm(typename TConfig::VecPrec alpha,
 }
 
 template <class T>
-void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const T* Avals, const int* Arows, const int* Acols, T* Bvals, int* Brows, int* Bcols, musaDataType valType)
+void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const T* Avals, const int* Arows, const int* Acols, T* Bvals, int* Brows, int* Bcols, musaDataType valType);
+
+template <>
+void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const float* Avals, const int* Arows, const int* Acols, float* Bvals, int* Brows, int* Bcols, musaDataType valType)
 {
     size_t bufferSize;
-    cusparseCheckError(musparseCsr2cscEx2_bufferSize(
-        handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols, valType,
-        MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, MUSPARSE_CSR2CSC_ALG2, &bufferSize));   //hzy: undeclared identifier 'MUSPARSE_CSR2CSC_ALG2'
+
+    cusparseCheckError(musparseXcsr2csc_bufferSize(
+         handle, nRows, nCols, nNz, Arows, Acols, MUSPARSE_ACTION_SYMBOLIC, &bufferSize));   
 
     void *buffer = nullptr;
     if (bufferSize > 0)
@@ -1748,15 +1773,88 @@ void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, 
         amgx::memory::musaMalloc(&buffer, bufferSize);
     }
 
-    cusparseCheckError(musparseCsr2cscEx2(
-        handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols, valType,
-        MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, MUSPARSE_CSR2CSC_ALG2, buffer));  //hzy: undeclared identifier 'MUSPARSE_CSR2CSC_ALG2'
+    cusparseCheckError(musparseScsr2csc(handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols,
+         MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, buffer));
+
 
     if(bufferSize > 0)
     {
         amgx::memory::musaFreeAsync(buffer);
     }
 }
+
+template <>
+void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const double* Avals, const int* Arows, const int* Acols, double* Bvals, int* Brows, int* Bcols, musaDataType valType)
+{
+    size_t bufferSize;
+
+    cusparseCheckError(musparseXcsr2csc_bufferSize(
+         handle, nRows, nCols, nNz, Arows, Acols, MUSPARSE_ACTION_SYMBOLIC, &bufferSize));   
+
+    void *buffer = nullptr;
+    if (bufferSize > 0)
+    {
+        amgx::memory::musaMalloc(&buffer, bufferSize);
+    }
+
+    cusparseCheckError(musparseDcsr2csc(handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols,
+         MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, buffer));
+
+
+    if(bufferSize > 0)
+    {
+        amgx::memory::musaFreeAsync(buffer);
+    }
+}
+
+template <>
+void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const muComplex* Avals, const int* Arows, const int* Acols, muComplex* Bvals, int* Brows, int* Bcols, musaDataType valType)
+{
+    size_t bufferSize;
+
+    cusparseCheckError(musparseXcsr2csc_bufferSize(
+         handle, nRows, nCols, nNz, Arows, Acols, MUSPARSE_ACTION_SYMBOLIC, &bufferSize));   
+
+    void *buffer = nullptr;
+    if (bufferSize > 0)
+    {
+        amgx::memory::musaMalloc(&buffer, bufferSize);
+    }
+
+    cusparseCheckError(musparseCcsr2csc(handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols,
+         MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, buffer));
+
+
+    if(bufferSize > 0)
+    {
+        amgx::memory::musaFreeAsync(buffer);
+    }
+}
+
+template <>
+void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const muDoubleComplex* Avals, const int* Arows, const int* Acols, muDoubleComplex* Bvals, int* Brows, int* Bcols, musaDataType valType)
+{
+    size_t bufferSize;
+
+    cusparseCheckError(musparseXcsr2csc_bufferSize(
+         handle, nRows, nCols, nNz, Arows, Acols, MUSPARSE_ACTION_SYMBOLIC, &bufferSize));   
+
+    void *buffer = nullptr;
+    if (bufferSize > 0)
+    {
+        amgx::memory::musaMalloc(&buffer, bufferSize);
+    }
+
+    cusparseCheckError(musparseZcsr2csc(handle, nRows, nCols, nNz, Avals, Arows, Acols, Bvals, Brows, Bcols,
+         MUSPARSE_ACTION_NUMERIC, MUSPARSE_INDEX_BASE_ZERO, buffer));
+
+
+    if(bufferSize > 0)
+    {
+        amgx::memory::musaFreeAsync(buffer);
+    }
+}
+
 
 void transpose_internal(musparseHandle_t handle, int nRows, int nCols, int nNz, const float* Avals, const int* Arows, const int* Acols, float* Bvals, int* Brows, int* Bcols)
 {

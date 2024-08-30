@@ -352,18 +352,19 @@ musparseStatus_t cusparseCsrgemm2(musparseHandle_t handle,             \
                                  void* pBuffer                        \
                                  )                                    \
 {                                                                     \
-  return func(handle, m, n, k, alpha, \
-              descrA, nnzA, csrValA, csrRowPtrA, csrColIndA, \
-              descrB, nnzB, csrValB, csrRowPtrB, csrColIndB, \
-              beta, \
-              descrD, nnzD, csrValD, csrRowPtrD, csrColIndD, \
-              descrC, csrValC, csrRowPtrC, csrColIndC, info, pBuffer);  \
+}
+//   return func(handle, m, n, k, alpha, \
+//               descrA, nnzA, csrValA, csrRowPtrA, csrColIndA, \
+//               descrB, nnzB, csrValB, csrRowPtrB, csrColIndB, \
+//               beta, \
+//               descrD, nnzD, csrValD, csrRowPtrD, csrColIndD, \
+//               descrC, csrValC, csrRowPtrC, csrColIndC, info, pBuffer);  \
 }
 
-CUSPARSE_CSRGEMM(float,           musparseScsrgemm)    //hzy
-CUSPARSE_CSRGEMM(double,          musparseDcsrgemm)   //hzy
-CUSPARSE_CSRGEMM(muComplex,       musparseCcsrgemm)   //hzy
-CUSPARSE_CSRGEMM(muDoubleComplex, musparseZcsrgemm)   //hzy
+CUSPARSE_CSRGEMM(float,           musparseScsrgemm)    //hzy : this will never be called  ...
+CUSPARSE_CSRGEMM(double,          musparseDcsrgemm)   //hzy : this will never be called  ...
+CUSPARSE_CSRGEMM(muComplex,       musparseCcsrgemm)   //hzy : this will never be called  ...
+CUSPARSE_CSRGEMM(muDoubleComplex, musparseZcsrgemm)   //hzy : this will never be called  ...
 #endif
 
 #ifndef CUSPARSE_USE_GENERIC_SPGEMM
@@ -390,20 +391,22 @@ musparseStatus_t cusparseCsrgemmBufferSize(musparseHandle_t handle,             
                                  size_t* pBufferSizeInBytes           \
                                  )                                    \
 {                                                                     \
-  return func(handle, m, n, k, alpha, descrA, nnzA,         \
-              csrRowPtrA, csrColIndA, descrB, nnzB,         \
-              csrRowPtrB, csrColIndB, beta, descrD, nnzD,   \
-              csrRowPtrD, csrColIndD, info, pBufferSizeInBytes);       \
+}
+//   return func(handle, m, n, k, alpha, descrA, nnzA,         \
+//               csrRowPtrA, csrColIndA, descrB, nnzB,         \
+//               csrRowPtrB, csrColIndB, beta, descrD, nnzD,   \
+//               csrRowPtrD, csrColIndD, info, pBufferSizeInBytes);       \
 }
 
-CUSPARSE_CSRGEMMBUFSZ(float,           musparseScsrgemm_bufferSizeExt)     //hzy
-CUSPARSE_CSRGEMMBUFSZ(double,          musparseDcsrgemm_bufferSizeExt)   //hzy
-CUSPARSE_CSRGEMMBUFSZ(muComplex,       musparseCcsrgemm_bufferSizeExt)   //hzy
-CUSPARSE_CSRGEMMBUFSZ(muDoubleComplex, musparseZcsrgemm_bufferSizeExt)   //hzy
+CUSPARSE_CSRGEMMBUFSZ(float,           musparseScsrgemm_bufferSizeExt)     //hzy_1
+CUSPARSE_CSRGEMMBUFSZ(double,          musparseDcsrgemm_bufferSizeExt)   //hzy_1
+CUSPARSE_CSRGEMMBUFSZ(muComplex,       musparseCcsrgemm_bufferSizeExt)   //hzy_1
+CUSPARSE_CSRGEMMBUFSZ(muDoubleComplex, musparseZcsrgemm_bufferSizeExt)   //hzy_1
 #endif
 
 // ====================================================================================================================
 
+#define CUSPARSE_USE_GENERIC_SPGEMM
 #ifdef CUSPARSE_USE_GENERIC_SPGEMM
 template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void CSR_Multiply_Impl<TemplateConfig<AMGX_device, V, M, I> >::cusparse_multiply( const Matrix_d &A, const Matrix_d &B, Matrix_d &C, IVector *Aq1, IVector *Bq1, IVector *Aq2, IVector *Bq2 ) {
    // CUSPARSE APIs
@@ -443,34 +446,46 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
     musaDataType        computeType = matType;
 
     // SpGEMM Computation
-    musparseSpGEMMDescr_t spgemmDesc;
-    cusparseCheckError( musparseSpGEMM_createDescr(&spgemmDesc) );
+    //musparseSpGEMMDescr_t spgemmDesc;
+    //cusparseCheckError( musparseSpGEMM_createDescr(&spgemmDesc) );
 
     // ask bufferSize1 bytes for external memory
-    musparseSpGEMM_workEstimation(handle, opA, opB,
-                                  &alpha, matA, matB, &beta, matC,
-                                  computeType, MUSPARSE_SPGEMM_DEFAULT,
-                                  spgemmDesc, &bufferSize1, NULL);
+    
+    musparseSpGEMM(handle, opA, opB,
+                   &alpha, matA, matB, &beta, matC, matC,
+                   computeType, MUSPARSE_SPGEMM_ALG_DEFAULT,
+                   MUSPARSE_SPGEMM_STAGE_AUTO, &bufferSize1, NULL);
     amgx::memory::musaMalloc(&dBuffer1, bufferSize1);
     // inspect the matrices A and B to understand the memory requiremnent for
     // the next step
+    /*
     musparseSpGEMM_workEstimation(handle, opA, opB,
                                   &alpha, matA, matB, &beta, matC,
-                                  computeType, MUSPARSE_SPGEMM_DEFAULT,
+                                  computeType,MUSPARSE_SPGEMM_ALG_DEFAULT,
                                   spgemmDesc, &bufferSize1, dBuffer1);
+				  */
+				  
 
+    musparseSpGEMM(handle, opA, opB,
+                   &alpha, matA, matB, &beta, matC, matC,
+                   computeType, MUSPARSE_SPGEMM_ALG_DEFAULT,
+                   MUSPARSE_SPGEMM_STAGE_AUTO, &bufferSize1, dBuffer1);
+    /*
     // ask bufferSize2 bytes for external memory
     musparseSpGEMM_compute(handle, opA, opB,
                            &alpha, matA, matB, &beta, matC,
                            computeType, MUSPARSE_SPGEMM_DEFAULT,
                            spgemmDesc, &bufferSize2, NULL);
     amgx::memory::musaMalloc(&dBuffer2, bufferSize2);
+			   */
 
     // compute the intermediate product of A * B
+    /*
     musparseSpGEMM_compute(handle, opA, opB,
                            &alpha, matA, matB, &beta, matC,
                            computeType, MUSPARSE_SPGEMM_DEFAULT,
                            spgemmDesc, &bufferSize2, dBuffer2);
+    */
     // get matrix C non-zero entries C_num_nnz1
     int64_t C_num_rows1, C_num_cols1, C_num_nnz1;
     musparseSpMatGetSize(matC, &C_num_rows1, &C_num_cols1, &C_num_nnz1);
@@ -491,15 +506,23 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
 
     musparseCsrSetPointers(matC, C.row_offsets.raw(), C.col_indices.raw(), C.values.raw());
 
+    musparseSpGEMM(handle, opA, opB,
+                   &alpha, matA, matB, &beta, matC, matC,
+                   computeType, MUSPARSE_SPGEMM_ALG_DEFAULT,
+                   MUSPARSE_SPGEMM_STAGE_AUTO, &bufferSize1, dBuffer1);
+    //musaMemcpy(C.row_offsets.raw(),p_matC->row_data, sizeof(int64_t)*(A.get_num_rows() + 1), musaMemcpyDeviceToHost);
+
+    /*
     // copy the final products to the matrix C
     musparseSpGEMM_copy(handle, opA, opB,
                         &alpha, matA, matB, &beta, matC,
                         computeType, MUSPARSE_SPGEMM_DEFAULT, spgemmDesc);
+			*/
 
     C.set_initialized(1);
 
     // destroy matrix/vector descriptors
-    cusparseCheckError( musparseSpGEMM_destroyDescr(spgemmDesc) );
+    //cusparseCheckError( musparseSpGEMM_destroyDescr(spgemmDesc) );
     cusparseCheckError( musparseDestroySpMat(matA) );
     cusparseCheckError( musparseDestroySpMat(matB) );
     cusparseCheckError( musparseDestroySpMat(matC) );
@@ -532,13 +555,13 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
     typename Matrix_d::value_type alpha = types::util<typename Matrix_d::value_type>::get_one();
 
     // Determine the buffer size
-    cusparseCheckError(
-        cusparseCsrgemmBufferSize(
-            handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(), &alpha,
-            A.cuMatDescr, A.get_num_nz(), A.row_offsets.raw(), A.col_indices.raw(),
-            B.cuMatDescr, B.get_num_nz(), B.row_offsets.raw(), B.col_indices.raw(),
-            NULL, A.cuMatDescr, 0, A.row_offsets.raw(), A.col_indices.raw(),
-            info, &pBufferSizeInBytes));   //hzy
+    // cusparseCheckError(
+    //     cusparseCsrgemmBufferSize(
+    //         handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(), &alpha,
+    //         A.cuMatDescr, A.get_num_nz(), A.row_offsets.raw(), A.col_indices.raw(),
+    //         B.cuMatDescr, B.get_num_nz(), B.row_offsets.raw(), B.col_indices.raw(),
+    //         NULL, A.cuMatDescr, 0, A.row_offsets.raw(), A.col_indices.raw(),
+    //         info, &pBufferSizeInBytes));   //hzy
 
     // Allocate the intermediary buffer
     amgx::memory::musaMalloc(&pBuffer, pBufferSizeInBytes);
@@ -559,14 +582,14 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
     C.setColsReorderedByColor(false);
 
     // Compute the row offsets for C
-    cusparseCheckError(
-        musparseXcsrgemm2Nnz(  
-            handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(),
-            A.cuMatDescr, A.get_num_nz(), A.row_offsets.raw(), A.col_indices.raw(),
-            B.cuMatDescr, B.get_num_nz(), B.row_offsets.raw(), B.col_indices.raw(),
-            A.cuMatDescr, 0, A.row_offsets.raw(), A.col_indices.raw(),
-            C.cuMatDescr, C.row_offsets.raw(), nnzTotalDevHostPtr,
-            info, pBuffer));    // hzy
+    // cusparseCheckError(
+    //     musparseXcsrgemm2Nnz(  
+    //         handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(),
+    //         A.cuMatDescr, A.get_num_nz(), A.row_offsets.raw(), A.col_indices.raw(),
+    //         B.cuMatDescr, B.get_num_nz(), B.row_offsets.raw(), B.col_indices.raw(),
+    //         A.cuMatDescr, 0, A.row_offsets.raw(), A.col_indices.raw(),
+    //         C.cuMatDescr, C.row_offsets.raw(), nnzTotalDevHostPtr,
+    //         info, pBuffer));    // hzy
 
     // Note the number of non-zeros in C
     int baseC;
@@ -579,16 +602,16 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
     C.set_num_nz(nnzC);
 
     // Call the generic cuSPARSE CSR GEMM routine
-    cusparseCheckError(
-        cusparseCsrgemm2(
-            handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(),
-            &alpha,
-            A.cuMatDescr, A.get_num_nz(), A.values.raw(), A.row_offsets.raw(), A.col_indices.raw(),
-            B.cuMatDescr, B.get_num_nz(), B.values.raw(), B.row_offsets.raw(), B.col_indices.raw(),
-            NULL,
-            A.cuMatDescr, 0, A.values.raw(), A.row_offsets.raw(), A.col_indices.raw(),
-            C.cuMatDescr, C.values.raw(), C.row_offsets.raw(), C.col_indices.raw(),
-            info, pBuffer));    //hzy
+    // cusparseCheckError(
+    //     cusparseCsrgemm2(
+    //         handle, A.get_num_rows(), B.get_num_cols(), A.get_num_cols(),
+    //         &alpha,
+    //         A.cuMatDescr, A.get_num_nz(), A.values.raw(), A.row_offsets.raw(), A.col_indices.raw(),
+    //         B.cuMatDescr, B.get_num_nz(), B.values.raw(), B.row_offsets.raw(), B.col_indices.raw(),
+    //         NULL,
+    //         A.cuMatDescr, 0, A.values.raw(), A.row_offsets.raw(), A.col_indices.raw(),
+    //         C.cuMatDescr, C.values.raw(), C.row_offsets.raw(), C.col_indices.raw(),
+    //         info, pBuffer));    //hzy
 
     // Finalise
     C.set_initialized(1);
@@ -599,6 +622,7 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void C
     amgx::memory::musaFreeAsync(pBuffer);
 }
 #endif
+#undef CUSPARSE_USE_GENERIC_SPGEMM
 
 template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I >
 void CSR_Multiply_Impl<TemplateConfig<AMGX_device, V, M, I> >::multiply( const Matrix_d &A, const Matrix_d &B, Matrix_d &C, IVector *Aq1, IVector *Bq1, IVector *Aq2, IVector *Bq2 )
