@@ -38,7 +38,7 @@ set(AMGX_INCLUDES
 
 set(tests_all ${tests_all} src/testframework.cpp src/test_utils.cpp src/unit_test.cpp)
 
-add_library(amgx_tests_libs OBJECT ${tests_all})
+add_library(amgx_tests_libs OBJECT ${tests_all} ${TEST_SRCS})
 
 target_include_directories(amgx_tests_libs PRIVATE ${AMGX_INCLUDES}) 
 
@@ -73,7 +73,7 @@ ENDIF(CMAKE_C_COMPILER_NAME MATCHES cl)
 
 add_dependencies(amgx_tests_launcher amgx_tests_library)
 
-target_link_libraries(amgx_tests_launcher amgxsh amgx ${libs_all})
+target_link_libraries(amgx_tests_launcher amgxsh amgx ${libs_all} OpenMP::OpenMP_CXX musart)
 
 if(${AMGX_PUBLIC_RELEASE} MATCHES "FALSE")
   install(TARGETS amgx_tests_launcher DESTINATION "lib/tests")

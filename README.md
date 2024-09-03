@@ -197,3 +197,7 @@ See [API reference doc](doc/AMGX_Reference.pdf) for detailed description of the 
   * Information on contributing
   * Information on solver configurations
   * Information on the code and algorithms
+
+### Compilation for test
+
+Need to add cmake option `-DCMAKE_POSITION_INDEPENDENT_CODE=ON` to compile the library as a shared object.

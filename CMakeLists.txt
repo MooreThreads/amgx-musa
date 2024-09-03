@@ -312,9 +312,11 @@ endif(MKL_ROOT_DIR)
 
 
 #create a list of all sources in amgx
+set(TEST_SRCS "")
 foreach( lib ${libList} )
   add_subdirectory(${lib})
   FILE(GLOB_RECURSE TESTS "${CMAKE_SOURCE_DIR}/${lib}/tests/*.cpp")
+  list(APPEND TEST_SRCS ${TESTS})
 endforeach(lib)
 
 
@@ -396,6 +398,6 @@ add_subdirectory(examples)
 # endif(EXISTS ${CMAKE_SOURCE_DIR}/eigen_examples)
 
 # # build unit tests
-# if(EXISTS ${CMAKE_SOURCE_DIR}/tests)
-#    add_subdirectory(tests)
-# endif(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+if(EXISTS ${CMAKE_SOURCE_DIR}/tests)
+   add_subdirectory(tests)
+endif(EXISTS ${CMAKE_SOURCE_DIR}/tests)
