@@ -586,6 +586,7 @@ void Cusparse::bsrmv_internal( const typename TConfig::VecPrec alphaConst,
     }
 
     bool has_offdiag = nnz != 0;
+    musaStreamSynchronize(stream);
 
     if (has_offdiag )
     {
