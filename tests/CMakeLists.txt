@@ -51,13 +51,9 @@ target_link_libraries(amgx_tests_library amgx)
 add_executable(amgx_tests_launcher src/utest.cpp $<TARGET_OBJECTS:amgx_tests_libs>)
 
 if(${CMAKE_VERSION} VERSION_GREATER_EQUAL "3.18.0")
-  set_target_properties(amgx_tests_launcher PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-  set_target_properties(amgx_tests_libs PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-  set_target_properties(amgx_tests_library PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-
-  target_compile_options(amgx_tests_launcher PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${CUDA_NVCC_FLAGS} >)
-  target_compile_options(amgx_tests_libs PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${CUDA_NVCC_FLAGS} >)
-  target_compile_options(amgx_tests_library PUBLIC $<$<COMPILE_LANGUAGE:CUDA>: ${CUDA_NVCC_FLAGS} >)
+  target_compile_options(amgx_tests_launcher PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
+  target_compile_options(amgx_tests_libs PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
+  target_compile_options(amgx_tests_library PUBLIC $<$<COMPILE_LANGUAGE:MUSA>: ${MUSA_MCC_FLAGS} >)
 endif()
 
 target_include_directories(amgx_tests_launcher PRIVATE ${AMGX_INCLUDES}) 

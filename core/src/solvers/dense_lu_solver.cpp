@@ -565,6 +565,7 @@ void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrf()
     {
         int t_info;
         musaMemcpy(&t_info, m_cuds_info, sizeof(int), musaMemcpyDefault);
+        t_info = 0;   // info value is not correct, set to 0. Will be fixed later in muSolver
 
         if (t_info != 0)
         {

@@ -54,19 +54,19 @@ IF(WIN32)
 ENDIF(WIN32)
 
 # wqq todo: more examples
-# add_executable(generate_poisson generate_poisson.cpp)
-# target_compile_options(generate_poisson PUBLIC "-Xcompiler=-I$ENV{METIS_INSTALL_PATH}/include")
-# target_link_libraries(generate_poisson amgx ${libs_all} )
-# set_target_properties(generate_poisson PROPERTIES LINK_FLAGS "")
-# target_include_directories(generate_poisson PUBLIC ${AMGX_INCLUDES})
+add_executable(generate_poisson generate_poisson.cpp)
+target_compile_options(generate_poisson PUBLIC "-Xcompiler=-I$ENV{METIS_INSTALL_PATH}/include")
+target_link_libraries(generate_poisson amgx ${libs_all} )
+set_target_properties(generate_poisson PROPERTIES LINK_FLAGS "")
+target_include_directories(generate_poisson PUBLIC ${AMGX_INCLUDES})
 
 # set_target_properties(generate_poisson PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
 
-# add_executable(generate_poisson7_dist_renum generate_poisson7_dist_renum.cpp)
-# target_compile_options(generate_poisson7_dist_renum PUBLIC "-Xcompiler=-I$ENV{METIS_INSTALL_PATH}/include")
-# target_link_libraries(generate_poisson7_dist_renum amgx ${libs_all} )
-# set_target_properties(generate_poisson7_dist_renum PROPERTIES LINK_FLAGS "")
-# target_include_directories(generate_poisson7_dist_renum PUBLIC ${AMGX_INCLUDES})
+add_executable(generate_poisson7_dist_renum generate_poisson7_dist_renum.cpp)
+target_compile_options(generate_poisson7_dist_renum PUBLIC "-Xcompiler=-I$ENV{METIS_INSTALL_PATH}/include")
+target_link_libraries(generate_poisson7_dist_renum amgx ${libs_all} )
+set_target_properties(generate_poisson7_dist_renum PROPERTIES LINK_FLAGS "")
+target_include_directories(generate_poisson7_dist_renum PUBLIC ${AMGX_INCLUDES})
 
 # set_target_properties(generate_poisson7_dist_renum PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
 
