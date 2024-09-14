@@ -80,7 +80,6 @@ class Cusparse;
 #if defined(__cplusplus)
 extern "C" {
 musparseStatus_t MUSPARSEAPI musparseSetMatFullPrecision(musparseMatDescr_t descrA, bool fullprec);
-// hzy:undefined reference to `musparseSetMatFullPrecision'
 }
 #endif
 

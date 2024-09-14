@@ -1089,7 +1089,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_32F, MUSA_R_32F, stream);
         #else
-	     musparseMatInfo_t info;
+	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseScsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
@@ -1125,7 +1125,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_64F, MUSA_R_64F, stream);
 
         #else
-	     musparseMatInfo_t info;
+	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
@@ -1373,7 +1373,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_32F, MUSA_C_32F, stream);
         #else
-	     musparseMatInfo_t info;
+	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseCcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
@@ -1408,7 +1408,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_64F, MUSA_C_64F, stream);
         #else
-	     musparseMatInfo_t info;
+	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseZcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }

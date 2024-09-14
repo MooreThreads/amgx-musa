@@ -7,3 +7,6 @@ plugin_config.cpp
 *.sublime-workspace
 core/src/version.cpp
 ci/docker/
+.vscode/
+examples/input_matrix/
+*.mtx

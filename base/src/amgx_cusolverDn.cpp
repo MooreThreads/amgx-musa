@@ -26,7 +26,6 @@
  */
 
 #include <amgx_cusolverDn.h>
-
 namespace amgx
 {
 

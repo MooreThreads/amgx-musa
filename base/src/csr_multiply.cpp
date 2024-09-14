@@ -398,17 +398,20 @@ musparseStatus_t cusparseCsrgemmBufferSize(musparseHandle_t handle,             
 //               csrRowPtrD, csrColIndD, info, pBufferSizeInBytes);       \
 }
 
-CUSPARSE_CSRGEMMBUFSZ(float,           musparseScsrgemm_bufferSizeExt)     //hzy_1
-CUSPARSE_CSRGEMMBUFSZ(double,          musparseDcsrgemm_bufferSizeExt)   //hzy_1
-CUSPARSE_CSRGEMMBUFSZ(muComplex,       musparseCcsrgemm_bufferSizeExt)   //hzy_1
-CUSPARSE_CSRGEMMBUFSZ(muDoubleComplex, musparseZcsrgemm_bufferSizeExt)   //hzy_1
+CUSPARSE_CSRGEMMBUFSZ(float,           musparseScsrgemm_bufferSizeExt) 
+CUSPARSE_CSRGEMMBUFSZ(double,          musparseDcsrgemm_bufferSizeExt)
+CUSPARSE_CSRGEMMBUFSZ(muComplex,       musparseCcsrgemm_bufferSizeExt) 
+CUSPARSE_CSRGEMMBUFSZ(muDoubleComplex, musparseZcsrgemm_bufferSizeExt) 
 #endif
 
 // ====================================================================================================================
 
 #define CUSPARSE_USE_GENERIC_SPGEMM
 #ifdef CUSPARSE_USE_GENERIC_SPGEMM
-template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > void CSR_Multiply_Impl<TemplateConfig<AMGX_device, V, M, I> >::cusparse_multiply( const Matrix_d &A, const Matrix_d &B, Matrix_d &C, IVector *Aq1, IVector *Bq1, IVector *Aq2, IVector *Bq2 ) {
+template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I > 
+void CSR_Multiply_Impl<TemplateConfig<AMGX_device, V, M, I> >::cusparse_multiply( 
+    const Matrix_d &A, const Matrix_d &B, Matrix_d &C, 
+    IVector *Aq1, IVector *Bq1, IVector *Aq2, IVector *Bq2 ) {
    // CUSPARSE APIs
     musparseHandle_t handle = Cusparse::get_instance().get_handle();
     musparseSpMatDescr_t matA, matB, matC;
