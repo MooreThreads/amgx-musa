@@ -1067,6 +1067,7 @@ inline void generic_SpMV(musparseHandle_t handle, musparseOperation_t trans,
 }
 #endif
 
+#define CUSPARSE_ADAPTIVE_INTERFACES 1
 inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                              int mb, int nb, int nnzb,
                              const float *alpha,
@@ -1088,6 +1089,13 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     {
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_32F, MUSA_R_32F, stream);
+
+        #elif CUSPARSE_ADAPTIVE_INTERFACES
+            musparseMatInfo_t info;
+            musparseCreateMatInfo(&info);
+            cusparseCheckError(musparseScsrmv_analysis(handle, trans, mb, nb, nnzb, descr, bsrVal, bsrRowPtr, bsrColInd, info));
+            cusparseCheckError(musparseScsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
+
         #else
 	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseScsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
@@ -1101,6 +1109,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     // Reset cuSparse to default stream
     musparseSetStream(handle, 0);
 }
+
 
 inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                              int mb, int nb, int nnzb,
@@ -1123,10 +1132,16 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     {
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_R_64F, MUSA_R_64F, stream);
-
+        
+        #elif CUSPARSE_ADAPTIVE_INTERFACES
+            musparseMatInfo_t info;
+            musparseCreateMatInfo(&info);
+            cusparseCheckError(musparseDcsrmv_analysis(handle, trans, mb, nb, nnzb, descr, bsrVal, bsrRowPtr, bsrColInd, info));
+            cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
+            
         #else
-	     musparseMatInfo_t info = NULL;
-             cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
+	        musparseMatInfo_t info = NULL;
+            cusparseCheckError(musparseDcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
         #endif
     }
     else
@@ -1137,6 +1152,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     // Reset cuSparse to default stream
     musparseSetStream(handle, 0);
 }
+#undef CUSPARSE_ADAPTIVE_INTERFACES
 
 inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                              int mb, int nb, int nnzb,
@@ -1350,7 +1366,7 @@ inline void Cusparse::bsrxmv_internal( musparseHandle_t handle, musparseDirectio
 }
 
 
-
+#define CUSPARSE_ADAPTIVE_INTERFACES 1
 inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                              int mb, int nb, int nnzb,
                              const muComplex *alpha,
@@ -1372,6 +1388,13 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     {
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_32F, MUSA_C_32F, stream);
+
+        #elif CUSPARSE_ADAPTIVE_INTERFACES
+            musparseMatInfo_t info;
+            musparseCreateMatInfo(&info);
+            cusparseCheckError(musparseCcsrmv_analysis(handle, trans, mb, nb, nnzb, descr, bsrVal, bsrRowPtr, bsrColInd, info));
+            cusparseCheckError(musparseCcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
+
         #else
 	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseCcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
@@ -1407,6 +1430,13 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     {
         #ifdef CUSPARSE_GENERIC_INTERFACES
             generic_SpMV(handle, trans, mb, nb, nnzb, alpha, bsrVal, bsrRowPtr, bsrColInd, x, beta, y, MUSA_C_64F, MUSA_C_64F, stream);
+
+        #elif CUSPARSE_ADAPTIVE_INTERFACES
+            musparseMatInfo_t info;
+            musparseCreateMatInfo(&info);
+            cusparseCheckError(musparseZcsrmv_analysis(handle, trans, mb, nb, nnzb, descr, bsrVal, bsrRowPtr, bsrColInd, info));
+            cusparseCheckError(musparseZcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
+
         #else
 	     musparseMatInfo_t info = NULL;
              cusparseCheckError(musparseZcsrmv(handle, trans, mb, nb, nnzb, alpha, descr, bsrVal, bsrRowPtr, bsrColInd, info, x, beta, y));
@@ -1420,6 +1450,7 @@ inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, m
     // Reset cuSparse to default stream
     musparseSetStream(handle, 0);
 }
+#undef CUSPARSE_ADAPTIVE_INTERFACES
 
 inline void Cusparse::bsrmv( musparseHandle_t handle, musparseDirection_t dir, musparseOperation_t trans,
                              int mb, int nb, int nnzb,
