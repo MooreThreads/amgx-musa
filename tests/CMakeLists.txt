@@ -69,7 +69,11 @@ ENDIF(CMAKE_C_COMPILER_NAME MATCHES cl)
 
 add_dependencies(amgx_tests_launcher amgx_tests_library)
 
-target_link_libraries(amgx_tests_launcher amgxsh amgx ${libs_all} OpenMP::OpenMP_CXX musart)
+if(OMP_ROOT)
+  target_link_libraries(amgx_tests_launcher amgxsh amgx ${libs_all} ${OMP_ROOT}/lib/libomp.so musart)
+else()
+  target_link_libraries(amgx_tests_launcher amgxsh amgx ${libs_all} OpenMP::OpenMP_CXX musart)
+endif()
 
 if(${AMGX_PUBLIC_RELEASE} MATCHES "FALSE")
   install(TARGETS amgx_tests_launcher DESTINATION "lib/tests")
