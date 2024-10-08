@@ -43,14 +43,15 @@ void *CSR_Multiply<TemplateConfig<AMGX_device, V, M, I> >::csr_workspace_create(
     musaDeviceProp props = getDeviceProperties();
     int arch = 10 * props.major + props.minor;
 
-    if ( arch >= 70 )
-    {
-        return new CSR_Multiply_Sm70<TConfig_d>();
-    }
-    if ( arch >= 35 )
-    {
-        return new CSR_Multiply_Sm35<TConfig_d>();
-    }
+    // if ( arch >= 70 )
+    // {
+    //     return new CSR_Multiply_Sm70<TConfig_d>();
+    // }
+    // if ( arch >= 35 )
+    // {
+    //     return new CSR_Multiply_Sm35<TConfig_d>();
+    // }
+    return new CSR_Multiply_Sm70<TConfig_d>();
 
     FatalError( "CSR_Multiply: Unsupported architecture. It requires a Kepler GPU or newer!!!", AMGX_ERR_NOT_SUPPORTED_BLOCKSIZE );
 }
@@ -64,18 +65,22 @@ void *CSR_Multiply<TemplateConfig<AMGX_device, V, M, I> >::csr_workspace_create(
     musaDeviceProp props = getDeviceProperties();
     int arch = 10 * props.major + props.minor;
 
-    if ( arch >= 70 )
-    {
-        CSR_Multiply_Sm70<TConfig_d> *wk = new CSR_Multiply_Sm70<TConfig_d>();
-        wk->set_max_attempts(max_attempts);
-        return wk;
-    }
-    if ( arch >= 35 )
-    {
-        CSR_Multiply_Sm35<TConfig_d> *wk = new CSR_Multiply_Sm35<TConfig_d>();
-        wk->set_max_attempts(max_attempts);
-        return wk;
-    }
+    // if ( arch >= 70 )
+    // {
+    //     CSR_Multiply_Sm70<TConfig_d> *wk = new CSR_Multiply_Sm70<TConfig_d>();
+    //     wk->set_max_attempts(max_attempts);
+    //     return wk;
+    // }
+    // if ( arch >= 35 )
+    // {
+    //     CSR_Multiply_Sm35<TConfig_d> *wk = new CSR_Multiply_Sm35<TConfig_d>();
+    //     wk->set_max_attempts(max_attempts);
+    //     return wk;
+    // }
+
+    CSR_Multiply_Sm70<TConfig_d> *wk = new CSR_Multiply_Sm70<TConfig_d>();
+    wk->set_max_attempts(max_attempts);
+    return wk;
 
     FatalError( "CSR_Multiply: Unsupported architecture. It requires a Kepler GPU or newer!!!", AMGX_ERR_NOT_SUPPORTED_BLOCKSIZE );
 }

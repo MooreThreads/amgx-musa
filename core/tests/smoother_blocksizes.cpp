@@ -94,7 +94,7 @@ void check_block_smoothers_random(int bsize, int rows, std::string smoother_stri
     {
         for (int j = A_h.row_offsets[i]; j < A_h.row_offsets[i + 1]; j++)
         {
-            printf("Row: %d, Col: %d\n", i, A_h.col_indices[j]);
+            // printf("Row: %d, Col: %d\n", i, A_h.col_indices[j]);
             double val = 1;
 
             if (i == A_h.col_indices[j])
