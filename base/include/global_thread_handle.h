@@ -233,7 +233,7 @@ musaError_t musaMalloc(void **ptr, size_t size);
 musaError_t musaFreeAsync(void *ptr);
 
 // Wait for the asynchronous frees to complete.
-void cudaFreeWait();
+void musaFreeWait();
 
 // Join threads. ????
 void joinPinnedPools();

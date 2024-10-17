@@ -31,14 +31,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-//#include "cuda_runtime.h"
+//#include "musa_runtime.h"
 
 /* CUDA error macro */
 #define CUDA_SAFE_CALL(call) do {                                 \
-  cudaError_t err = call;                                         \
-  if(cudaSuccess != err) {                                        \
+  musaError_t err = call;                                         \
+  if(musaSuccess != err) {                                        \
     fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n", \
-            __FILE__, __LINE__, cudaGetErrorString( err) );       \
+            __FILE__, __LINE__, musaGetErrorString( err) );       \
     exit(EXIT_FAILURE);                                           \
   } } while (0)
 
@@ -442,6 +442,6 @@ int main(int argc, const char **argv)
 #ifdef AMGX_DYNAMIC_LOADING
     amgx_libclose(lib_handle);
 #endif
-    //CUDA_SAFE_CALL(cudaDeviceReset());
+    //CUDA_SAFE_CALL(musaDeviceReset());
     return status;
 }

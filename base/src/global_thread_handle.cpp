@@ -1054,7 +1054,7 @@ musaError_t musaFreeAsync(void *ptr)
     return status;
 }
 
-void cudaFreeWait()
+void musaFreeWait()
 {
 }
 

@@ -29,14 +29,14 @@
 #include <stdlib.h>
 #include <string.h>
 #include <mpi.h>
-#include "cuda_runtime.h"
+#include "musa_runtime.h"
 
 /* CUDA error macro */
 #define CUDA_SAFE_CALL(call) do {                                 \
-  cudaError_t err = call;                                         \
-  if(cudaSuccess != err) {                                        \
+  musaError_t err = call;                                         \
+  if(musaSuccess != err) {                                        \
     fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n", \
-            __FILE__, __LINE__, cudaGetErrorString( err) );       \
+            __FILE__, __LINE__, musaGetErrorString( err) );       \
     exit(EXIT_FAILURE);                                           \
   } } while (0)
 
@@ -146,9 +146,9 @@ int main(int argc, char **argv)
     MPI_Comm_size(amgx_mpi_comm, &nranks);
     MPI_Comm_rank(amgx_mpi_comm, &rank);
     //CUDA GPUs
-    CUDA_SAFE_CALL(cudaGetDeviceCount(&gpu_count));
+    CUDA_SAFE_CALL(musaGetDeviceCount(&gpu_count));
     lrank = rank % gpu_count;
-    CUDA_SAFE_CALL(cudaSetDevice(lrank));
+    CUDA_SAFE_CALL(musaSetDevice(lrank));
     printf("Process %d selecting device %d\n", rank, lrank);
 
     /* check arguments */
@@ -370,6 +370,6 @@ int main(int argc, char **argv)
     amgx_libclose(lib_handle);
 #endif
     MPI_Finalize();
-    CUDA_SAFE_CALL(cudaDeviceReset());
+    CUDA_SAFE_CALL(musaDeviceReset());
     return status;
 }

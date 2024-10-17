@@ -50,7 +50,7 @@ IF(WIN32)
       set_target_properties ( amgx_capi PROPERTIES LINKER_LANGUAGE CXX )
     ENDIF(MSVC)
 # ELSE(WIN32)
-#   SET_SOURCE_FILES_PROPERTIES( amgx_capi.c PROPERTIES COMPILE_FLAGS -std=c99 )
+#   SET_SOURCE_FILES_PROPERTIES( amgx_capi.c PROPERTIES COMPILE_FLAGS -std=c++17 )
 ENDIF(WIN32)
 
 # wqq todo: more examples
@@ -100,25 +100,21 @@ if(MPI_FOUND)
       ENDIF(MSVC)
     ELSE(WIN32)
 
-      SET_SOURCE_FILES_PROPERTIES( amgx_mpi_capi.c PROPERTIES COMPILE_FLAGS -std=c99 )
       set_target_properties ( amgx_mpi_capi PROPERTIES COMPILE_FLAGS "${OpenMP_C_FLAGS} -pthread" )
       set_target_properties ( amgx_mpi_capi PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-      target_link_libraries(amgx_mpi_capi amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs})
+      target_link_libraries(amgx_mpi_capi amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs} stdc++ m musa)
 
-      SET_SOURCE_FILES_PROPERTIES( amgx_mpi_capi_agg.c PROPERTIES COMPILE_FLAGS -std=c99 )
       set_target_properties ( amgx_mpi_capi_agg PROPERTIES COMPILE_FLAGS "${OpenMP_C_FLAGS} -pthread" )
       set_target_properties ( amgx_mpi_capi_agg PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-      target_link_libraries(amgx_mpi_capi_agg amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs})
+      target_link_libraries(amgx_mpi_capi_agg amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs} stdc++ m musa)
 
-      SET_SOURCE_FILES_PROPERTIES( amgx_mpi_capi_cla.c PROPERTIES COMPILE_FLAGS -std=c99 )
       set_target_properties ( amgx_mpi_capi_cla PROPERTIES COMPILE_FLAGS "${OpenMP_C_FLAGS} -pthread" )
       set_target_properties ( amgx_mpi_capi_cla PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-      target_link_libraries(amgx_mpi_capi_cla amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs})
+      target_link_libraries(amgx_mpi_capi_cla amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs} stdc++ m musa)
 
-      SET_SOURCE_FILES_PROPERTIES( amgx_mpi_poisson7.c PROPERTIES COMPILE_FLAGS -std=c99 )
       set_target_properties ( amgx_mpi_poisson7 PROPERTIES COMPILE_FLAGS "${OpenMP_C_FLAGS} -pthread" )
       set_target_properties ( amgx_mpi_poisson7 PROPERTIES LINK_FLAGS "${MPI_LINK_FLAGS}")
-      target_link_libraries( amgx_mpi_poisson7 amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs})
+      target_link_libraries( amgx_mpi_poisson7 amgxsh ${omp_lib} ${MPI_C_LIBRARIES} ${dyn_libs} stdc++ m musa)
 
     ENDIF(WIN32) 
     
@@ -134,10 +130,10 @@ if(MPI_FOUND)
     target_include_directories(amgx_mpi_capi_cla PUBLIC ${AMGX_INCLUDES})
     target_include_directories(amgx_mpi_poisson7 PUBLIC ${AMGX_INCLUDES})
 
-    set_target_properties(amgx_mpi_capi PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-    set_target_properties(amgx_mpi_capi_agg PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-    set_target_properties(amgx_mpi_capi_cla PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
-    set_target_properties(amgx_mpi_poisson7 PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
+    # set_target_properties(amgx_mpi_capi PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
+    # set_target_properties(amgx_mpi_capi_agg PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
+    # set_target_properties(amgx_mpi_capi_cla PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
+    # set_target_properties(amgx_mpi_poisson7 PROPERTIES CUDA_ARCHITECTURES "${CUDA_ARCH}")
 
 endif(MPI_FOUND)
 

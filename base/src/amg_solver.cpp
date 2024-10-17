@@ -219,7 +219,7 @@ AMGX_ERROR AMG_Solver<T_Config>::setup( Matrix<T_Config> &A)//&A0)
     // reset settings to normal
     memory::setAsyncFreeFlag(false);
     // free postponed objects
-    thrust::global_thread_handle::cudaFreeWait();
+    thrust::global_thread_handle::musaFreeWait();
 
     if ( m_with_timings )
     {
@@ -251,7 +251,7 @@ AMGX_ERROR AMG_Solver<T_Config>::resetup( Matrix<T_Config> &A)//&A0 )
     // reset settings to normal
     memory::setAsyncFreeFlag(false);
     // free postponed objects
-    thrust::global_thread_handle::cudaFreeWait();
+    thrust::global_thread_handle::musaFreeWait();
 
     if ( m_with_timings )
     {
@@ -293,7 +293,7 @@ AMGX_ERROR AMG_Solver<T_Config>::solve( Vector<T_Config> &b, Vector<T_Config> &x
     }
 
     AMGX_ERROR e = solver->solve_no_throw( b, x, status, xIsZero );
-    thrust::global_thread_handle::cudaFreeWait();
+    thrust::global_thread_handle::musaFreeWait();
 
     if ( m_with_timings )
     {
