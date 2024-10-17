@@ -39,14 +39,14 @@ typedef unsigned __int64 uint64_t;
 #endif
 #include <string.h>
 #include <mpi.h>
-#include "cuda_runtime.h"
+#include "musa_runtime.h"
 
 /* CUDA error macro */
 #define CUDA_SAFE_CALL(call) do {                                 \
-  cudaError_t err = call;                                         \
-  if(cudaSuccess != err) {                                        \
+  musaError_t err = call;                                         \
+  if(musaSuccess != err) {                                        \
     fprintf(stderr, "Cuda error in file '%s' in line %i : %s.\n", \
-            __FILE__, __LINE__, cudaGetErrorString( err) );       \
+            __FILE__, __LINE__, musaGetErrorString( err) );       \
     exit(EXIT_FAILURE);                                           \
   } } while (0)
 
@@ -195,9 +195,9 @@ int main(int argc, char **argv)
     MPI_Comm_size(amgx_mpi_comm, &nranks);
     MPI_Comm_rank(amgx_mpi_comm, &rank);
     //CUDA GPUs
-    CUDA_SAFE_CALL(cudaGetDeviceCount(&gpu_count));
+    CUDA_SAFE_CALL(musaGetDeviceCount(&gpu_count));
     lrank = rank % gpu_count;
-    CUDA_SAFE_CALL(cudaSetDevice(lrank));
+    CUDA_SAFE_CALL(musaSetDevice(lrank));
     printf("Process %d selecting device %d\n", rank, lrank);
 
     /* check arguments */
@@ -441,21 +441,21 @@ int main(int argc, char **argv)
     if ((pidx = findParamIndex(argv, argc, "-gpu")) != -1)
     {
         /* allocate memory and copy the data to the GPU */
-        CUDA_SAFE_CALL(cudaMalloc((void **)&d_x, n * block_dimx * sizeof_v_val));
-        CUDA_SAFE_CALL(cudaMalloc((void **)&d_b, n * block_dimy * sizeof_v_val));
-        CUDA_SAFE_CALL(cudaMalloc((void **)&d_col_indices, nnz * sizeof(int64_t)));
-        CUDA_SAFE_CALL(cudaMalloc((void **)&d_row_ptrs, (n + 1)*sizeof(int)));
-        CUDA_SAFE_CALL(cudaMalloc((void **)&d_values, nnz * block_size * sizeof_m_val));
-        CUDA_SAFE_CALL(cudaMemcpy(d_x, h_x, n * block_dimx * sizeof_v_val, cudaMemcpyDefault));
-        CUDA_SAFE_CALL(cudaMemcpy(d_b, h_b, n * block_dimy * sizeof_v_val, cudaMemcpyDefault));
-        CUDA_SAFE_CALL(cudaMemcpy(d_col_indices, h_col_indices, nnz * sizeof(int64_t), cudaMemcpyDefault));
-        CUDA_SAFE_CALL(cudaMemcpy(d_row_ptrs, h_row_ptrs, (n + 1)*sizeof(int), cudaMemcpyDefault));
-        CUDA_SAFE_CALL(cudaMemcpy(d_values, h_values, nnz * block_size * sizeof_m_val, cudaMemcpyDefault));
+        CUDA_SAFE_CALL(musaMalloc((void **)&d_x, n * block_dimx * sizeof_v_val));
+        CUDA_SAFE_CALL(musaMalloc((void **)&d_b, n * block_dimy * sizeof_v_val));
+        CUDA_SAFE_CALL(musaMalloc((void **)&d_col_indices, nnz * sizeof(int64_t)));
+        CUDA_SAFE_CALL(musaMalloc((void **)&d_row_ptrs, (n + 1)*sizeof(int)));
+        CUDA_SAFE_CALL(musaMalloc((void **)&d_values, nnz * block_size * sizeof_m_val));
+        CUDA_SAFE_CALL(musaMemcpy(d_x, h_x, n * block_dimx * sizeof_v_val, musaMemcpyDefault));
+        CUDA_SAFE_CALL(musaMemcpy(d_b, h_b, n * block_dimy * sizeof_v_val, musaMemcpyDefault));
+        CUDA_SAFE_CALL(musaMemcpy(d_col_indices, h_col_indices, nnz * sizeof(int64_t), musaMemcpyDefault));
+        CUDA_SAFE_CALL(musaMemcpy(d_row_ptrs, h_row_ptrs, (n + 1)*sizeof(int), musaMemcpyDefault));
+        CUDA_SAFE_CALL(musaMemcpy(d_values, h_values, nnz * block_size * sizeof_m_val, musaMemcpyDefault));
 
         if (h_diag != NULL)
         {
-            CUDA_SAFE_CALL(cudaMalloc(&d_diag, n * block_size * sizeof_m_val));
-            CUDA_SAFE_CALL(cudaMemcpy(d_diag, h_diag, n * block_size * sizeof_m_val, cudaMemcpyDefault));
+            CUDA_SAFE_CALL(musaMalloc(&d_diag, n * block_size * sizeof_m_val));
+            CUDA_SAFE_CALL(musaMemcpy(d_diag, h_diag, n * block_size * sizeof_m_val, musaMemcpyDefault));
         }
 
         /* set pointers to point to GPU (device) memory */
@@ -578,9 +578,9 @@ int main(int argc, char **argv)
 
     /* example of how to get (the local part of) the solution */
     //if ((pidx = findParamIndex(argv, argc, "-gpu")) != -1) {
-    //    CUDA_SAFE_CALL(cudaMalloc(&d_result, n*block_dimx*sizeof_v_val));
+    //    CUDA_SAFE_CALL(musaMalloc(&d_result, n*block_dimx*sizeof_v_val));
     //    AMGX_vector_download(x, d_result);
-    //    CUDA_SAFE_CALL(cudaFree(d_result));
+    //    CUDA_SAFE_CALL(musaFree(d_result));
     //}
     //else{
     //    void* h_result = malloc(n*block_dimx*sizeof_v_val);
@@ -594,15 +594,15 @@ int main(int argc, char **argv)
     if ((pidx = findParamIndex(argv, argc, "-gpu")) != -1)
     {
         /* deallocate GPU (device) memory */
-        CUDA_SAFE_CALL(cudaFree(d_x));
-        CUDA_SAFE_CALL(cudaFree(d_b));
-        CUDA_SAFE_CALL(cudaFree(d_row_ptrs));
-        CUDA_SAFE_CALL(cudaFree(d_col_indices));
-        CUDA_SAFE_CALL(cudaFree(d_values));
+        CUDA_SAFE_CALL(musaFree(d_x));
+        CUDA_SAFE_CALL(musaFree(d_b));
+        CUDA_SAFE_CALL(musaFree(d_row_ptrs));
+        CUDA_SAFE_CALL(musaFree(d_col_indices));
+        CUDA_SAFE_CALL(musaFree(d_values));
 
         if (d_diag != NULL)
         {
-            CUDA_SAFE_CALL(cudaFree(d_diag));
+            CUDA_SAFE_CALL(musaFree(d_diag));
         }
     }
     else
@@ -639,6 +639,6 @@ int main(int argc, char **argv)
     amgx_libclose(lib_handle);
 #endif
     MPI_Finalize();
-    CUDA_SAFE_CALL(cudaDeviceReset());
+    CUDA_SAFE_CALL(musaDeviceReset());
     return status;
 }

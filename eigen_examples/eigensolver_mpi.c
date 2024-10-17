@@ -88,12 +88,12 @@ int main(int argc, char **argv)
 
   int gpu_count = 0;
   // calculate local rank assuming equal number of GPUs per node and one GPU per rank
-  cudaGetDeviceCount(&gpu_count);
+  musaGetDeviceCount(&gpu_count);
   local_rank = part - (part/gpu_count)*gpu_count;
 
   printf("Process %d selecting device %d\n", part, local_rank);
 
-  cudaSetDevice(local_rank);
+  musaSetDevice(local_rank);
 
   int pidx = 0;
 

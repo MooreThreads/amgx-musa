@@ -10,3 +10,4 @@ ci/docker/
 .vscode/
 examples/input_matrix/
 *.mtx
+.utestsnums
