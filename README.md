@@ -216,4 +216,5 @@ And you can run the perf test:
 cd perf/DILU_forward_1x1_kernel
 ./build/bin/dilu_forward_1x1_kernel   #default: for data 0
 ./build/bin/dilu_forward_1x1_kernel -f 1000  #for data 1000
+./build/bin/dilu_forward_1x1_kernel -wc 5 -tc 10  #warm up 5 cycles, test 10 cycles
 ```

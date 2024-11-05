@@ -9,7 +9,7 @@
 #include <solvers/multicolor_dilu_solver.h>
 
 
-static int parse_arguments(int argc, char* argv[], int& fileNo)
+static int parse_arguments(int argc, char* argv[], int& fileNo, int& test_cycle, int& warmup_cycle)
 {
     if (argc >= 2)
     {
@@ -26,6 +26,14 @@ static int parse_arguments(int argc, char* argv[], int& fileNo)
                 if ((arg == "-f") && (i + 1 < argc))
                 {
                     fileNo = atoi(argv[++i]);
+                }
+                else if ((arg == "-tc") && (i + 1 < argc))
+                {
+                    test_cycle = atoi(argv[++i]);
+                }
+                else if ((arg == "-wc") && (i + 1 < argc))
+                {
+                    warmup_cycle = atoi(argv[++i]);
                 }
                 else
                 {
@@ -72,7 +80,9 @@ int main(int argc, char* argv[])
 {
    
     int N           = 0;
-    if (parse_arguments(argc, argv, N))
+    int warmup_cycle = 10;
+    int test_cycle = 10;
+    if (parse_arguments(argc, argv, N, test_cycle, warmup_cycle))
     {
         return EXIT_FAILURE;
     }
@@ -90,49 +100,64 @@ int main(int argc, char* argv[])
     int* A_rows_d;
     musaMalloc(&A_rows_d, A_rows_n * sizeof(int));
     musaMemcpy(A_rows_d, &A_rows_h, A_rows_n * sizeof(int), musaMemcpyHostToDevice);
-    
+    int* A_rows_d_tmp;
+    musaMalloc(&A_rows_d_tmp, A_rows_n * sizeof(int));
 
     int A_cols_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_rows_n, 1).at(0);
     int A_cols_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_cols_n).at(0);
     int* A_cols_d;
     musaMalloc(&A_cols_d, A_cols_n * sizeof(int));
     musaMemcpy(A_cols_d, &A_cols_h, A_cols_n * sizeof(int), musaMemcpyHostToDevice);
+    int *A_cols_d_tmp;
+    musaMalloc(&A_cols_d_tmp, A_cols_n * sizeof(int));
 
     int A_vals_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_cols_n, 1).at(0);
     float A_vals_h = readDataFromBin<float>(filename, pos+=sizeof(int), A_vals_n).at(0);
-    float* A_vals_d;
+    float *A_vals_d;
     musaMalloc(&A_vals_d, A_vals_n * sizeof(float));
     musaMemcpy(A_vals_d, &A_vals_h, A_vals_n * sizeof(float), musaMemcpyHostToDevice);
+    float *A_vals_d_tmp;
+    musaMalloc(&A_vals_d_tmp, A_vals_n * sizeof(float));
 
     int A_diag_n = readDataFromBin<int>(filename, pos+=sizeof(float)*A_vals_n, 1).at(0);
     int A_diag_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_diag_n).at(0);
     int* A_diag_d;
     musaMalloc(&A_diag_d, A_diag_n * sizeof(int));
     musaMemcpy(A_diag_d, &A_diag_h, A_diag_n * sizeof(int), musaMemcpyHostToDevice);
+    int* A_diag_d_tmp;
+    musaMalloc(&A_diag_d_tmp, A_diag_n * sizeof(int));
 
     int x_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_diag_n, 1).at(0);
     float x_h = readDataFromBin<float>(filename, pos+=sizeof(int), x_n).at(0);
     float* x_d;
     musaMalloc(&x_d, x_n * sizeof(float));
     musaMemcpy(x_d, &x_h, x_n * sizeof(float), musaMemcpyHostToDevice);
+    float* x_d_tmp;
+    musaMalloc(&x_d_tmp, x_n * sizeof(float));
 
     int b_n = readDataFromBin<int>(filename, pos+=sizeof(float)*x_n, 1).at(0);
     float b_h = readDataFromBin<float>(filename, pos+=sizeof(int), b_n).at(0);
     float* b_d;
     musaMalloc(&b_d, b_n * sizeof(float));
     musaMemcpy(b_d, &b_h, b_n * sizeof(float), musaMemcpyHostToDevice);
+    float* b_d_tmp;
+    musaMalloc(&b_d_tmp, b_n * sizeof(float));
 
     int delta_n = readDataFromBin<int>(filename, pos+=sizeof(float)*b_n, 1).at(0);
     float delta_h = readDataFromBin<float>(filename, pos+=sizeof(int), delta_n).at(0);
     float* delta_d;
     musaMalloc(&delta_d, delta_n * sizeof(float));
     musaMemcpy(delta_d, &delta_h, delta_n * sizeof(float), musaMemcpyHostToDevice);
+    float* delta_d_tmp;
+    musaMalloc(&delta_d_tmp, delta_n * sizeof(float));
 
     int sorted_rows_by_color_n = readDataFromBin<int>(filename, pos+=sizeof(float)*delta_n, 1).at(0);
     int sorted_rows_by_color_h = readDataFromBin<int>(filename, pos+=sizeof(int), sorted_rows_by_color_n).at(0);
     int* sorted_rows_by_color_d;
     musaMalloc(&sorted_rows_by_color_d, sorted_rows_by_color_n * sizeof(int));
     musaMemcpy(sorted_rows_by_color_d, &sorted_rows_by_color_h, sorted_rows_by_color_n * sizeof(int), musaMemcpyHostToDevice);
+    int* sorted_rows_by_color_d_tmp;
+    musaMalloc(&sorted_rows_by_color_d_tmp, sorted_rows_by_color_n * sizeof(int));
 
     int num_rows_per_color_h = readDataFromBin<int>(filename, pos+=sizeof(int)*sorted_rows_by_color_n, 1).at(0);
 
@@ -143,13 +168,16 @@ int main(int argc, char* argv[])
     int* row_colors_d;
     musaMalloc(&row_colors_d, row_colors_n * sizeof(int));
     musaMemcpy(row_colors_d, &row_colors_h, row_colors_n * sizeof(int), musaMemcpyHostToDevice);
-
+    int* row_colors_d_tmp;
+    musaMalloc(&row_colors_d_tmp, row_colors_n * sizeof(int));
 
     int Einv_n = readDataFromBin<int>(filename, pos+=sizeof(int)*row_colors_n, 1).at(0);
     float Einv_h = readDataFromBin<float>(filename, pos+=sizeof(int), Einv_n).at(0);
     float* Einv_d;
     musaMalloc(&Einv_d, Einv_n * sizeof(float));
     musaMemcpy(Einv_d, &Einv_h, Einv_n * sizeof(float), musaMemcpyHostToDevice);
+    float* Einv_d_tmp;
+    musaMalloc(&Einv_d_tmp, Einv_n * sizeof(float));
 
     amgx::ColoringType boundary_coloring_h = readDataFromBin<amgx::ColoringType>(
                                              filename, pos+=sizeof(float)*Einv_n, 1).at(0);
@@ -166,22 +194,41 @@ int main(int argc, char* argv[])
     // const int NUM_ROWS_PER_CTA = CTA_SIZE / NUM_THREADS_PER_ROW;
     // const int grid_size = std::min( 4096, (num_rows_per_color + NUM_ROWS_PER_CTA - 1) / NUM_ROWS_PER_CTA );
 
-
     double time_sum  = 0.0;
-    auto   starttime = std::chrono::system_clock::now();
+    int total_cycle = warmup_cycle + test_cycle;
+    for(int i = 0; i < total_cycle; ++i)
+    {
+        musaMemcpy(A_rows_d_tmp, A_rows_d, A_rows_n * sizeof(int), musaMemcpyDeviceToDevice);
+        musaMemcpy(A_cols_d_tmp, A_cols_d, A_cols_n * sizeof(int), musaMemcpyDeviceToDevice);
+        musaMemcpy(A_vals_d_tmp, A_vals_d, A_vals_n * sizeof(float), musaMemcpyDeviceToDevice);
+        musaMemcpy(A_diag_d_tmp, A_diag_d, A_diag_n * sizeof(int), musaMemcpyDeviceToDevice);
+        musaMemcpy(x_d_tmp, x_d, x_n * sizeof(float), musaMemcpyDeviceToDevice);
+        musaMemcpy(b_d_tmp, b_d, b_n * sizeof(float), musaMemcpyDeviceToDevice);
+        musaMemcpy(delta_d_tmp, delta_d, delta_n * sizeof(float), musaMemcpyDeviceToDevice);
+        musaMemcpy(sorted_rows_by_color_d_tmp, sorted_rows_by_color_d, sorted_rows_by_color_n * sizeof(int), musaMemcpyDeviceToDevice);
+        musaMemcpy(row_colors_d_tmp, row_colors_d, row_colors_n * sizeof(int), musaMemcpyDeviceToDevice);
+        musaMemcpy(Einv_d_tmp, Einv_d, Einv_n * sizeof(float), musaMemcpyDeviceToDevice);
 
-    DILU_forward_1x1_kernel<float, float, NUM_THREADS_PER_ROW, CTA_SIZE, WARP_SIZE, false> <<< grid_size, CTA_SIZE>>>(
-                        A_rows_d, A_cols_d, A_vals_d, A_diag_d, x_d, b_d, delta_d, sorted_rows_by_color_d, 
-                        num_rows_per_color_h, current_color_h, row_colors_d, Einv_d, boundary_coloring_h, boundary_index_h);
+        if (i < warmup_cycle) {
+            DILU_forward_1x1_kernel<float, float, NUM_THREADS_PER_ROW, CTA_SIZE, WARP_SIZE, false> <<< grid_size, CTA_SIZE>>>(
+                        A_rows_d_tmp, A_cols_d_tmp, A_vals_d_tmp, A_diag_d_tmp, x_d_tmp, b_d_tmp, delta_d_tmp, sorted_rows_by_color_d_tmp, 
+                        num_rows_per_color_h, current_color_h, row_colors_d_tmp, Einv_d_tmp, boundary_coloring_h, boundary_index_h);
+        } else {
+            auto starttime_single = std::chrono::system_clock::now();
+            DILU_forward_1x1_kernel<float, float, NUM_THREADS_PER_ROW, CTA_SIZE, WARP_SIZE, false> <<< grid_size, CTA_SIZE>>>(
+                        A_rows_d_tmp, A_cols_d_tmp, A_vals_d_tmp, A_diag_d_tmp, x_d_tmp, b_d_tmp, delta_d_tmp, sorted_rows_by_color_d_tmp, 
+                        num_rows_per_color_h, current_color_h, row_colors_d_tmp, Einv_d_tmp, boundary_coloring_h, boundary_index_h);
+            musaStreamSynchronize(0);
+            auto endtime_single = std::chrono::system_clock::now();
+            auto single_count = std::chrono::duration_cast<std::chrono::microseconds>(endtime_single - starttime_single).count();
+            time_sum += double(single_count * std::chrono::microseconds::period::num);
+        }
+    }
 
-    musaStreamSynchronize(0);
-    auto DILU_forward_1x1_kernel_time = std::chrono::system_clock::now();
-
-    auto time_microsec_count =
-            std::chrono::duration_cast<std::chrono::microseconds>(DILU_forward_1x1_kernel_time - starttime).count();
-    double time_used = double(time_microsec_count * std::chrono::microseconds::period::num);
+    auto time_average = time_sum / test_cycle;
     printf("file %d grid_size:  %d\n", N, grid_size);
-    printf("DILU_forward_1x1_kernel Time Used:  %f us\n", time_used);
+    printf("warmup %d times, average of %d times\n", warmup_cycle, test_cycle);
+    printf("DILU_forward_1x1_kernel Time Used:  %f us\n", time_average);
 
     musaFree(A_rows_d);
     musaFree(A_cols_d);
@@ -193,6 +240,17 @@ int main(int argc, char* argv[])
     musaFree(sorted_rows_by_color_d);
     musaFree(row_colors_d);
     musaFree(Einv_d);
+
+    musaFree(A_rows_d_tmp);
+    musaFree(A_cols_d_tmp);
+    musaFree(A_vals_d_tmp);
+    musaFree(A_diag_d_tmp);
+    musaFree(x_d_tmp);
+    musaFree(b_d_tmp);
+    musaFree(delta_d_tmp);
+    musaFree(sorted_rows_by_color_d_tmp);
+    musaFree(row_colors_d_tmp);
+    musaFree(Einv_d_tmp);
 
     return EXIT_SUCCESS;
 }

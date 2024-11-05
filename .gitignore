@@ -11,3 +11,4 @@ ci/docker/
 examples/input_matrix/
 *.mtx
 .utestsnums
+perf/DILU_forward_1x1_kernel/build/
