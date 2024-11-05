@@ -1,0 +1,198 @@
+#include <iostream>
+#include "DILU_forward_1x1_kernel.h"
+#include <chrono>
+#include <fstream>
+#include <vector>
+
+
+#include <amgx_types/util.h>
+#include <solvers/multicolor_dilu_solver.h>
+
+
+static int parse_arguments(int argc, char* argv[], int& fileNo)
+{
+    if (argc >= 2)
+    {
+        for (int i = 1; i < argc; ++i)
+        {
+            std::string arg = argv[i];
+
+            if ((arg.at(0) == '-') || ((arg.at(0) == '-') && (arg.at(1) == '-')))
+            {
+                if ((arg == "-h") || (arg == "--help"))
+                {
+                    return EXIT_FAILURE;
+                }
+                if ((arg == "-f") && (i + 1 < argc))
+                {
+                    fileNo = atoi(argv[++i]);
+                }
+                else
+                {
+                    std::cerr << "error with " << arg << std::endl;
+                    std::cerr << "do not recognize option" << std::endl << std::endl;
+                    return EXIT_FAILURE;
+                }
+            }
+            else
+            {
+                std::cerr << "error with " << arg << std::endl;
+                std::cerr << "option must start with - or --" << std::endl << std::endl;
+                return EXIT_FAILURE;
+            }
+        }
+    }
+    return EXIT_SUCCESS;
+}
+
+template<typename T>
+std::vector<T> readDataFromBin(const std::string& filename, int byte, int n)
+{
+    std::vector<T> data;
+    std::ifstream  inFile(filename, std::ios::binary);
+    if (inFile.is_open())
+    {
+        inFile.seekg(byte); // locate byte x
+        T value;
+        for (int i = 0; i < n; ++i)
+        {
+            inFile.read(reinterpret_cast<char*>(&value), sizeof(T));
+            data.push_back(value);
+        }
+        inFile.close();
+    }
+    else
+    {
+        std::cerr << "Cannot open file." << std::endl;
+    }
+    return data;
+}
+
+int main(int argc, char* argv[])
+{
+   
+    int N           = 0;
+    if (parse_arguments(argc, argv, N))
+    {
+        return EXIT_FAILURE;
+    }
+
+    std::string filename = "data/data_cage14_DILU_forward_1x1_kernel.bin";
+    if (N != 0)
+    {
+        filename = filename + "_" + std::to_string(N);  
+    }
+    printf("Data %d file is used.\n", N);
+
+    int pos = 0;
+    int A_rows_n = readDataFromBin<int>(filename, pos, 1).at(0);
+    int A_rows_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_rows_n).at(0);
+    int* A_rows_d;
+    musaMalloc(&A_rows_d, A_rows_n * sizeof(int));
+    musaMemcpy(A_rows_d, &A_rows_h, A_rows_n * sizeof(int), musaMemcpyHostToDevice);
+    
+
+    int A_cols_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_rows_n, 1).at(0);
+    int A_cols_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_cols_n).at(0);
+    int* A_cols_d;
+    musaMalloc(&A_cols_d, A_cols_n * sizeof(int));
+    musaMemcpy(A_cols_d, &A_cols_h, A_cols_n * sizeof(int), musaMemcpyHostToDevice);
+
+    int A_vals_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_cols_n, 1).at(0);
+    float A_vals_h = readDataFromBin<float>(filename, pos+=sizeof(int), A_vals_n).at(0);
+    float* A_vals_d;
+    musaMalloc(&A_vals_d, A_vals_n * sizeof(float));
+    musaMemcpy(A_vals_d, &A_vals_h, A_vals_n * sizeof(float), musaMemcpyHostToDevice);
+
+    int A_diag_n = readDataFromBin<int>(filename, pos+=sizeof(float)*A_vals_n, 1).at(0);
+    int A_diag_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_diag_n).at(0);
+    int* A_diag_d;
+    musaMalloc(&A_diag_d, A_diag_n * sizeof(int));
+    musaMemcpy(A_diag_d, &A_diag_h, A_diag_n * sizeof(int), musaMemcpyHostToDevice);
+
+    int x_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_diag_n, 1).at(0);
+    float x_h = readDataFromBin<float>(filename, pos+=sizeof(int), x_n).at(0);
+    float* x_d;
+    musaMalloc(&x_d, x_n * sizeof(float));
+    musaMemcpy(x_d, &x_h, x_n * sizeof(float), musaMemcpyHostToDevice);
+
+    int b_n = readDataFromBin<int>(filename, pos+=sizeof(float)*x_n, 1).at(0);
+    float b_h = readDataFromBin<float>(filename, pos+=sizeof(int), b_n).at(0);
+    float* b_d;
+    musaMalloc(&b_d, b_n * sizeof(float));
+    musaMemcpy(b_d, &b_h, b_n * sizeof(float), musaMemcpyHostToDevice);
+
+    int delta_n = readDataFromBin<int>(filename, pos+=sizeof(float)*b_n, 1).at(0);
+    float delta_h = readDataFromBin<float>(filename, pos+=sizeof(int), delta_n).at(0);
+    float* delta_d;
+    musaMalloc(&delta_d, delta_n * sizeof(float));
+    musaMemcpy(delta_d, &delta_h, delta_n * sizeof(float), musaMemcpyHostToDevice);
+
+    int sorted_rows_by_color_n = readDataFromBin<int>(filename, pos+=sizeof(float)*delta_n, 1).at(0);
+    int sorted_rows_by_color_h = readDataFromBin<int>(filename, pos+=sizeof(int), sorted_rows_by_color_n).at(0);
+    int* sorted_rows_by_color_d;
+    musaMalloc(&sorted_rows_by_color_d, sorted_rows_by_color_n * sizeof(int));
+    musaMemcpy(sorted_rows_by_color_d, &sorted_rows_by_color_h, sorted_rows_by_color_n * sizeof(int), musaMemcpyHostToDevice);
+
+    int num_rows_per_color_h = readDataFromBin<int>(filename, pos+=sizeof(int)*sorted_rows_by_color_n, 1).at(0);
+
+    int current_color_h = readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
+
+    int row_colors_n = readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
+    int row_colors_h = readDataFromBin<int>(filename, pos+=sizeof(int), row_colors_n).at(0);
+    int* row_colors_d;
+    musaMalloc(&row_colors_d, row_colors_n * sizeof(int));
+    musaMemcpy(row_colors_d, &row_colors_h, row_colors_n * sizeof(int), musaMemcpyHostToDevice);
+
+
+    int Einv_n = readDataFromBin<int>(filename, pos+=sizeof(int)*row_colors_n, 1).at(0);
+    float Einv_h = readDataFromBin<float>(filename, pos+=sizeof(int), Einv_n).at(0);
+    float* Einv_d;
+    musaMalloc(&Einv_d, Einv_n * sizeof(float));
+    musaMemcpy(Einv_d, &Einv_h, Einv_n * sizeof(float), musaMemcpyHostToDevice);
+
+    amgx::ColoringType boundary_coloring_h = readDataFromBin<amgx::ColoringType>(
+                                             filename, pos+=sizeof(float)*Einv_n, 1).at(0);
+
+    int boundary_index_h = readDataFromBin<int>(filename, pos+=sizeof(amgx::ColoringType), 1).at(0);
+
+
+    const int NUM_THREADS_PER_ROW = 8;//readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
+    const int CTA_SIZE = 128;//readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
+    const int WARP_SIZE = 32;//readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
+    int grid_size = readDataFromBin<int>(filename, pos+=sizeof(int)*4, 1).at(0);
+
+    // const int NUM_THREADS_PER_ROW = 8;
+    // const int NUM_ROWS_PER_CTA = CTA_SIZE / NUM_THREADS_PER_ROW;
+    // const int grid_size = std::min( 4096, (num_rows_per_color + NUM_ROWS_PER_CTA - 1) / NUM_ROWS_PER_CTA );
+
+
+    double time_sum  = 0.0;
+    auto   starttime = std::chrono::system_clock::now();
+
+    DILU_forward_1x1_kernel<float, float, NUM_THREADS_PER_ROW, CTA_SIZE, WARP_SIZE, false> <<< grid_size, CTA_SIZE>>>(
+                        A_rows_d, A_cols_d, A_vals_d, A_diag_d, x_d, b_d, delta_d, sorted_rows_by_color_d, 
+                        num_rows_per_color_h, current_color_h, row_colors_d, Einv_d, boundary_coloring_h, boundary_index_h);
+
+    musaStreamSynchronize(0);
+    auto DILU_forward_1x1_kernel_time = std::chrono::system_clock::now();
+
+    auto time_microsec_count =
+            std::chrono::duration_cast<std::chrono::microseconds>(DILU_forward_1x1_kernel_time - starttime).count();
+    double time_used = double(time_microsec_count * std::chrono::microseconds::period::num);
+    printf("file %d grid_size:  %d\n", N, grid_size);
+    printf("DILU_forward_1x1_kernel Time Used:  %f us\n", time_used);
+
+    musaFree(A_rows_d);
+    musaFree(A_cols_d);
+    musaFree(A_vals_d);
+    musaFree(A_diag_d);
+    musaFree(x_d);
+    musaFree(b_d);
+    musaFree(delta_d);
+    musaFree(sorted_rows_by_color_d);
+    musaFree(row_colors_d);
+    musaFree(Einv_d);
+
+    return EXIT_SUCCESS;
+}

@@ -201,3 +201,19 @@ See [API reference doc](doc/AMGX_Reference.pdf) for detailed description of the 
 ### Compilation for test
 
 Need to add cmake option `-DCMAKE_POSITION_INDEPENDENT_CODE=ON` to compile the library as a shared object.
+
+## Perf Optimization
+We extract hotspot kernel(s) for perf improvement, you can build as follows:
+
+```bash
+cd perf/DILU_forward_1x1_kernel
+cmake -B build
+cmake --build build -j16
+```
+
+And you can run the perf test:
+```bash
+cd perf/DILU_forward_1x1_kernel
+./build/bin/dilu_forward_1x1_kernel   #default: for data 0
+./build/bin/dilu_forward_1x1_kernel -f 1000  #for data 1000
+```
