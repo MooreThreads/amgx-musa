@@ -20,11 +20,7 @@
 
 template< typename Matrix_type, typename Vector_type, int NUM_THREADS_PER_ROW, int CTA_SIZE, int WARP_SIZE, bool HAS_EXTERNAL_DIAG >
 __global__
-#if defined(__MUSA_ARCH__) && __MUSA_ARCH__ >= 700
 __launch_bounds__( CTA_SIZE, 12 )
-#elif defined(__MUSA_ARCH__)
-__launch_bounds__( CTA_SIZE, 12 )
-#endif
 void DILU_forward_1x1_kernel( const int *__restrict A_rows,
                               const int *__restrict A_cols,
                               const Matrix_type *__restrict A_vals,

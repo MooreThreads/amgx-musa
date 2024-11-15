@@ -87,97 +87,107 @@ int main(int argc, char* argv[])
         return EXIT_FAILURE;
     }
 
-    std::string filename = "data/data_cage14_DILU_forward_1x1_kernel.bin";
+    std::string filename = "../data/data_cage14_DILU_forward_1x1_kernel.bin";
     if (N != 0)
     {
         filename = filename + "_" + std::to_string(N);  
     }
     printf("Data %d file is used.\n", N);
 
+
     int pos = 0;
     int A_rows_n = readDataFromBin<int>(filename, pos, 1).at(0);
-    int A_rows_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_rows_n).at(0);
+    std::vector<int> A_rows_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_rows_n);
     int* A_rows_d;
     musaMalloc(&A_rows_d, A_rows_n * sizeof(int));
-    musaMemcpy(A_rows_d, &A_rows_h, A_rows_n * sizeof(int), musaMemcpyHostToDevice);
+    musaMemcpy(A_rows_d, A_rows_h.data(), A_rows_n * sizeof(int), musaMemcpyHostToDevice);
     int* A_rows_d_tmp;
     musaMalloc(&A_rows_d_tmp, A_rows_n * sizeof(int));
 
+   
     int A_cols_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_rows_n, 1).at(0);
-    int A_cols_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_cols_n).at(0);
+    std::vector<int> A_cols_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_cols_n);
     int* A_cols_d;
     musaMalloc(&A_cols_d, A_cols_n * sizeof(int));
-    musaMemcpy(A_cols_d, &A_cols_h, A_cols_n * sizeof(int), musaMemcpyHostToDevice);
+    musaMemcpy(A_cols_d, A_cols_h.data(), A_cols_n * sizeof(int), musaMemcpyHostToDevice);
     int *A_cols_d_tmp;
     musaMalloc(&A_cols_d_tmp, A_cols_n * sizeof(int));
 
+
     int A_vals_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_cols_n, 1).at(0);
-    float A_vals_h = readDataFromBin<float>(filename, pos+=sizeof(int), A_vals_n).at(0);
-    float *A_vals_d;
+    std::vector<float> A_vals_h = readDataFromBin<float>(filename, pos+=sizeof(int), A_vals_n);
+    float* A_vals_d;
     musaMalloc(&A_vals_d, A_vals_n * sizeof(float));
-    musaMemcpy(A_vals_d, &A_vals_h, A_vals_n * sizeof(float), musaMemcpyHostToDevice);
+    musaMemcpy(A_vals_d, A_vals_h.data(), A_vals_n * sizeof(float), musaMemcpyHostToDevice);
     float *A_vals_d_tmp;
     musaMalloc(&A_vals_d_tmp, A_vals_n * sizeof(float));
 
+
     int A_diag_n = readDataFromBin<int>(filename, pos+=sizeof(float)*A_vals_n, 1).at(0);
-    int A_diag_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_diag_n).at(0);
+    std::vector<int> A_diag_h = readDataFromBin<int>(filename, pos+=sizeof(int), A_diag_n);
     int* A_diag_d;
     musaMalloc(&A_diag_d, A_diag_n * sizeof(int));
-    musaMemcpy(A_diag_d, &A_diag_h, A_diag_n * sizeof(int), musaMemcpyHostToDevice);
+    musaMemcpy(A_diag_d, A_diag_h.data(), A_diag_n * sizeof(int), musaMemcpyHostToDevice);
     int* A_diag_d_tmp;
     musaMalloc(&A_diag_d_tmp, A_diag_n * sizeof(int));
 
     int x_n = readDataFromBin<int>(filename, pos+=sizeof(int)*A_diag_n, 1).at(0);
-    float x_h = readDataFromBin<float>(filename, pos+=sizeof(int), x_n).at(0);
+    std::vector<float> x_h= readDataFromBin<float>(filename, pos+=sizeof(int), x_n);
     float* x_d;
     musaMalloc(&x_d, x_n * sizeof(float));
-    musaMemcpy(x_d, &x_h, x_n * sizeof(float), musaMemcpyHostToDevice);
+    musaMemcpy(x_d, x_h.data(), x_n * sizeof(float), musaMemcpyHostToDevice);
     float* x_d_tmp;
     musaMalloc(&x_d_tmp, x_n * sizeof(float));
 
+
     int b_n = readDataFromBin<int>(filename, pos+=sizeof(float)*x_n, 1).at(0);
-    float b_h = readDataFromBin<float>(filename, pos+=sizeof(int), b_n).at(0);
+    std::vector<float> b_h = readDataFromBin<float>(filename, pos+=sizeof(int), b_n);
     float* b_d;
     musaMalloc(&b_d, b_n * sizeof(float));
-    musaMemcpy(b_d, &b_h, b_n * sizeof(float), musaMemcpyHostToDevice);
+    musaMemcpy(b_d, b_h.data(), b_n * sizeof(float), musaMemcpyHostToDevice);
     float* b_d_tmp;
     musaMalloc(&b_d_tmp, b_n * sizeof(float));
 
+
     int delta_n = readDataFromBin<int>(filename, pos+=sizeof(float)*b_n, 1).at(0);
-    float delta_h = readDataFromBin<float>(filename, pos+=sizeof(int), delta_n).at(0);
+    std::vector<float> delta_h = readDataFromBin<float>(filename, pos+=sizeof(int), delta_n);
     float* delta_d;
     musaMalloc(&delta_d, delta_n * sizeof(float));
-    musaMemcpy(delta_d, &delta_h, delta_n * sizeof(float), musaMemcpyHostToDevice);
+    musaMemcpy(delta_d, delta_h.data(), delta_n * sizeof(float), musaMemcpyHostToDevice);
     float* delta_d_tmp;
     musaMalloc(&delta_d_tmp, delta_n * sizeof(float));
 
+
     int sorted_rows_by_color_n = readDataFromBin<int>(filename, pos+=sizeof(float)*delta_n, 1).at(0);
-    int sorted_rows_by_color_h = readDataFromBin<int>(filename, pos+=sizeof(int), sorted_rows_by_color_n).at(0);
+    std::vector<int> sorted_rows_by_color_h = readDataFromBin<int>(filename, pos+=sizeof(int), sorted_rows_by_color_n);
     int* sorted_rows_by_color_d;
     musaMalloc(&sorted_rows_by_color_d, sorted_rows_by_color_n * sizeof(int));
-    musaMemcpy(sorted_rows_by_color_d, &sorted_rows_by_color_h, sorted_rows_by_color_n * sizeof(int), musaMemcpyHostToDevice);
+    musaMemcpy(sorted_rows_by_color_d, sorted_rows_by_color_h.data(), sorted_rows_by_color_n * sizeof(int), musaMemcpyHostToDevice);
     int* sorted_rows_by_color_d_tmp;
     musaMalloc(&sorted_rows_by_color_d_tmp, sorted_rows_by_color_n * sizeof(int));
+
 
     int num_rows_per_color_h = readDataFromBin<int>(filename, pos+=sizeof(int)*sorted_rows_by_color_n, 1).at(0);
 
     int current_color_h = readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
 
     int row_colors_n = readDataFromBin<int>(filename, pos+=sizeof(int), 1).at(0);
-    int row_colors_h = readDataFromBin<int>(filename, pos+=sizeof(int), row_colors_n).at(0);
+    std::vector<int> row_colors_h = readDataFromBin<int>(filename, pos+=sizeof(int), row_colors_n);
     int* row_colors_d;
     musaMalloc(&row_colors_d, row_colors_n * sizeof(int));
-    musaMemcpy(row_colors_d, &row_colors_h, row_colors_n * sizeof(int), musaMemcpyHostToDevice);
+    musaMemcpy(row_colors_d, row_colors_h.data(), row_colors_n * sizeof(int), musaMemcpyHostToDevice);
     int* row_colors_d_tmp;
     musaMalloc(&row_colors_d_tmp, row_colors_n * sizeof(int));
 
+
     int Einv_n = readDataFromBin<int>(filename, pos+=sizeof(int)*row_colors_n, 1).at(0);
-    float Einv_h = readDataFromBin<float>(filename, pos+=sizeof(int), Einv_n).at(0);
+    std::vector<float> Einv_h = readDataFromBin<float>(filename, pos+=sizeof(int), Einv_n);
     float* Einv_d;
     musaMalloc(&Einv_d, Einv_n * sizeof(float));
-    musaMemcpy(Einv_d, &Einv_h, Einv_n * sizeof(float), musaMemcpyHostToDevice);
+    musaMemcpy(Einv_d, Einv_h.data(), Einv_n * sizeof(float), musaMemcpyHostToDevice);
     float* Einv_d_tmp;
     musaMalloc(&Einv_d_tmp, Einv_n * sizeof(float));
+
 
     amgx::ColoringType boundary_coloring_h = readDataFromBin<amgx::ColoringType>(
                                              filename, pos+=sizeof(float)*Einv_n, 1).at(0);
@@ -193,6 +203,7 @@ int main(int argc, char* argv[])
     // const int NUM_THREADS_PER_ROW = 8;
     // const int NUM_ROWS_PER_CTA = CTA_SIZE / NUM_THREADS_PER_ROW;
     // const int grid_size = std::min( 4096, (num_rows_per_color + NUM_ROWS_PER_CTA - 1) / NUM_ROWS_PER_CTA );
+
 
     double time_sum  = 0.0;
     int total_cycle = warmup_cycle + test_cycle;

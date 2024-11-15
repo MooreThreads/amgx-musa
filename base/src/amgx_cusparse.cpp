@@ -40,7 +40,7 @@
 #include <amgx_types/util.h>
 
 #if MUSART_VERSION < 11000
-#define MUSPARSE_SPMM_ALG_DEFAULT MUSPARSE_MM_ALG_DEFAULT
+#define MUSPARSE_SPMM_ALG_DEFAULT MUSPARSE_SPMM_ALG_DEFAULT
 #endif
 
 namespace amgx
