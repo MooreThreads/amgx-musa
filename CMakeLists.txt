@@ -38,7 +38,10 @@ set(CMAKE_CXX_COMPILER ${MCC_CXX_COMPILER})
 # Set MUSA include and library path
 set(MUSA_INC "${MUSA_ROOT}/include" CACHE STRING "Set MUSA_INC path")
 set(MUSA_LIB "${MUSA_ROOT}/lib" CACHE PATH "Set MUSA_LIB path")
-add_compile_options(-x musa --musa-path=${MUSA_ROOT})
+add_compile_options(-x musa --musa-path=${MUSA_ROOT}
+  "SHELL:-mllvm -mtgpu-enable-sync-use-barrier=1"
+  "SHELL:-mllvm -mtgpu-enable-add-mutex-to-idf=1"
+  "SHELL:-mllvm -mtgpu-enable-end-workaround=use_oob_store")
 
 if(MUSA_ARCHS)
   string(REPLACE "," ";" MUSA_ARCHS ${MUSA_ARCHS})

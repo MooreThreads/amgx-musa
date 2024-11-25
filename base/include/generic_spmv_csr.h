@@ -161,7 +161,7 @@ void __csr_generic_spmv_vector(const Matrix    &A,
                                const state     &st)
 {
     typedef typename Matrix::index_type IndexType;
-    const size_t THREADS_PER_BLOCK  = 128;
+    const size_t THREADS_PER_BLOCK  = 32;
     const size_t VECTORS_PER_BLOCK  = THREADS_PER_BLOCK / THREADS_PER_VECTOR;
     const size_t MAX_BLOCKS = cusp::detail::device::arch::max_active_blocks(
                                   csr_generic_spmv_vector_kernel<IndexType, typename Matrix::value_type,
