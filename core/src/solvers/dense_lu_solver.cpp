@@ -539,14 +539,14 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I >
 void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrf()
 {
     int wsize = 0;
-    mublasStatus_t status1 = musolverDnXgetrf_bufferSize(m_cuds_handle,
+    musolverStatus_t status1 = musolverDnXgetrf_bufferSize(m_cuds_handle,
                                m_num_rows,
                                m_num_cols,
                                m_dense_A,
                                m_lda,
                                &wsize);
 
-    if ( status1 != MUBLAS_STATUS_SUCCESS)
+    if ( status1 != MUSOLVER_STATUS_SUCCESS)
     {
         FatalError( "Failed kernel in DenseLU", AMGX_ERR_INTERNAL);
     }
@@ -556,7 +556,7 @@ void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrf()
     status1 = musolverDnXgetrf(m_cuds_handle, m_num_rows, m_num_cols,
                                m_dense_A, m_lda, m_trf_wspace, m_ipiv, m_cuds_info);
 
-    if ( status1 != MUBLAS_STATUS_SUCCESS)
+    if ( status1 != MUSOLVER_STATUS_SUCCESS)
     {
         FatalError( "failed kernel in Dense LU is likely due to invalid input parameters",
                     AMGX_ERR_INTERNAL);
@@ -599,7 +599,7 @@ template< AMGX_VecPrecision V, AMGX_MatPrecision M, AMGX_IndPrecision I >
 void DenseLUSolver<TemplateConfig<AMGX_device, V, M, I> >::cudense_getrs( Vector_d &x )
 {
     //Solve L*X = RHS
-    mublasStatus_t status = musolverDnXgetrs(m_cuds_handle,
+    musolverStatus_t status = musolverDnXgetrs(m_cuds_handle,
                               MUBLAS_OP_N,
                               m_num_rows,
                               1,
@@ -951,7 +951,7 @@ solve_iteration(Vector_d &rhs,
         //Solve L*X = RHS
         MVector_d x_global(m_num_rows);
         thrust::copy(rhs_global_h.begin(), rhs_global_h.end(), x_global.begin());
-        mublasStatus_t status = 
+        musolverStatus_t status = 
             musolverDnXgetrs(m_cuds_handle,
                              MUBLAS_OP_N,
                              m_num_rows,

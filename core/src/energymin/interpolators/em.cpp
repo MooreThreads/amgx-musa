@@ -811,7 +811,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
     // Sequentially perform dense LU factorization on all Aij's
     // LU factors stored in place of the Aij's
     // Then, perform inversion of Aij submatrices by solving with RHS == identity matrix
-    mublasStatus_t cudsStat;
+    musolverStatus_t cudsStat;
 
     if (!cuds_handle)
     {
@@ -845,7 +845,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
         int AijOffset  = AijOffsets[j];
         int AijNumRows = P.row_offsets[j + 1] - P.row_offsets[j];
         int lda = AijNumRows;
-        mublasStatus_t status = musolverDnXgetrf_bufferSize(cuds_handle, AijNumRows, AijNumRows, dense_Aijs + AijOffset, lda, &cur_wsize);
+        musolverStatus_t status = musolverDnXgetrf_bufferSize(cuds_handle, AijNumRows, AijNumRows, dense_Aijs + AijOffset, lda, &cur_wsize);
 
         if (status != MUBLAS_STATUS_SUCCESS)
         {
@@ -868,7 +868,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
                                     dense_Aijs + AijOffset, lda, m_cuds_wspace,
                                     ipiv + ipivOffset, cuds_info);
 
-        if (cudsStat != MUBLAS_STATUS_SUCCESS)
+        if (cudsStat != MUSOLVER_STATUS_SUCCESS)
         {
             FatalError("failed to perform LU factorization", AMGX_ERR_INTERNAL);
         }
@@ -878,7 +878,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
                                     dense_Aijs + AijOffset, lda,
                                     ipiv + ipivOffset, dense_invAijs + AijOffset, lda, cuds_info );
 
-        if (cudsStat != MUBLAS_STATUS_SUCCESS)
+        if (cudsStat != MUSOLVER_STATUS_SUCCESS)
         {
             FatalError("failed to perform triangular solve", AMGX_ERR_INTERNAL);
         }
@@ -1026,7 +1026,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
     <<< numBlocks, blocksize>>>(PcolOffsets_ptr, ProwInd_ptr, numCoarse,
                                 v_x.raw(), Pvalues_ptr);
     cudaCheckError();
-    mublasStatus_t cudsStat;
+    musolverStatus_t cudsStat;
 
     if (!cuds_handle)
     {
@@ -1067,7 +1067,7 @@ void EM_Interpolator<TemplateConfig<AMGX_device, t_vecPrec, t_matPrec, t_indPrec
                                     dense_Aijs + AijOffset, lda,
                                     ipiv + ipivOffset, Pvalues_ptr + PcolOffset, lda, cuds_info);
 
-        if (cudsStat != MUBLAS_STATUS_SUCCESS)
+        if (cudsStat != MUSOLVER_STATUS_SUCCESS)
         { FatalError("failed to perform triangular solve", AMGX_ERR_INTERNAL); }
 
         ipivOffset += AijNumRows;   // starting offset of the next pivoting sequence

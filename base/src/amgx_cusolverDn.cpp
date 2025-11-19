@@ -32,47 +32,47 @@ namespace amgx
 //
 // LU factorization
 //
-mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
         int m,
         int n,
         float *A,
         int lda,
         int *Lwork )
 {
-    return musolverSgetrf_bufferSize(m, n, true, Lwork);
+    return musolverDnSgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
         int m,
         int n,
         double *A,
         int lda,
         int *Lwork )
 {
-    return musolverDgetrf_bufferSize(m, n, true, Lwork);
+    return musolverDnDgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf_bufferSize(mublasHandle_t handle,
         int m,
         int n,
         muComplex *A,
         int lda,
         int *Lwork )
 {
-    return musolverCgetrf_bufferSize(m, n, true, Lwork);
+    return musolverDnCgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-mublasStatus_t musolverDnXgetrf_bufferSize (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf_bufferSize(mublasHandle_t handle,
         int m,
         int n,
         muDoubleComplex *A,
         int lda,
         int *Lwork )
 {
-    return musolverZgetrf_bufferSize(m, n, true, Lwork);
+    return musolverDnZgetrf_bufferSize(handle, m, n, A, lda, Lwork);
 }
 
-mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    float *A,
@@ -81,10 +81,10 @@ mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverSgetrf(handle, m, n, A, lda, devIpiv, info, (void* )wspace);
+    return musolverDnSgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
-mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    double *A,
@@ -93,10 +93,10 @@ mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverDgetrf(handle, m, n, A, lda, devIpiv, info, (void* )wspace);
+    return musolverDnDgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
-mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    muComplex *A,
@@ -105,10 +105,10 @@ mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverCgetrf(handle, m, n, A, lda, devIpiv, info, (void* )wspace);
+    return musolverDnCgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
-mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int m,
                                    int n,
                                    muDoubleComplex *A,
@@ -117,13 +117,13 @@ mublasStatus_t musolverDnXgetrf (mublasHandle_t handle,
                                    int *devIpiv,
                                    int *info)
 {
-    return musolverZgetrf(handle, m, n, A, lda, devIpiv, info, (void* )wspace);
+    return musolverDnZgetrf(handle, m, n, A, lda, wspace, devIpiv, info);
 }
 
 //
 // solve
 //
-mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -134,18 +134,12 @@ mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    // int buffersize;
-    // void* buffer;
-    // musolverSgetrs_bufferSize(trans, n, nrhs, &buffersize);
-    // musaMalloc(&buffer, buffersize);
-    // return musolverSgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, buffer);
-
     int* dInfo;
     musaMalloc(&dInfo, sizeof(int));
-    return musolverSgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
+    return musolverDnSgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
 }
 
-mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -156,18 +150,12 @@ mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    // int buffersize;
-    // void* buffer;
-    // musolverDgetrs_bufferSize(trans, n, nrhs, &buffersize);
-    // musaMalloc(&buffer, buffersize);
-    // return musolverDgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, buffer);
-
     int* dInfo;
     musaMalloc(&dInfo, sizeof(int));
-    return musolverDgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
+    return musolverDnDgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
 }
 
-mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -178,17 +166,12 @@ mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    // int buffersize;
-    // void* buffer;
-    // musolverCgetrs_bufferSize(trans, n, nrhs, &buffersize);
-    // musaMalloc(&buffer, buffersize);
-    // return musolverCgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, buffer);
     int* dInfo;
     musaMalloc(&dInfo, sizeof(int));
-    return musolverCgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
+    return musolverDnCgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
 }
 
-mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
+musolverStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   mublasOperation_t trans,
                                   int n,
                                   int nrhs,
@@ -199,15 +182,9 @@ mublasStatus_t musolverDnXgetrs(mublasHandle_t handle,
                                   int ldb,
                                   int *devInfo )
 {
-    // int buffersize;
-    // void* buffer;
-    // musolverZgetrs_bufferSize(trans, n, nrhs, &buffersize);
-    // musaMalloc(&buffer, buffersize);
-    // return musolverZgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, buffer);
-
     int* dInfo;
     musaMalloc(&dInfo, sizeof(int));
-    return musolverZgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
+    return musolverDnZgetrs(handle, trans, n, nrhs, A, lda, devIpiv, B, ldb, dInfo);
 }
 
 } // namespace amgx
