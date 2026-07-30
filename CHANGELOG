@@ -2,6 +2,18 @@ CHANGELOG
 
 ===============================================================
 
+MUSA release note
+
+---------------------------------------------------------------
+
+This repository publishes the Moore Threads MUSA port of AMGX. The MUSA release
+branch is based on upstream NVIDIA AMGX v2.3.0 and contains PH1 backend,
+toolkit, MPI and performance-hotspot adaptation work.
+
+The upstream AMGX changelog is preserved below for historical context.
+
+===============================================================
+
 v2.2.0 - 2021-04-06
 
 ---------------------------------------------------------------

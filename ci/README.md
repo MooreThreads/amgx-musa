@@ -1,6 +1,10 @@
 Continuous integration
 ===
 
+This directory is inherited from upstream AMGX and is kept for reference. The
+MUSA release branch does not claim that these upstream CUDA-oriented container
+recipes are the authoritative CI path for AMGX-MUSA.
+
 **WIP**: Adding continuous integration to AmgX is currently a work in progress.
 
 * [`./ci/run.sh`](run.sh) runs the whole CI pipeline locally: it builds the
